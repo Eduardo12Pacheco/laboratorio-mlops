@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 # Multi-stage image for every Compose service (D16): one locked, non-editable wheel
 # installed into a virtualenv, then copied into a slim runtime with only libgomp1.
-FROM python:3.12-slim-bookworm AS builder
+FROM python:3.15-slim-bookworm AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:0.11.29 /uv /uvx /bin/
 
@@ -19,7 +19,7 @@ COPY src ./src
 RUN uv sync --locked --no-dev --no-editable
 
 
-FROM python:3.12-slim-bookworm AS runtime
+FROM python:3.15-slim-bookworm AS runtime
 
 # LightGBM needs the OpenMP runtime (D26); nothing else is required at runtime.
 RUN apt-get update \
