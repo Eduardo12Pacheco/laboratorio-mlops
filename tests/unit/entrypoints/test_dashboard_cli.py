@@ -30,6 +30,7 @@ def test_dashboard_command_runs_the_packaged_app() -> None:
     assert "--theme.light.primaryColor" in argv
     assert "--theme.dark.primaryColor" in argv
     assert "--theme.background" not in argv  # let Streamlit's light/dark auto theme win
+    assert argv[argv.index("--client.toolbarMode") + 1] == "minimal"  # no "Deploy" button
 
 
 def test_dashboard_exports_the_workspace_and_propagates_success(

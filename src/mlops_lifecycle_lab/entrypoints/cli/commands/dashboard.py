@@ -54,6 +54,8 @@ def dashboard_command(
         "true",
         "--browser.gatherUsageStats",
         "false",
+        "--client.toolbarMode",
+        "minimal",
         "--theme.light.primaryColor",
         LIGHT.accent,
         "--theme.dark.primaryColor",

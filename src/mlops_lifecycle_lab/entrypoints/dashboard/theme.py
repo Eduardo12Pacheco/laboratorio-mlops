@@ -151,17 +151,18 @@ def status_marks(theme: Theme) -> Mapping[str, StatusMark]:
     )
 
 
-def plotly_layout(theme: Theme, *, height: int = 320) -> dict[str, object]:
+def plotly_layout(theme: Theme, *, height: int = 320, top: int = 48) -> dict[str, object]:
     """A transparent Plotly layout that inherits Streamlit's theme typography."""
     return {
         "height": height,
-        "margin": {"l": 10, "r": 10, "t": 40, "b": 10},
+        "margin": {"l": 10, "r": 10, "t": top, "b": 72},
         "paper_bgcolor": "rgba(0,0,0,0)",
         "plot_bgcolor": "rgba(0,0,0,0)",
         "font": {"color": theme.text},
         "xaxis": {"gridcolor": theme.grid, "zeroline": False},
         "yaxis": {"gridcolor": theme.grid, "zeroline": False},
-        "legend": {"orientation": "h", "yanchor": "bottom", "y": 1.02, "x": 0},
+        # Below the plot: above it the legend collides with the chart title.
+        "legend": {"orientation": "h", "yanchor": "top", "y": -0.18, "x": 0},
     }
 
 

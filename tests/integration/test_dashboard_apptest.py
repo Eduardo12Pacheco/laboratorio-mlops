@@ -39,6 +39,7 @@ def _app(monkeypatch: pytest.MonkeyPatch, workspace: Path, page: str) -> AppTest
 def _assert_heading(at: AppTest, page: str) -> None:
     assert [title.value for title in at.title] == [page]
     assert not at.exception
+    assert not at.error, [element.value for element in at.error]  # healthy data never errors
 
 
 def test_overview_renders_metrics(monkeypatch: pytest.MonkeyPatch, drilled_workspace: Path) -> None:
@@ -50,7 +51,7 @@ def test_overview_renders_metrics(monkeypatch: pytest.MonkeyPatch, drilled_works
 def test_monitoring_renders_plots(monkeypatch: pytest.MonkeyPatch, drilled_workspace: Path) -> None:
     at = _app(monkeypatch, drilled_workspace, "Monitoring")
     _assert_heading(at, "Monitoring")
-    assert at.get("plotly_chart") or at.dataframe
+    assert at.get("plotly_chart")
 
 
 def test_registry_renders_the_version_table(
@@ -75,7 +76,7 @@ def test_drill_renders_the_timeline(
     at = _app(monkeypatch, drilled_workspace, "Drill")
     _assert_heading(at, "Drill")
     assert at.selectbox
-    assert at.get("plotly_chart") or at.dataframe
+    assert at.get("plotly_chart")
 
 
 @pytest.mark.parametrize("page", PAGES)

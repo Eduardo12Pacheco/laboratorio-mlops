@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from plotly.subplots import make_subplots
 
 from mlops_lifecycle_lab.bootstrap.container import Container
 from mlops_lifecycle_lab.entrypoints.dashboard.theme import Theme, plotly_layout
@@ -35,29 +36,41 @@ def _available_reports(container: Container) -> tuple[DrillReport, ...]:
 
 
 def _comparison_chart(report: DrillReport, theme: Theme) -> go.Figure:
+    """RMSE and WAPE on separate panels: their scales differ by orders of magnitude."""
     comparison = report.comparison
-    figure = go.Figure()
-    figure.add_trace(
-        go.Bar(
-            name="as served",
-            x=["RMSE", "WAPE"],
-            y=[comparison.as_served_rmse, comparison.as_served_wape],
-            marker_color=theme.categorical[0],
-        )
+    figure = make_subplots(
+        rows=1, cols=2, subplot_titles=("RMSE (lower is better)", "WAPE (lower is better)")
     )
-    figure.add_trace(
-        go.Bar(
-            name="frozen v1",
-            x=["RMSE", "WAPE"],
-            y=[comparison.frozen_rmse, comparison.frozen_wape],
-            marker_color=theme.categorical[3],
-        )
+    series = (
+        ("as served", comparison.as_served_rmse, comparison.as_served_wape, theme.categorical[0]),
+        ("frozen v1", comparison.frozen_rmse, comparison.frozen_wape, theme.categorical[3]),
     )
+    for name, rmse, wape, color in series:
+        figure.add_trace(
+            go.Bar(name=name, x=[name], y=[rmse], marker_color=color, legendgroup=name),
+            row=1,
+            col=1,
+        )
+        figure.add_trace(
+            go.Bar(
+                name=name,
+                x=[name],
+                y=[wape],
+                marker_color=color,
+                legendgroup=name,
+                showlegend=False,
+            ),
+            row=1,
+            col=2,
+        )
     figure.update_layout(
-        **plotly_layout(theme, height=320),
+        # Extra top margin: room for the title above the two subplot titles.
+        **plotly_layout(theme, height=320, top=96),
         title=f"As served vs frozen v1 · ratio {comparison.ratio:.2f}x",
-        barmode="group",
     )
+    figure.update_xaxes(gridcolor=theme.grid, zeroline=False)
+    figure.update_yaxes(gridcolor=theme.grid, zeroline=False)
+    figure.update_annotations(font_color=theme.text)
     return figure
 
 
