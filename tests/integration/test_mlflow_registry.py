@@ -120,6 +120,8 @@ def test_an_illegal_transition_never_writes_a_tag(
 
 
 def test_the_adapter_never_uses_deprecated_stage_apis() -> None:
-    source = Path("src/mlops_lifecycle_lab/adapters/registry/mlflow_registry.py").read_text()
+    source = Path("src/mlops_lifecycle_lab/adapters/registry/mlflow_registry.py").read_text(
+        encoding="utf-8"
+    )
     assert "transition_model_version_stage" not in source
     assert "get_latest_versions" not in source
