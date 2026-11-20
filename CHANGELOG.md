@@ -8,6 +8,20 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Multi-stage container image built with `uv sync --locked --no-dev --no-editable`,
+  `libgomp1` for LightGBM, a non-root `mll` user (uid 10001) and the documented offline
+  environment defaults.
+- Compose stack (`mlflow`, `init`, `api`, `scheduler`, `dashboard`, `tools`-profile
+  `cli`) on host ports 14000/14080/14501, with healthchecks, loopback-only publishing,
+  `read_only` root filesystems, dropped capabilities, a shared `mll-data` volume and the
+  real lifecycle replay through the API.
+- `scripts/smoke_compose.sh` and the docker-marked pytest wrapper: builds the stack,
+  probes every health endpoint, verifies the non-root uid and waits for the first
+  automated promotion (`SMOKE OK champion=2`).
+- `mll bootstrap --at <ISO timestamp>` so the Compose `init` service bootstraps on the
+  replay clock and the persisted probation window is consistent with 2012.
+- Empty `MLL_ADMIN_API_KEY` values now mean "unset", and Compose forwards the optional
+  key to the API.
 - Streamlit Control Room with five pages (Overview, Monitoring, Registry, Lifecycle,
   Drill), light/dark palettes that pass WCAG contrast checks, explicit loading/empty/error
   states and status marks that never rely on colour alone.
