@@ -1,0 +1,28 @@
+Bike Sharing Dataset
+====================
+
+Source: UCI Machine Learning Repository, dataset 275.
+Landing page: https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset
+DOI: 10.24432/C5W894
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+License text: https://creativecommons.org/licenses/by/4.0/
+
+Citation
+--------
+
+Fanaee-T, Hadi (2013). Bike Sharing Dataset. UCI Machine Learning Repository.
+DOI: 10.24432/C5W894.
+
+The bundled file `hour.csv.gz` is an unmodified gzip compression of `hour.csv`
+from the original archive. The decompressed file is byte-for-byte identical to
+the UCI `hour.csv` (sha256
+e03de4ee4ef4dc376ac6e04bf829673c6269e8eba5c60fa121640fa2f829504f). The dataset
+is redistributed here with attribution under CC BY 4.0.
+
+Variables used by this project
+------------------------------
+
+- `dteday` + `hr`: the observation timestamp (hourly, local time, naive).
+- `season`, `holiday`, `workingday`, `weathersit`: calendar and weather context.
+- `temp`, `atemp`, `hum`, `windspeed`: normalised numeric covariates.
+- `casual`, `registered`, `cnt`: rental counts (the label is `cnt`).
