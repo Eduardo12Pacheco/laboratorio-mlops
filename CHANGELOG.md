@@ -20,3 +20,6 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   exposed as `mll validate` (PASS/WARN/FAIL with per-rule violations).
 - Shared feature pipeline (twelve columns including the `t_days` trend feature) and the
   regression metric contract (RMSE/MAE/WAPE/bias) used by every later report.
+- Naive profile baseline (the promotion-gate floor), native PSI drift statistics for the
+  monitored numeric/categorical features and the day-block paired bootstrap used by the
+  significance gate.
