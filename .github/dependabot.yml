@@ -10,6 +10,16 @@ updates:
     groups:
       python-dependencies:
         patterns: ["*"]
+    # Hard pins from pyproject.toml (D9, ADR-0006): newer majors/minors break the stack.
+    ignore:
+      - dependency-name: "pandas" # Evidently 0.7 cannot be imported with pandas 3.1
+        versions: [">=3.1"]
+      - dependency-name: "plotly" # Evidently requires plotly < 6
+        versions: [">=6"]
+      - dependency-name: "apscheduler" # 4.x is alpha with a different API
+        versions: [">=4"]
+      - dependency-name: "evidently" # pinned < 0.8 (D9); revalidate the adapter before widening
+        versions: [">=0.8"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -27,3 +37,7 @@ updates:
     open-pull-requests-limit: 3
     commit-message:
       prefix: "build(deps)"
+    # The project is Python 3.12 only (requires-python < 3.13); only patch rebuilds apply.
+    ignore:
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
