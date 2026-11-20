@@ -8,6 +8,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Serving API (S8): typed Pydantic v2 schemas with hourly timestamp and numeric-domain
+  validation, `/healthz`, `/readyz`, `/v1/model`, `/v1/predict`, `/v1/predict/batch`,
+  `/v1/labels`, `/v1/admin/reload` and Prometheus `/metrics`.
+- Hot-reloading `ModelHolder`: the champion artifact is loaded before the atomic swap, a
+  failing reload keeps the previous model and increments
+  `mll_model_reload_failures_total`, and request ids are echoed and logged.
+- `HttpScoringGateway` for HTTP serving mode: 1000-row chunking, exponential-backoff
+  retries on connection/5xx errors and 422-to-`ValidationFailedError` mapping.
+- `mll serve` and `mll score`, plus worker-thread-safe SQLite access for the API.
 - Monitoring snapshot service: trailing labelled metrics for the current champion,
   native PSI drift against its training reference and prediction-distribution PSI from the
   `reference_predictions.json` artifact, persisted with a `SNAPSHOT_COMPUTED` event.
