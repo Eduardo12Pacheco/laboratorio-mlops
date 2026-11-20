@@ -10,9 +10,14 @@ import typer
 
 from mlops_lifecycle_lab import DISTRIBUTION_NAME, __version__
 from mlops_lifecycle_lab.config import apply_privacy_defaults
+from mlops_lifecycle_lab.entrypoints.cli.commands.bootstrap import bootstrap
 from mlops_lifecycle_lab.entrypoints.cli.commands.data import data_app
+from mlops_lifecycle_lab.entrypoints.cli.commands.drill import drill_app
+from mlops_lifecycle_lab.entrypoints.cli.commands.monitor import monitor_app
+from mlops_lifecycle_lab.entrypoints.cli.commands.registry import registry_app
 from mlops_lifecycle_lab.entrypoints.cli.commands.score import score
 from mlops_lifecycle_lab.entrypoints.cli.commands.serve import serve
+from mlops_lifecycle_lab.entrypoints.cli.commands.train import train
 from mlops_lifecycle_lab.entrypoints.cli.commands.validate import validate
 
 app = typer.Typer(
@@ -24,7 +29,12 @@ app = typer.Typer(
 )
 
 app.add_typer(data_app, name="data")
+app.add_typer(registry_app, name="registry")
+app.add_typer(monitor_app, name="monitor")
+app.add_typer(drill_app, name="drill")
 app.command("validate")(validate)
+app.command("bootstrap")(bootstrap)
+app.command("train")(train)
 app.command("serve")(serve)
 app.command("score")(score)
 
