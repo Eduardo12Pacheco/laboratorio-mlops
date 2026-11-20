@@ -1,7 +1,8 @@
 """Typer entry point for the ``mll`` command.
 
-Only the ``--version`` flag exists in the scaffold; feature commands are registered by
-later tasks.
+The app is assembled here from one module per command. Every subcommand applies the
+offline/privacy defaults and depends on the composition root, never on concrete adapters
+directly.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from mlops_lifecycle_lab import DISTRIBUTION_NAME, __version__
 from mlops_lifecycle_lab.config import apply_privacy_defaults
 from mlops_lifecycle_lab.entrypoints.cli.commands.bootstrap import bootstrap
 from mlops_lifecycle_lab.entrypoints.cli.commands.data import data_app
+from mlops_lifecycle_lab.entrypoints.cli.commands.doctor import doctor
 from mlops_lifecycle_lab.entrypoints.cli.commands.drill import drill_app
 from mlops_lifecycle_lab.entrypoints.cli.commands.monitor import monitor_app
 from mlops_lifecycle_lab.entrypoints.cli.commands.registry import registry_app
@@ -37,6 +39,7 @@ app.command("bootstrap")(bootstrap)
 app.command("train")(train)
 app.command("serve")(serve)
 app.command("score")(score)
+app.command("doctor")(doctor)
 
 
 @app.callback()
