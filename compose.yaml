@@ -1,0 +1,158 @@
+name: mlops-lifecycle-lab
+
+# One image, one shared data volume, one Compose project (D16, S19). Every service is
+# non-root, read-only and capability-dropped; state lives exclusively on `mll-data`.
+# Host ports follow the L4 allocation for this repository.
+
+x-build: &build
+  context: .
+  target: runtime
+
+x-environment: &environment
+  MLL_WORKSPACE: /data
+  MLL_LOG_FORMAT: json
+  # The application reads MLL_*; MLFLOW_TRACKING_URI is kept for MLflow client tooling.
+  MLL_MLFLOW_TRACKING_URI: http://mlflow:5000
+  MLL_MLFLOW_ARTIFACT_ROOT: /data/mlflow/artifacts
+  MLFLOW_TRACKING_URI: http://mlflow:5000
+  MLFLOW_DISABLE_TELEMETRY: "true"
+  DO_NOT_TRACK: "1"
+  ITERATIVE_DO_NOT_TRACK: "1"
+  EVIDENTLY_DISABLE_TELEMETRY: "1"
+  STREAMLIT_BROWSER_GATHER_USAGE_STATS: "false"
+  MLFLOW_DISABLE_AGENT_HINT: "1"
+
+x-service: &service
+  build: *build
+  image: mll:local
+  user: "10001:10001"
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  environment: *environment
+  volumes:
+    - mll-data:/data
+
+services:
+  mlflow:
+    <<: *service
+    entrypoint: ["mlflow"]
+    command:
+      - server
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5000"
+      - --workers
+      - "1"
+      - --backend-store-uri
+      - sqlite:////data/mlflow/mlflow.db
+      - --serve-artifacts
+      - --artifacts-destination
+      - /data/mlflow/artifacts
+      - --default-artifact-root
+      - mlflow-artifacts:/
+      - --allowed-hosts
+      - mlflow:5000,localhost:5000,127.0.0.1:5000,localhost:14000,127.0.0.1:14000
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request,sys; urllib.request.urlopen('http://localhost:5000/health'); sys.exit(0)",
+        ]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    ports:
+      - "127.0.0.1:14000:5000"
+
+  init:
+    <<: *service
+    command: ["bootstrap", "--if-missing", "--at", "2012-01-01T00:00:00"]
+    restart: "no"
+    depends_on:
+      mlflow:
+        condition: service_healthy
+
+  api:
+    <<: *service
+    command: ["serve", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      <<: *environment
+      MLL_ADMIN_API_KEY: "${MLL_ADMIN_API_KEY:-}"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request,sys; urllib.request.urlopen('http://localhost:8000/readyz'); sys.exit(0)",
+        ]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+      start_period: 5s
+    depends_on:
+      mlflow:
+        condition: service_healthy
+      init:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:14080:8000"
+
+  scheduler:
+    <<: *service
+    command: ["scheduler", "start", "--mode", "replay"]
+    environment:
+      <<: *environment
+      MLL_SERVING_MODE: http
+      MLL_API_URL: http://api:8000
+      MLL_REPLAY_INTERVAL_SECONDS: "${MLL_REPLAY_INTERVAL_SECONDS:-20}"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os; os.kill(1, 0)"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+    depends_on:
+      api:
+        condition: service_healthy
+
+  dashboard:
+    <<: *service
+    command: ["dashboard", "--host", "0.0.0.0", "--port", "8501"]
+    environment:
+      <<: *environment
+      MLL_API_URL: http://api:8000
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request,sys; urllib.request.urlopen('http://localhost:8501/_stcore/health'); sys.exit(0)",
+        ]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+      start_period: 10s
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:14501:8501"
+
+  cli:
+    <<: *service
+    entrypoint: ["mll"]
+    profiles: ["tools"]
+
+volumes:
+  mll-data:

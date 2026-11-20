@@ -50,7 +50,7 @@ def test_every_service_is_hardened_and_non_root() -> None:
     for name, service in _services().items():
         assert service["user"] == "10001:10001", name
         assert service["read_only"] is True, name
-        assert "/tmp" in service["tmpfs"], name
+        assert "/tmp" in service["tmpfs"], name  # noqa: S108 - intentional tmpfs
         assert service["cap_drop"] == ["ALL"], name
         assert "no-new-privileges:true" in service["security_opt"], name
 
@@ -91,10 +91,7 @@ def test_dependency_conditions_match_the_startup_order() -> None:
     services = _services()
 
     assert services["init"]["depends_on"]["mlflow"]["condition"] == "service_healthy"
-    assert (
-        services["api"]["depends_on"]["init"]["condition"]
-        == "service_completed_successfully"
-    )
+    assert services["api"]["depends_on"]["init"]["condition"] == "service_completed_successfully"
     assert services["scheduler"]["depends_on"]["api"]["condition"] == "service_healthy"
     assert services["dashboard"]["depends_on"]["api"]["condition"] == "service_healthy"
 
@@ -121,19 +118,36 @@ def test_mlflow_serves_the_shared_artifact_store() -> None:
 def test_commands_wire_the_lifecycle_services() -> None:
     services = _services()
 
-    assert services["init"]["command"] == ["bootstrap", "--if-missing"]
+    assert services["init"]["command"] == [
+        "bootstrap",
+        "--if-missing",
+        "--at",
+        "2012-01-01T00:00:00",
+    ]
     assert services["init"]["restart"] == "no"
-    assert services["api"]["command"] == ["serve", "--host", "0.0.0.0", "--port", "8000"]
+    assert services["api"]["command"] == [
+        "serve",
+        "--host",
+        "0.0.0.0",  # noqa: S104 - container bind, published on loopback
+        "--port",
+        "8000",
+    ]
     assert services["scheduler"]["command"] == ["scheduler", "start", "--mode", "replay"]
     assert services["dashboard"]["command"] == [
         "dashboard",
         "--host",
-        "0.0.0.0",
+        "0.0.0.0",  # noqa: S104 - container bind, published on loopback
         "--port",
         "8501",
     ]
     assert services["cli"]["profiles"] == ["tools"]
     assert services["cli"]["entrypoint"] == ["mll"]
+
+
+def test_api_forwards_the_optional_admin_key() -> None:
+    environment = _services()["api"]["environment"]
+
+    assert environment["MLL_ADMIN_API_KEY"] == "${MLL_ADMIN_API_KEY:-}"
 
 
 def test_scheduler_drives_the_real_api_with_a_fast_replay() -> None:
