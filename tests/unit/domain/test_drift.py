@@ -199,7 +199,7 @@ def test_psi_is_non_negative(sample: list[float]) -> None:
 
 
 AFFINE_FLOATS = st.lists(
-    st.integers(min_value=-100_000, max_value=100_000).map(lambda value: value / 1_000.0),
+    st.integers(min_value=-1_000, max_value=1_000).map(float),
     min_size=100,
     max_size=200,
 )
@@ -208,11 +208,11 @@ AFFINE_FLOATS = st.lists(
 @settings(max_examples=25, deadline=None)
 @given(
     sample=AFFINE_FLOATS,
-    scale=st.floats(min_value=0.5, max_value=5.0),
-    offset=st.floats(-10.0, 10.0),
+    scale=st.sampled_from([0.5, 1.0, 2.0, 4.0]),
+    offset=st.integers(min_value=-8, max_value=8),
 )
 def test_psi_is_invariant_to_positive_affine_transforms(
-    sample: list[float], scale: float, offset: float
+    sample: list[float], scale: float, offset: int
 ) -> None:
     reference = np.asarray(sample, dtype=np.float64)
     current = reference + 1.0

@@ -96,7 +96,10 @@ def test_rmse_is_at_least_mae_and_both_are_non_negative(
 
     metrics = compute_metrics(y_true, y_pred)
 
-    assert metrics.rmse >= metrics.mae >= 0.0
+    # With equal errors RMSE equals MAE mathematically; sqrt/mean round-off can put
+    # RMSE one ulp below MAE, so compare with a relative float tolerance.
+    assert metrics.rmse >= metrics.mae * (1.0 - 1e-12)
+    assert metrics.mae >= 0.0
     assert metrics.wape >= 0.0
     assert metrics.n == size
 
