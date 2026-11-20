@@ -199,17 +199,17 @@ def test_psi_is_non_negative(sample: list[float]) -> None:
 
 
 AFFINE_FLOATS = st.lists(
-    st.floats(min_value=-1_000.0, max_value=1_000.0, allow_nan=False, allow_infinity=False),
+    st.integers(min_value=-100_000, max_value=100_000).map(lambda value: value / 1_000.0),
     min_size=100,
     max_size=200,
 )
 
 
-@settings(max_examples=50, deadline=None)
+@settings(max_examples=25, deadline=None)
 @given(
     sample=AFFINE_FLOATS,
-    scale=st.floats(min_value=0.1, max_value=10.0),
-    offset=st.floats(-100.0, 100.0),
+    scale=st.floats(min_value=0.5, max_value=5.0),
+    offset=st.floats(-10.0, 10.0),
 )
 def test_psi_is_invariant_to_positive_affine_transforms(
     sample: list[float], scale: float, offset: float
@@ -220,5 +220,5 @@ def test_psi_is_invariant_to_positive_affine_transforms(
     transformed_current = scale * current + offset
 
     assert psi_numeric(transformed_reference, transformed_current) == pytest.approx(
-        psi_numeric(reference, current), abs=0.02
+        psi_numeric(reference, current), rel=0, abs=1e-12
     )

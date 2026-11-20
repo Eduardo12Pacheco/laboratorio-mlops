@@ -108,15 +108,12 @@ def psi_numeric(reference: ArrayLike, current: ArrayLike, bins: int = 10) -> flo
         raise ValueError(f"bins must be at least 2, got {bins}")
     ref = _numeric(reference, "reference")
     cur = _numeric(current, "current")
-    quantiles = np.unique(np.quantile(ref, np.linspace(0.0, 1.0, bins + 1)))
-    if quantiles.size == 1:
-        # A degenerate reference cannot be split into quantile bins; keep the value as
-        # the boundary so the statistic stays finite instead of crashing a tick.
-        edges = np.asarray([-np.inf, quantiles[0], np.inf])
-    else:
-        edges = quantiles.copy()
-        edges[0] = -np.inf
-        edges[-1] = np.inf
+    # `inverted_cdf` anchors every edge on an observed reference value. Linear
+    # interpolation can invent a boundary such as 1.4e-17 between two repeated values,
+    # which is not affine-invariant (adding a constant collapses it) and would make the
+    # statistic depend on floating-point artefacts instead of the data.
+    quantiles = np.unique(np.quantile(ref, np.linspace(0.0, 1.0, bins + 1), method="inverted_cdf"))
+    edges = np.concatenate(([-np.inf], quantiles, [np.inf]))
     expected = _proportions(ref, edges)
     actual = _proportions(cur, edges)
     return float(np.sum((actual - expected) * np.log(actual / expected)))
