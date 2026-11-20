@@ -28,3 +28,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Champion/challenger promotion gates G1-G6, the label-based retrain trigger policy
   (probation veto, manual override, cooldown and SLO breach) and the probation policy
   that decides between continuing, passing and rolling back.
+- Application ports, frozen DTOs and the model-version tag codec shared with registry
+  adapters, plus the retrying `Pipeline`/`Step` runner backed by a run ledger.
+- Training, evaluation, promotion/rejection, rollback, bootstrap and scoring use cases:
+  deterministic data fingerprints, S6 lineage, gate reports, probation state, idempotent
+  prediction logging and the in-process scoring gateway.
+- In-memory doubles for every port and shared registry/prediction-log contract suites
+  that the SQLite and MLflow adapters will run unchanged.
