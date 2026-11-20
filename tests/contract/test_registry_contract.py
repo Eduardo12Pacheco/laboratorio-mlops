@@ -6,12 +6,19 @@ adding its name to the fixture parameters.
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator, Mapping
 from datetime import datetime
+from uuid import uuid4
 
+import numpy as np
+import pandas as pd
 import pytest
+from lightgbm import LGBMRegressor
 
+from mlops_lifecycle_lab.adapters.registry.mlflow_registry import MlflowRegistry
+from mlops_lifecycle_lab.adapters.tracking.mlflow_tracker import MlflowTracker
 from mlops_lifecycle_lab.application.dto import encode_version_tags
+from mlops_lifecycle_lab.application.ports import TrainedModel
 from mlops_lifecycle_lab.application.ports import ALIAS_CHAMPION, ModelRegistry
 from mlops_lifecycle_lab.domain.errors import (
     IllegalTransitionError,
@@ -19,26 +26,81 @@ from mlops_lifecycle_lab.domain.errors import (
     UnknownModelVersionError,
 )
 from mlops_lifecycle_lab.domain.lifecycle import ModelStage, ModelVersion
+from mlops_lifecycle_lab.domain.schema import FEATURE_COLUMNS
 from mlops_lifecycle_lab.domain.windows import TimeWindow
 from tests.fakes.registry import InMemoryRegistry
+from tests.integration.conftest import MlflowWorkspace
 
 CREATED_AT = datetime(2012, 1, 1)
 
 
-@pytest.fixture(params=["memory"])
-def registry(request: pytest.FixtureRequest) -> Iterator[ModelRegistry]:
-    """Provide each registry backend under contract (T6 adds the MLflow adapter)."""
+class _RegistryHarness:
+    """Contract wrapper that pre-registers the MLflow artifact of a version.
+
+    The fake allocates versions itself, while a real registry can only adopt a version
+    produced by a tracker run. The harness keeps that setup out of every shared assertion.
+    """
+
+    def __init__(
+        self,
+        registry: ModelRegistry,
+        prepare: Callable[[int], None],
+        model_name: str,
+    ) -> None:
+        self._registry = registry
+        self._prepare = prepare
+        self.model_name = model_name
+
+    def adopt_candidate(self, version: int, tags: Mapping[str, str]) -> ModelVersion:
+        self._prepare(version)
+        return self._registry.adopt_candidate(version, tags)
+
+    def __getattr__(self, name: str) -> object:
+        return getattr(self._registry, name)
+
+
+@pytest.fixture(params=["memory", "mlflow"])
+def registry(
+    request: pytest.FixtureRequest,
+    mlflow_workspace: MlflowWorkspace,
+) -> Iterator[_RegistryHarness]:
+    """Provide each registry backend under contract."""
     backend = str(request.param)
     if backend == "memory":
-        yield InMemoryRegistry()
+        yield _RegistryHarness(InMemoryRegistry(), lambda version: None, "bike-demand")
+    elif backend == "mlflow":
+        model_name = f"contract-{uuid4().hex}"
+        tracker = MlflowTracker(
+            tracking_uri=mlflow_workspace.uri,
+            experiment_name="bike-demand",
+            artifact_root=mlflow_workspace.root / "artifacts",
+            model_name=model_name,
+        )
+        adapter = MlflowRegistry(tracking_uri=mlflow_workspace.uri, model_name=model_name)
+        prepared: set[int] = set()
+        rng = np.random.default_rng(42)
+        frame = pd.DataFrame({name: rng.random(12) for name in FEATURE_COLUMNS})
+
+        def prepare(version: int) -> None:
+            if version in prepared:
+                return
+            model = LGBMRegressor(n_estimators=2, n_jobs=1, verbose=-1).fit(
+                frame, np.linspace(1, 10, len(frame))
+            )
+            with tracker.run("contract-register", {}) as run:
+                logged = run.log_model(TrainedModel(model, {"algorithm": "lightgbm"}), frame)
+            assert logged.registered_version == version
+            prepared.add(version)
+
+        yield _RegistryHarness(adapter, prepare, model_name)
     else:  # pragma: no cover - guards a typo in the parameter list
         raise AssertionError(f"unknown registry backend {backend!r}")
 
 
-def make_version(version: int = 1) -> ModelVersion:
+def make_version(version: int = 1, name: str = "bike-demand") -> ModelVersion:
     """Build a complete candidate version for the contract."""
     return ModelVersion(
-        name="bike-demand",
+        name=name,
         version=version,
         stage=ModelStage.CANDIDATE,
         run_id=f"run-{version}",
@@ -53,9 +115,15 @@ def make_version(version: int = 1) -> ModelVersion:
     )
 
 
-def adopt(registry: ModelRegistry, version: int) -> ModelVersion:
+def expected(registry: _RegistryHarness, version: int) -> ModelVersion:
+    """The exact version the adapter must rebuild from its tags."""
+    return make_version(version, registry.model_name)
+
+
+def adopt(registry: _RegistryHarness, version: int) -> ModelVersion:
     """Adopt a freshly registered version through the port."""
-    return registry.adopt_candidate(version, encode_version_tags(make_version(version)))
+    name = registry.model_name
+    return registry.adopt_candidate(version, encode_version_tags(make_version(version, name)))
 
 
 def test_a_new_registry_has_no_versions_and_no_champion(registry: ModelRegistry) -> None:
@@ -68,7 +136,7 @@ def test_a_new_registry_has_no_versions_and_no_champion(registry: ModelRegistry)
 def test_adopt_candidate_round_trips_the_lineage(registry: ModelRegistry) -> None:
     adopted = adopt(registry, 1)
 
-    assert adopted == make_version(1)
+    assert adopted == expected(registry, 1)
     assert adopted.stage is ModelStage.CANDIDATE
     assert registry.get_version(1) == adopted
     assert registry.list_versions() == [adopted]
