@@ -120,6 +120,15 @@ class ExperimentTracker(Protocol):
         """Open a run as a context manager; the run closes even when the body raises."""
         ...
 
+    def load_json(self, name: str, run_id: str) -> JSONValue | None:
+        """Read a JSON artifact of a closed run, or `None` when it does not exist.
+
+        Monitoring needs the champion's `reference_predictions.json` to compute the
+        prediction-distribution PSI; the tracker is the only component that knows where
+        artifacts live, so reading them is part of the same port.
+        """
+        ...
+
 
 class ModelRegistry(Protocol):
     """Champion/challenger registry driven by tags and aliases (`S7`)."""

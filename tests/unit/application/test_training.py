@@ -132,8 +132,15 @@ def test_training_logs_every_s6_param_metric_tag_and_artifact() -> None:
         "rows",
     }
     assert run.metrics["rows"] == 48.0
-    assert set(run.jsons) == {"validation_report.json", "feature_columns.json"}
+    assert set(run.jsons) == {
+        "validation_report.json",
+        "feature_columns.json",
+        "reference_predictions.json",
+    }
     assert run.jsons["feature_columns.json"] == list(FEATURE_COLUMNS)
+    reference = run.jsons["reference_predictions.json"]
+    assert reference["count"] == 48
+    assert len(reference["values"]) == 48
     assert len(run.models) == 1
     trained, input_example = run.models[0]
     assert list(input_example.columns) == list(FEATURE_COLUMNS)

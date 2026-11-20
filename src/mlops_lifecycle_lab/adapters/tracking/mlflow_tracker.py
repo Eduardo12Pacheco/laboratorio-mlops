@@ -15,6 +15,7 @@ from pathlib import Path
 
 import mlflow
 import pandas as pd
+from mlflow.exceptions import MlflowException
 from mlflow.models.model import ModelInfo
 
 from mlops_lifecycle_lab.application.dto import JSONValue
@@ -104,6 +105,20 @@ class MlflowTracker:
             raise
         else:
             mlflow.end_run(status="FINISHED")
+
+    def load_json(self, name: str, run_id: str) -> JSONValue | None:
+        """Read a JSON artifact of `run_id`; `None` when it is absent."""
+        mlflow.set_tracking_uri(self._tracking_uri)
+        try:
+            text = mlflow.artifacts.load_text(f"runs:/{run_id}/{name}")
+        except (MlflowException, OSError):
+            return None
+        value: JSONValue = json.loads(text)
+        return value
+
+    def ensure_ready(self) -> str:
+        """Create the tracking database/experiment if needed and return the experiment id."""
+        return self._ensure_experiment()
 
     def _ensure_experiment(self) -> str:
         mlflow.set_tracking_uri(self._tracking_uri)

@@ -139,6 +139,14 @@ class TrainCandidate:
             )
             run.log_json("validation_report.json", validation.to_dict())
             run.log_json("feature_columns.json", list(FEATURE_COLUMNS))
+            run.log_json(
+                "reference_predictions.json",
+                {
+                    "values": [float(value) for value in predictions],
+                    "count": len(predictions),
+                    "window": window_tag(request.holdout_window),
+                },
+            )
             logged = run.log_model(trained, input_example=training_frame[list(FEATURE_COLUMNS)])
 
         candidate = ModelVersion(

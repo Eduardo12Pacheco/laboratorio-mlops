@@ -82,6 +82,13 @@ class InMemoryTracker:
             self.registry.set_predictor(version, trained.predictor)
         return version
 
+    def load_json(self, name: str, run_id: str) -> JSONValue | None:
+        """Return a JSON artifact logged by the run `run_id`, if any."""
+        for run in reversed(self.runs):
+            if run.run_id == run_id:
+                return run.jsons.get(name)
+        return None
+
     def latest_run(self) -> FakeRun:
         """Return the most recent run."""
         return self.runs[-1]
