@@ -17,12 +17,22 @@ DATA_DIR = Path(__file__).resolve().parents[2] / "src/mlops_lifecycle_lab/_data"
 runner = CliRunner()
 
 
+def invoke(args: list[str]) -> Result:
+    """Invoke the CLI with a wide, colour-free terminal for stable assertions."""
+    return runner.invoke(
+        app,
+        args,
+        env={"NO_COLOR": "1", "TERM": "dumb"},
+        terminal_width=200,
+    )
+
+
 def combined(result: Result) -> str:
     return result.output + result.stderr
 
 
 def test_data_verify_reports_the_bundle() -> None:
-    result = runner.invoke(app, ["data", "verify"])
+    result = invoke(["data", "verify"])
 
     assert result.exit_code == 0, combined(result)
     assert "hour.csv sha256 OK" in result.output
@@ -30,7 +40,7 @@ def test_data_verify_reports_the_bundle() -> None:
 
 
 def test_data_info_json_reports_provenance() -> None:
-    result = runner.invoke(app, ["data", "info", "--json"])
+    result = invoke(["data", "info", "--json"])
 
     assert result.exit_code == 0, combined(result)
     payload = json.loads(result.output)
@@ -42,7 +52,7 @@ def test_data_info_json_reports_provenance() -> None:
 
 
 def test_data_info_human_output_mentions_the_license() -> None:
-    result = runner.invoke(app, ["data", "info"])
+    result = invoke(["data", "info"])
 
     assert result.exit_code == 0, combined(result)
     assert "17379 rows" in result.output
@@ -59,14 +69,14 @@ def test_tampered_copy_exits_two_with_checksum_error(tmp_path: Path) -> None:
     copy = tmp_path / "hour.csv.gz"
     copy.write_bytes(gzip.compress(tampered, compresslevel=9, mtime=0))
 
-    result = runner.invoke(app, ["data", "verify", "--path", str(copy)])
+    result = invoke(["data", "verify", "--path", str(copy)])
 
     assert result.exit_code == 2, combined(result)
     assert "ChecksumMismatchError" in combined(result)
 
 
 def test_validate_bundled_reports_warn_with_one_warning() -> None:
-    result = runner.invoke(app, ["validate", "--bundled", "--json"])
+    result = invoke(["validate", "--bundled", "--json"])
 
     assert result.exit_code == 0, combined(result)
     payload = json.loads(result.output)
@@ -106,7 +116,7 @@ def test_validate_path_accepts_an_original_uci_csv(tmp_path: Path) -> None:
     path = tmp_path / "hour.csv"
     frame.to_csv(path, index=False)
 
-    result = runner.invoke(app, ["validate", str(path), "--context", "training"])
+    result = invoke(["validate", str(path), "--context", "training"])
 
     assert result.exit_code == 0, combined(result)
     assert "PASS" in result.output
@@ -130,23 +140,21 @@ def test_validate_bad_batch_exits_three(tmp_path: Path) -> None:
     path = tmp_path / "batch.csv"
     frame.to_csv(path, index=False)
 
-    result = runner.invoke(app, ["validate", str(path), "--context", "batch"])
+    result = invoke(["validate", str(path), "--context", "batch"])
 
     assert result.exit_code == 3, combined(result)
     assert "season_domain" in combined(result)
 
 
 def test_validate_requires_exactly_one_input() -> None:
-    result = runner.invoke(app, ["validate"])
+    result = invoke(["validate"])
 
     assert result.exit_code == 2, combined(result)
     assert "--bundled" in combined(result)
 
 
 def test_data_fetch_rejects_unknown_sources(tmp_path: Path) -> None:
-    result = runner.invoke(
-        app, ["data", "fetch", "--source", "kaggle", "--dest", str(tmp_path / "out")]
-    )
+    result = invoke(["data", "fetch", "--source", "kaggle", "--dest", str(tmp_path / "out")])
 
     assert result.exit_code == 2, combined(result)
     assert "uci" in combined(result)
@@ -187,7 +195,7 @@ def test_data_fetch_with_recorded_fixture_writes_the_csv(
     monkeypatch.setattr(data_command, "load_manifest", lambda: manifest)
     monkeypatch.setattr(data_command, "_download_bytes", fake_download)
 
-    result = runner.invoke(app, ["data", "fetch", "--source", "uci", "--dest", str(tmp_path)])
+    result = invoke(["data", "fetch", "--source", "uci", "--dest", str(tmp_path)])
 
     assert result.exit_code == 0, combined(result)
     assert (tmp_path / "hour.csv").read_bytes() == inner
@@ -195,7 +203,7 @@ def test_data_fetch_with_recorded_fixture_writes_the_csv(
 
 
 def test_data_verify_help_mentions_the_path_option() -> None:
-    result = runner.invoke(app, ["data", "verify", "--help"])
+    result = invoke(["data", "verify", "--help"])
 
     assert result.exit_code == 0
     assert "--path" in result.output
