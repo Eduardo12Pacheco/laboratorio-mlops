@@ -20,6 +20,7 @@ from mlops_lifecycle_lab.adapters.drift.evidently_reports import (
     EvidentlyReportRenderer,
     NullReportRenderer,
 )
+from mlops_lifecycle_lab.adapters.serving_client.http_gateway import HttpScoringGateway
 from mlops_lifecycle_lab.bootstrap.container import Container, build_container
 from mlops_lifecycle_lab.config import Settings
 from mlops_lifecycle_lab.domain.schema import RAW_COLUMNS
@@ -57,10 +58,25 @@ def test_container_uses_evidently_when_fast_mode_is_off(tmp_path: Path) -> None:
         container.close()
 
 
-def test_container_rejects_http_serving_until_the_serving_task(tmp_path: Path) -> None:
-    settings = Settings(workspace=tmp_path, fast=True, serving_mode="http")
+def test_container_wires_the_http_gateway_when_serving_mode_is_http(tmp_path: Path) -> None:
+    settings = Settings(
+        workspace=tmp_path,
+        fast=True,
+        serving_mode="http",
+        api_url="http://127.0.0.1:9",
+    )
+    container = build_container(settings)
 
-    with pytest.raises(ValueError, match="in-process"):
+    try:
+        assert isinstance(container.gateway, HttpScoringGateway)
+    finally:
+        container.close()
+
+
+def test_container_rejects_an_unknown_serving_mode(tmp_path: Path) -> None:
+    settings = Settings(workspace=tmp_path, fast=True).model_copy(update={"serving_mode": "grpc"})
+
+    with pytest.raises(ValueError, match="serving_mode"):
         build_container(settings)
 
 

@@ -6,16 +6,18 @@ trainer, renderer or dataset without patching internals. It also materialises th
 operational SQLite file and the MLflow tracking database, so a fresh workspace is ready
 before the first CLI command runs.
 
-`serving_mode="http"` is intentionally deferred to the serving task: the HTTP adapter is
-part of the serving API milestone, and the drill/tests use the in-process gateway so the
-lifecycle can be verified without a server.
+`serving_mode="inprocess"` (the default) scores through the serving service directly;
+`serving_mode="http"` goes through `HttpScoringGateway` so the scheduler scores against the
+real API and observes promotions through its hot reload (D16).
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Literal, Protocol
+
+from pydantic import SecretStr
 
 from mlops_lifecycle_lab.adapters.clock import SystemClock
 from mlops_lifecycle_lab.adapters.data.bundled_dataset import BundledDataset
@@ -26,6 +28,7 @@ from mlops_lifecycle_lab.adapters.drift.evidently_reports import (
 )
 from mlops_lifecycle_lab.adapters.models.lightgbm_trainer import LightGbmTrainer
 from mlops_lifecycle_lab.adapters.registry.mlflow_registry import MlflowRegistry
+from mlops_lifecycle_lab.adapters.serving_client.http_gateway import HttpScoringGateway
 from mlops_lifecycle_lab.adapters.storage.event_store import SqliteEventStore
 from mlops_lifecycle_lab.adapters.storage.kv_store import SqliteKeyValueStore
 from mlops_lifecycle_lab.adapters.storage.labeled_data import CompositeLabeledData
@@ -34,7 +37,14 @@ from mlops_lifecycle_lab.adapters.storage.run_ledger import SqliteRunLedger
 from mlops_lifecycle_lab.adapters.storage.snapshot_store import SqliteSnapshotStore
 from mlops_lifecycle_lab.adapters.storage.sqlite import SqliteDatabase
 from mlops_lifecycle_lab.adapters.tracking.mlflow_tracker import MlflowTracker
-from mlops_lifecycle_lab.application.ports import Clock, DriftReportRenderer, ModelTrainer
+from mlops_lifecycle_lab.application.ports import (
+    Clock,
+    DriftReportRenderer,
+    ModelRegistry,
+    ModelTrainer,
+    PredictionLog,
+    ScoringGateway,
+)
 from mlops_lifecycle_lab.application.services.bootstrap import BootstrapChampion
 from mlops_lifecycle_lab.application.services.evaluation import EvaluateChallenger
 from mlops_lifecycle_lab.application.services.lifecycle import RunLifecycleTick
@@ -66,11 +76,14 @@ class ContainerSettings(Protocol):
     mlflow_artifact_root: Path | None
     model_name: str
     experiment_name: str
+    admin_api_key: SecretStr | None
+    reload_interval_seconds: float
+    api_url: str
     seed: int
     window_days: int
     holdout_days: int
     probation_days: int
-    serving_mode: str
+    serving_mode: Literal["inprocess", "http"]
     fast: bool
     slo_wape: float
     abs_wape_max: float
@@ -101,18 +114,18 @@ class Container:
     clock: Clock
     dataset: BundledDataset
     database: SqliteDatabase
-    prediction_log: SqlitePredictionLog
+    prediction_log: PredictionLog
     labeled_data: CompositeLabeledData
     events: SqliteEventStore
     snapshots: SqliteSnapshotStore
     kv: SqliteKeyValueStore
     ledger: SqliteRunLedger
     tracker: MlflowTracker
-    registry: MlflowRegistry
+    registry: ModelRegistry
     trainer: ModelTrainer
     renderer: DriftReportRenderer
     prediction_service: PredictionService
-    gateway: InProcessGateway
+    gateway: ScoringGateway
     batch_source: ReplayBatchSource
     policies: PolicyConfig
     monitoring: ComputeSnapshot
@@ -125,7 +138,10 @@ class Container:
     lifecycle: RunLifecycleTick
 
     def close(self) -> None:
-        """Close the operational database; the composition root owns the connection."""
+        """Close the owned adapters (the database and an HTTP gateway client)."""
+        close_gateway = getattr(self.gateway, "close", None)
+        if callable(close_gateway):
+            close_gateway()
         self.database.close()
 
 
@@ -140,14 +156,10 @@ def build_container(
     """Wire settings and adapters into a ready-to-use `Container`.
 
     Raises:
-        ValueError: for `serving_mode="http"` until the serving adapter lands; the
-            in-process gateway is the only scoring path the lifecycle needs.
+        ValueError: for an unknown `serving_mode`.
     """
-    if settings.serving_mode != "inprocess":
-        raise ValueError(
-            "only the in-process serving mode is wired in this milestone; "
-            "set MLL_SERVING_MODE=inprocess"
-        )
+    if settings.serving_mode not in {"inprocess", "http"}:
+        raise ValueError(f"unknown serving_mode {settings.serving_mode!r}")
 
     settings.workspace.mkdir(parents=True, exist_ok=True)
     database = SqliteDatabase(settings.workspace / "mll.db")
@@ -185,7 +197,11 @@ def build_container(
         active_clock,
         model_name=settings.model_name,
     )
-    gateway = InProcessGateway(prediction_service, prediction_log)
+    gateway: ScoringGateway = (
+        HttpScoringGateway(settings.api_url)
+        if settings.serving_mode == "http"
+        else InProcessGateway(prediction_service, prediction_log)
+    )
     training = TrainCandidate(
         labeled_data,
         active_trainer,
