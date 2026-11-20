@@ -9,10 +9,13 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import pandas as pd
 import pytest
 
+from mlops_lifecycle_lab.adapters.storage.prediction_log import SqlitePredictionLog
+from mlops_lifecycle_lab.adapters.storage.sqlite import SqliteDatabase
 from mlops_lifecycle_lab.application.dto import LabelRecord, PredictionRecord
 from mlops_lifecycle_lab.application.ports import PredictionLog
 from mlops_lifecycle_lab.domain.schema import FEATURE_COLUMNS
@@ -35,12 +38,18 @@ BASE_FEATURES: dict[str, float] = {
 }
 
 
-@pytest.fixture(params=["memory"])
-def log(request: pytest.FixtureRequest) -> Iterator[PredictionLog]:
-    """Provide each prediction-log backend under contract (T6 adds SQLite)."""
+@pytest.fixture(params=["memory", "sqlite"])
+def log(request: pytest.FixtureRequest, tmp_path: Path) -> Iterator[PredictionLog]:
+    """Provide each prediction-log backend under contract."""
     backend = str(request.param)
     if backend == "memory":
         yield InMemoryPredictionLog()
+    elif backend == "sqlite":
+        database = SqliteDatabase(tmp_path / "predictions.db")
+        try:
+            yield SqlitePredictionLog(database)
+        finally:
+            database.close()
     else:  # pragma: no cover - guards a typo in the parameter list
         raise AssertionError(f"unknown prediction-log backend {backend!r}")
 
