@@ -8,6 +8,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Streamlit Control Room with five pages (Overview, Monitoring, Registry, Lifecycle,
+  Drill), light/dark palettes that pass WCAG contrast checks, explicit loading/empty/error
+  states and status marks that never rely on colour alone.
+- Read-only dashboard view models over the existing ports (champion health, trailing
+  metrics, PSI matrix, registry aliases and gate evidence, audit timeline, run ledger and
+  committed drill reports) plus `mll dashboard` on host port 14501.
 - APScheduler replay service: one interval job with `max_instances=1`, a persisted
   `replay_tick` cursor, self-stop at the replay length and clean SIGINT/SIGTERM handling.
 - `mll scheduler start --mode replay|once` driving the same lifecycle tick as the drill,
