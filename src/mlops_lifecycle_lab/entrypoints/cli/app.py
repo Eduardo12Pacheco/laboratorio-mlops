@@ -10,6 +10,8 @@ import typer
 
 from mlops_lifecycle_lab import DISTRIBUTION_NAME, __version__
 from mlops_lifecycle_lab.config import apply_privacy_defaults
+from mlops_lifecycle_lab.entrypoints.cli.commands.data import data_app
+from mlops_lifecycle_lab.entrypoints.cli.commands.validate import validate
 
 app = typer.Typer(
     name="mll",
@@ -18,6 +20,9 @@ app = typer.Typer(
     invoke_without_command=True,
     add_completion=False,
 )
+
+app.add_typer(data_app, name="data")
+app.command("validate")(validate)
 
 
 @app.callback()

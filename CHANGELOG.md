@@ -14,3 +14,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `mll --version` entry point.
 - Initial CI workflow running lint, types, architecture contracts and the test suite on
   Linux and Windows.
+- Bundled UCI Bike Sharing dataset with a provenance manifest, CC BY 4.0 attribution and
+  `mll data verify|info|fetch` (zip and CSV checksums verified before writing).
+- Domain schema and half-open time windows, plus the pure data-contract validation engine
+  exposed as `mll validate` (PASS/WARN/FAIL with per-rule violations).
