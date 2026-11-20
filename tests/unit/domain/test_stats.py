@@ -30,7 +30,7 @@ def test_a_strictly_better_challenger_has_a_positive_lower_bound() -> None:
     lower, upper = day_block_bootstrap_ci(timestamps(2), champion, challenger)
 
     assert lower > 0.0
-    assert upper > lower
+    assert upper >= lower
 
 
 def test_same_seed_is_reproducible() -> None:

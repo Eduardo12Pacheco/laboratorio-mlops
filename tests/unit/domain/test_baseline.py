@@ -22,14 +22,14 @@ def make_frame() -> pd.DataFrame:
             "timestamp": pd.to_datetime(
                 [
                     datetime(2011, 1, 1, 8),
+                    datetime(2011, 1, 1, 8),
                     datetime(2011, 1, 1, 9),
                     datetime(2011, 1, 2, 8),
                     datetime(2011, 1, 2, 9),
-                    datetime(2011, 1, 3, 8),
                 ]
             ),
             "workingday": np.array([1, 1, 1, 0, 0], dtype=np.int64),
-            "cnt": np.array([10, 30, 20, 5, 15], dtype=np.int64),
+            "cnt": np.array([10, 20, 30, 4, 16], dtype=np.int64),
         }
     )
 
@@ -46,7 +46,7 @@ def test_profile_is_the_mean_by_workingday_and_hour() -> None:
         pd.DataFrame({"workingday": [1, 0], "hr": [8, 8]}, dtype=np.int64)
     )
 
-    assert prediction.tolist() == pytest.approx([15.0, 5.0])
+    assert prediction.tolist() == pytest.approx([15.0, 4.0])
 
 
 def test_unseen_key_falls_back_to_the_global_mean() -> None:
