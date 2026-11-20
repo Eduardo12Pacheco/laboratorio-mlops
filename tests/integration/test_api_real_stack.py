@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
+import socket
+import threading
+import time
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
+import httpx
 import pandas as pd
-from fastapi.testclient import TestClient
+import uvicorn
+from fastapi import FastAPI
 
 from mlops_lifecycle_lab.bootstrap.container import Container, build_container
 from mlops_lifecycle_lab.config import Settings
@@ -33,6 +40,29 @@ def raw_payload(row: pd.Series) -> dict[str, object]:
     }
 
 
+@contextmanager
+def running_api(app: FastAPI) -> Iterator[httpx.Client]:
+    """Serve `app` with uvicorn on an ephemeral loopback port in a background thread."""
+    probe = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    probe.bind(("127.0.0.1", 0))
+    port = int(probe.getsockname()[1])
+    probe.close()
+    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning"))
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    deadline = time.monotonic() + 30.0
+    while not server.started:
+        if time.monotonic() > deadline:
+            raise RuntimeError("uvicorn did not start within 30 s")
+        time.sleep(0.05)
+    try:
+        with httpx.Client(base_url=f"http://127.0.0.1:{port}", timeout=60.0) as client:
+            yield client
+    finally:
+        server.should_exit = True
+        thread.join(timeout=15.0)
+
+
 def count_predictions(container: Container) -> int:
     with container.database.transaction() as connection:
         return int(connection.execute("SELECT COUNT(*) FROM predictions").fetchone()[0])
@@ -44,7 +74,7 @@ def test_real_stack_serves_the_bootstrapped_champion(tmp_path: Path) -> None:
         champion = container.bootstrap.execute()
         assert champion.version == 1
 
-        with TestClient(create_app(container)) as client:
+        with running_api(create_app(container)) as client:
             ready = client.get("/readyz")
             assert ready.status_code == 200
 
@@ -100,7 +130,7 @@ def test_model_endpoint_reports_lineage_of_the_loaded_champion(tmp_path: Path) -
     container = build_container(Settings(workspace=tmp_path, fast=True))
     try:
         container.bootstrap.execute()
-        with TestClient(create_app(container)) as client:
+        with running_api(create_app(container)) as client:
             body = client.get("/v1/model").json()
         assert body["name"] == "bike-demand"
         assert body["version"] == 1
