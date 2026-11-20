@@ -1,0 +1,4882 @@
+{
+  "gate_reports": [
+    {
+      "decision": "APPROVED",
+      "gates": [
+        {
+          "name": "DATA_VALID",
+          "observed": "WARN",
+          "passed": true,
+          "threshold": "not FAIL"
+        },
+        {
+          "name": "ABS_WAPE",
+          "observed": 0.14702700847664474,
+          "passed": true,
+          "threshold": 0.3
+        },
+        {
+          "name": "BEATS_BASELINE",
+          "observed": 53.26727194823844,
+          "passed": true,
+          "threshold": 126.67053673065071
+        },
+        {
+          "name": "IMPROVEMENT",
+          "observed": 0.5595184379132322,
+          "passed": true,
+          "threshold": 0.05
+        },
+        {
+          "name": "SIGNIFICANCE",
+          "observed": 9000.842936590261,
+          "passed": true,
+          "threshold": 0.0
+        },
+        {
+          "name": "SEGMENT",
+          "observed": -0.5527993206851505,
+          "passed": true,
+          "threshold": 0.1
+        }
+      ],
+      "tick": 13,
+      "version": 2
+    },
+    {
+      "decision": "REJECTED",
+      "gates": [
+        {
+          "name": "DATA_VALID",
+          "observed": "WARN",
+          "passed": true,
+          "threshold": "not FAIL"
+        },
+        {
+          "name": "ABS_WAPE",
+          "observed": 0.45356592166787413,
+          "passed": false,
+          "threshold": 0.3
+        },
+        {
+          "name": "BEATS_BASELINE",
+          "observed": 78.16966424639202,
+          "passed": true,
+          "threshold": 113.68739019636713
+        },
+        {
+          "name": "IMPROVEMENT",
+          "observed": -0.08858686535051087,
+          "passed": false,
+          "threshold": 0.05
+        },
+        {
+          "name": "SIGNIFICANCE",
+          "observed": -2994.628612636265,
+          "passed": false,
+          "threshold": 0.0
+        },
+        {
+          "name": "SEGMENT",
+          "observed": 0.09593474566804842,
+          "passed": true,
+          "threshold": 0.1
+        }
+      ],
+      "tick": 52,
+      "version": 3
+    }
+  ],
+  "libs": {
+    "evidently": "0.7.23",
+    "lightgbm": "4.7.0",
+    "mlflow": "3.18.0",
+    "numpy": "2.5.5",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1"
+  },
+  "scenario": "drift",
+  "schema": "drill-report/v1",
+  "seed": 42,
+  "summary": {
+    "as_served": {
+      "mae": 45.888781487080166,
+      "n": 8686,
+      "rmse": 70.71965997525061,
+      "wape": 0.19490465323201148
+    },
+    "counterfactual_frozen_v1": {
+      "mae": 74.52202762664507,
+      "n": 8686,
+      "rmse": 109.92492712351017,
+      "wape": 0.31651940805634626
+    },
+    "promotions": 1,
+    "quarantined_batches": 0,
+    "rejections": 1,
+    "rollbacks": 0,
+    "versions": 3
+  },
+  "ticks": [
+    {
+      "action": "PROBATION_CONTINUE",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 1,
+          "ts": "2012-01-08T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 167
+          },
+          "tick": 1,
+          "ts": "2012-01-08T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167
+          },
+          "tick": 1,
+          "ts": "2012-01-08T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -0.24453753187368873,
+            "mae": 26.18994311260586,
+            "model_version": 1,
+            "n_rows": 167,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.2214517623188656,
+            "psi": {
+              "atemp": 3.634104986897685,
+              "hum": 0.7698206466584337,
+              "season": 6.700250080665937,
+              "temp": 3.7587498770275034,
+              "weathersit": 0.18670395735791634,
+              "windspeed": 0.08033542540853032
+            },
+            "rmse": 42.59846412195696,
+            "tick": 1,
+            "ts": "2012-01-08T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.2108833413599411
+          },
+          "tick": 1,
+          "ts": "2012-01-08T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -0.24453753187368873,
+        "mae": 26.18994311260586,
+        "model_version": 1,
+        "n_rows": 167,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.2214517623188656,
+        "psi": {
+          "atemp": 3.634104986897685,
+          "hum": 0.7698206466584337,
+          "season": 6.700250080665937,
+          "temp": 3.7587498770275034,
+          "weathersit": 0.18670395735791634,
+          "windspeed": 0.08033542540853032
+        },
+        "rmse": 42.59846412195696,
+        "tick": 1,
+        "ts": "2012-01-08T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.2108833413599411
+      },
+      "tick": 1,
+      "tick_end": "2012-01-08T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "PROBATION_CONTINUE",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 2,
+          "ts": "2012-01-15T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 167
+          },
+          "tick": 2,
+          "ts": "2012-01-15T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167
+          },
+          "tick": 2,
+          "ts": "2012-01-15T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -11.149978747169415,
+            "mae": 28.410286546860466,
+            "model_version": 1,
+            "n_rows": 334,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.2515192367642209,
+            "psi": {
+              "atemp": 3.7864435234609726,
+              "hum": 0.3614796499077998,
+              "season": 6.700250080665937,
+              "temp": 3.8882321749732776,
+              "weathersit": 0.024580798662584703,
+              "windspeed": 0.02544418005967871
+            },
+            "rmse": 45.79873795034023,
+            "tick": 2,
+            "ts": "2012-01-15T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.22528574802116322
+          },
+          "tick": 2,
+          "ts": "2012-01-15T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -11.149978747169415,
+        "mae": 28.410286546860466,
+        "model_version": 1,
+        "n_rows": 334,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.2515192367642209,
+        "psi": {
+          "atemp": 3.7864435234609726,
+          "hum": 0.3614796499077998,
+          "season": 6.700250080665937,
+          "temp": 3.8882321749732776,
+          "weathersit": 0.024580798662584703,
+          "windspeed": 0.02544418005967871
+        },
+        "rmse": 45.79873795034023,
+        "tick": 2,
+        "ts": "2012-01-15T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.22528574802116322
+      },
+      "tick": 2,
+      "tick_end": "2012-01-15T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "PROBATION_PASSED",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 3,
+          "ts": "2012-01-22T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 167
+          },
+          "tick": 3,
+          "ts": "2012-01-22T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167
+          },
+          "tick": 3,
+          "ts": "2012-01-22T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -12.435681721788562,
+            "mae": 27.796193107790533,
+            "model_version": 1,
+            "n_rows": 501,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.2631916331552215,
+            "psi": {
+              "atemp": 3.9417507320531415,
+              "hum": 0.35376515224727656,
+              "season": 6.700250080665937,
+              "temp": 4.0219187637154254,
+              "weathersit": 0.016005842729001546,
+              "windspeed": 0.08508186811514859
+            },
+            "rmse": 44.39468260999494,
+            "tick": 3,
+            "ts": "2012-01-22T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.22905935829664875
+          },
+          "tick": 3,
+          "ts": "2012-01-22T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "passed_at": "2012-01-22T00:00:00"
+          },
+          "tick": 3,
+          "ts": "2012-01-22T00:00:00",
+          "type": "PROBATION_PASSED"
+        }
+      ],
+      "snapshot": {
+        "bias": -12.435681721788562,
+        "mae": 27.796193107790533,
+        "model_version": 1,
+        "n_rows": 501,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.2631916331552215,
+        "psi": {
+          "atemp": 3.9417507320531415,
+          "hum": 0.35376515224727656,
+          "season": 6.700250080665937,
+          "temp": 4.0219187637154254,
+          "weathersit": 0.016005842729001546,
+          "windspeed": 0.08508186811514859
+        },
+        "rmse": 44.39468260999494,
+        "tick": 3,
+        "ts": "2012-01-22T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.22905935829664875
+      },
+      "tick": 3,
+      "tick_end": "2012-01-22T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 4,
+          "ts": "2012-01-29T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 168
+          },
+          "tick": 4,
+          "ts": "2012-01-29T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 4,
+          "ts": "2012-01-29T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -19.80013366696924,
+            "mae": 32.084275370844665,
+            "model_version": 1,
+            "n_rows": 669,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.2349898878440894,
+            "psi": {
+              "atemp": 3.8958417293756273,
+              "hum": 0.11619882200646808,
+              "season": 6.700250080665937,
+              "temp": 3.987210897449072,
+              "weathersit": 0.01700967268927589,
+              "windspeed": 0.04152152082670619
+            },
+            "rmse": 51.04559901791985,
+            "tick": 4,
+            "ts": "2012-01-29T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.25143356085529805
+          },
+          "tick": 4,
+          "ts": "2012-01-29T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -19.80013366696924,
+        "mae": 32.084275370844665,
+        "model_version": 1,
+        "n_rows": 669,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.2349898878440894,
+        "psi": {
+          "atemp": 3.8958417293756273,
+          "hum": 0.11619882200646808,
+          "season": 6.700250080665937,
+          "temp": 3.987210897449072,
+          "weathersit": 0.01700967268927589,
+          "windspeed": 0.04152152082670619
+        },
+        "rmse": 51.04559901791985,
+        "tick": 4,
+        "ts": "2012-01-29T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.25143356085529805
+      },
+      "tick": 4,
+      "tick_end": "2012-01-29T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 5,
+          "ts": "2012-02-05T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 168
+          },
+          "tick": 5,
+          "ts": "2012-02-05T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 5,
+          "ts": "2012-02-05T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -27.013348720585135,
+            "mae": 35.05584886062468,
+            "model_version": 1,
+            "n_rows": 670,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.17221042662162794,
+            "psi": {
+              "atemp": 3.3365207234339564,
+              "hum": 0.09409098349291282,
+              "season": 6.700250080665937,
+              "temp": 3.597580841425215,
+              "weathersit": 0.01723072157457592,
+              "windspeed": 0.026779656188555732
+            },
+            "rmse": 55.85759955273538,
+            "tick": 5,
+            "ts": "2012-02-05T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.2571793526188152
+          },
+          "tick": 5,
+          "ts": "2012-02-05T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -27.013348720585135,
+        "mae": 35.05584886062468,
+        "model_version": 1,
+        "n_rows": 670,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.17221042662162794,
+        "psi": {
+          "atemp": 3.3365207234339564,
+          "hum": 0.09409098349291282,
+          "season": 6.700250080665937,
+          "temp": 3.597580841425215,
+          "weathersit": 0.01723072157457592,
+          "windspeed": 0.026779656188555732
+        },
+        "rmse": 55.85759955273538,
+        "tick": 5,
+        "ts": "2012-02-05T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.2571793526188152
+      },
+      "tick": 5,
+      "tick_end": "2012-02-05T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 6,
+          "ts": "2012-02-12T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 167
+          },
+          "tick": 6,
+          "ts": "2012-02-12T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167
+          },
+          "tick": 6,
+          "ts": "2012-02-12T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -29.700636176582904,
+            "mae": 37.333459461922544,
+            "model_version": 1,
+            "n_rows": 670,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.16101961821856392,
+            "psi": {
+              "atemp": 3.360903435976007,
+              "hum": 0.06339169508327296,
+              "season": 6.700250080665937,
+              "temp": 3.623480085423029,
+              "weathersit": 0.02081402077847177,
+              "windspeed": 0.017112383383842775
+            },
+            "rmse": 58.496159134617834,
+            "tick": 6,
+            "ts": "2012-02-12T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.2669949067565577
+          },
+          "tick": 6,
+          "ts": "2012-02-12T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -29.700636176582904,
+        "mae": 37.333459461922544,
+        "model_version": 1,
+        "n_rows": 670,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.16101961821856392,
+        "psi": {
+          "atemp": 3.360903435976007,
+          "hum": 0.06339169508327296,
+          "season": 6.700250080665937,
+          "temp": 3.623480085423029,
+          "weathersit": 0.02081402077847177,
+          "windspeed": 0.017112383383842775
+        },
+        "rmse": 58.496159134617834,
+        "tick": 6,
+        "ts": "2012-02-12T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.2669949067565577
+      },
+      "tick": 6,
+      "tick_end": "2012-02-12T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 7,
+          "ts": "2012-02-19T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 168
+          },
+          "tick": 7,
+          "ts": "2012-02-19T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 7,
+          "ts": "2012-02-19T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -32.78332947527831,
+            "mae": 40.26823506043972,
+            "model_version": 1,
+            "n_rows": 671,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.11540131289549323,
+            "psi": {
+              "atemp": 3.4034063155188816,
+              "hum": 0.0875706287735187,
+              "season": 6.700250080665937,
+              "temp": 3.6330342376207567,
+              "weathersit": 0.011929466233188834,
+              "windspeed": 0.03129802747977981
+            },
+            "rmse": 63.21027098228243,
+            "tick": 7,
+            "ts": "2012-02-19T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.27148124874964885
+          },
+          "tick": 7,
+          "ts": "2012-02-19T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -32.78332947527831,
+        "mae": 40.26823506043972,
+        "model_version": 1,
+        "n_rows": 671,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.11540131289549323,
+        "psi": {
+          "atemp": 3.4034063155188816,
+          "hum": 0.0875706287735187,
+          "season": 6.700250080665937,
+          "temp": 3.6330342376207567,
+          "weathersit": 0.011929466233188834,
+          "windspeed": 0.03129802747977981
+        },
+        "rmse": 63.21027098228243,
+        "tick": 7,
+        "ts": "2012-02-19T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.27148124874964885
+      },
+      "tick": 7,
+      "tick_end": "2012-02-19T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 166,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 8,
+          "ts": "2012-02-26T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 166
+          },
+          "tick": 8,
+          "ts": "2012-02-26T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 166
+          },
+          "tick": 8,
+          "ts": "2012-02-26T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -28.925825338660633,
+            "mae": 37.75368529133732,
+            "model_version": 1,
+            "n_rows": 669,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.10190726038566775,
+            "psi": {
+              "atemp": 3.3355696708981064,
+              "hum": 0.2143577221763702,
+              "season": 6.700250080665937,
+              "temp": 3.6261014668634215,
+              "weathersit": 0.0005487585450496678,
+              "windspeed": 0.018168092957211883
+            },
+            "rmse": 60.18321867100291,
+            "tick": 8,
+            "ts": "2012-02-26T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.25105328224148565
+          },
+          "tick": 8,
+          "ts": "2012-02-26T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -28.925825338660633,
+        "mae": 37.75368529133732,
+        "model_version": 1,
+        "n_rows": 669,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.10190726038566775,
+        "psi": {
+          "atemp": 3.3355696708981064,
+          "hum": 0.2143577221763702,
+          "season": 6.700250080665937,
+          "temp": 3.6261014668634215,
+          "weathersit": 0.0005487585450496678,
+          "windspeed": 0.018168092957211883
+        },
+        "rmse": 60.18321867100291,
+        "tick": 8,
+        "ts": "2012-02-26T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.25105328224148565
+      },
+      "tick": 8,
+      "tick_end": "2012-02-26T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 9,
+          "ts": "2012-03-04T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 167
+          },
+          "tick": 9,
+          "ts": "2012-03-04T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167
+          },
+          "tick": 9,
+          "ts": "2012-03-04T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -25.83722386654597,
+            "mae": 37.597136834926594,
+            "model_version": 1,
+            "n_rows": 668,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.08250757979999045,
+            "psi": {
+              "atemp": 3.3889448217137375,
+              "hum": 0.17698079620566834,
+              "season": 6.700250080665937,
+              "temp": 3.8413394704008703,
+              "weathersit": 0.0040438545199067725,
+              "windspeed": 0.011392168672398294
+            },
+            "rmse": 59.850448010027435,
+            "tick": 9,
+            "ts": "2012-03-04T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.2509882415826967
+          },
+          "tick": 9,
+          "ts": "2012-03-04T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -25.83722386654597,
+        "mae": 37.597136834926594,
+        "model_version": 1,
+        "n_rows": 668,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.08250757979999045,
+        "psi": {
+          "atemp": 3.3889448217137375,
+          "hum": 0.17698079620566834,
+          "season": 6.700250080665937,
+          "temp": 3.8413394704008703,
+          "weathersit": 0.0040438545199067725,
+          "windspeed": 0.011392168672398294
+        },
+        "rmse": 59.850448010027435,
+        "tick": 9,
+        "ts": "2012-03-04T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.2509882415826967
+      },
+      "tick": 9,
+      "tick_end": "2012-03-04T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 10,
+          "ts": "2012-03-11T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 168
+          },
+          "tick": 10,
+          "ts": "2012-03-11T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 10,
+          "ts": "2012-03-11T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -28.34267210416899,
+            "mae": 39.161559468164924,
+            "model_version": 1,
+            "n_rows": 669,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.06064819216441064,
+            "psi": {
+              "atemp": 2.893195526966011,
+              "hum": 0.35869926969581956,
+              "season": 6.700250080665937,
+              "temp": 3.249013185014815,
+              "weathersit": 0.005529019193417697,
+              "windspeed": 0.13118151393853947
+            },
+            "rmse": 62.72186994308068,
+            "tick": 10,
+            "ts": "2012-03-11T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.24710754538357085
+          },
+          "tick": 10,
+          "ts": "2012-03-11T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -28.34267210416899,
+        "mae": 39.161559468164924,
+        "model_version": 1,
+        "n_rows": 669,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.06064819216441064,
+        "psi": {
+          "atemp": 2.893195526966011,
+          "hum": 0.35869926969581956,
+          "season": 6.700250080665937,
+          "temp": 3.249013185014815,
+          "weathersit": 0.005529019193417697,
+          "windspeed": 0.13118151393853947
+        },
+        "rmse": 62.72186994308068,
+        "tick": 10,
+        "ts": "2012-03-11T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.24710754538357085
+      },
+      "tick": 10,
+      "tick_end": "2012-03-11T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 11,
+          "ts": "2012-03-18T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 167
+          },
+          "tick": 11,
+          "ts": "2012-03-18T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 167
+          },
+          "tick": 11,
+          "ts": "2012-03-18T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -36.75071013978951,
+            "mae": 45.75143059292147,
+            "model_version": 1,
+            "n_rows": 668,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.04759597927367691,
+            "psi": {
+              "atemp": 2.227026403175337,
+              "hum": 0.2891355755081919,
+              "season": 6.700250080665937,
+              "temp": 1.9123161672267774,
+              "weathersit": 0.008883192663078335,
+              "windspeed": 0.09022554550935859
+            },
+            "rmse": 72.82152025877573,
+            "tick": 11,
+            "ts": "2012-03-18T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.2499383015429721
+          },
+          "tick": 11,
+          "ts": "2012-03-18T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -36.75071013978951,
+        "mae": 45.75143059292147,
+        "model_version": 1,
+        "n_rows": 668,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.04759597927367691,
+        "psi": {
+          "atemp": 2.227026403175337,
+          "hum": 0.2891355755081919,
+          "season": 6.700250080665937,
+          "temp": 1.9123161672267774,
+          "weathersit": 0.008883192663078335,
+          "windspeed": 0.09022554550935859
+        },
+        "rmse": 72.82152025877573,
+        "tick": 11,
+        "ts": "2012-03-18T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.2499383015429721
+      },
+      "tick": 11,
+      "tick_end": "2012-03-18T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 1,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 12,
+          "ts": "2012-03-25T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 168
+          },
+          "tick": 12,
+          "ts": "2012-03-25T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 12,
+          "ts": "2012-03-25T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -51.41970894553335,
+            "mae": 59.12496357207189,
+            "model_version": 1,
+            "n_rows": 670,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.04281394561971568,
+            "psi": {
+              "atemp": 1.9217566656941119,
+              "hum": 0.1012795130510627,
+              "season": 3.8199020344792745,
+              "temp": 1.5942379702336313,
+              "weathersit": 0.0020512529097728837,
+              "windspeed": 0.020607140762052167
+            },
+            "rmse": 91.51771280587059,
+            "tick": 12,
+            "ts": "2012-03-25T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.28376187728892255
+          },
+          "tick": 12,
+          "ts": "2012-03-25T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -51.41970894553335,
+        "mae": 59.12496357207189,
+        "model_version": 1,
+        "n_rows": 670,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.04281394561971568,
+        "psi": {
+          "atemp": 1.9217566656941119,
+          "hum": 0.1012795130510627,
+          "season": 3.8199020344792745,
+          "temp": 1.5942379702336313,
+          "weathersit": 0.0020512529097728837,
+          "windspeed": 0.020607140762052167
+        },
+        "rmse": 91.51771280587059,
+        "tick": 12,
+        "ts": "2012-03-25T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.28376187728892255
+      },
+      "tick": 12,
+      "tick_end": "2012-03-25T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "PROMOTED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 13,
+          "ts": "2012-04-01T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "model_version": 1,
+            "rows": 168
+          },
+          "tick": 13,
+          "ts": "2012-04-01T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 13,
+          "ts": "2012-04-01T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "bias": -67.12661765829235,
+            "mae": 70.19099462992963,
+            "model_version": 1,
+            "n_rows": 671,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.051457770941831474,
+            "psi": {
+              "atemp": 2.0041099819763994,
+              "hum": 0.08748264992220896,
+              "season": 3.262377108493736,
+              "temp": 1.666529998582559,
+              "weathersit": 0.01704381723624673,
+              "windspeed": 0.04627140355875981
+            },
+            "rmse": 104.57596905569235,
+            "tick": 13,
+            "ts": "2012-04-01T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.30858743585050147
+          },
+          "tick": 13,
+          "ts": "2012-04-01T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        },
+        {
+          "model_version": 1,
+          "payload": {
+            "cut": "2012-03-18T00:00:00",
+            "holdout_window": "2012-03-18T00:00:00/2012-04-01T00:00:00",
+            "outcome": "PERFORMANCE_SLO_BREACH",
+            "trigger": "PERFORMANCE_SLO_BREACH"
+          },
+          "tick": 13,
+          "ts": "2012-04-01T00:00:00",
+          "type": "RETRAIN_TRIGGERED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "data_fingerprint": "7ceab84bac34c9f7c9a459d4725f917acf1c87a26acf23f322c7712bf90f6c55",
+            "holdout_rows": 336,
+            "metrics": {
+              "bias": -11.365982784943295,
+              "mae": 35.948978733304386,
+              "n": 336,
+              "rmse": 53.26727194823844,
+              "wape": 0.14702700847664474
+            },
+            "training_rows": 10485
+          },
+          "tick": 13,
+          "ts": "2012-04-01T00:00:00",
+          "type": "CHALLENGER_REGISTERED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "approved": true,
+            "champion_version": 1,
+            "failed_gates": [],
+            "gate_report": {
+              "approved": true,
+              "results": [
+                {
+                  "detail": "training frame validation verdict is WARN",
+                  "name": "DATA_VALID",
+                  "observed": "WARN",
+                  "passed": true,
+                  "threshold": "not FAIL"
+                },
+                {
+                  "detail": "challenger holdout WAPE 0.1470 vs budget 0.3000",
+                  "name": "ABS_WAPE",
+                  "observed": 0.14702700847664474,
+                  "passed": true,
+                  "threshold": 0.3
+                },
+                {
+                  "detail": "challenger RMSE 53.267 must be <= 0.85 x baseline 149.024",
+                  "name": "BEATS_BASELINE",
+                  "observed": 53.26727194823844,
+                  "passed": true,
+                  "threshold": 126.67053673065071
+                },
+                {
+                  "detail": "champion RMSE 120.930 -> challenger 53.267 (+55.95%)",
+                  "name": "IMPROVEMENT",
+                  "observed": 0.5595184379132322,
+                  "passed": true,
+                  "threshold": 0.05
+                },
+                {
+                  "detail": "95% CI of mean squared-error improvement: [9000.843, 14643.479]",
+                  "name": "SIGNIFICANCE",
+                  "observed": 9000.842936590261,
+                  "passed": true,
+                  "threshold": 0.0
+                },
+                {
+                  "detail": "workingday=0.0: -55.3% (champion 114.583, challenger 51.242); workingday=1.0: -56.2% (champion 123.377, challenger 54.056)",
+                  "name": "SEGMENT",
+                  "observed": -0.5527993206851505,
+                  "passed": true,
+                  "threshold": 0.1
+                }
+              ]
+            },
+            "reason": "all gates passed"
+          },
+          "tick": 13,
+          "ts": "2012-04-01T00:00:00",
+          "type": "GATES_EVALUATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "forced": false,
+            "previous_champion": 1,
+            "reason": null
+          },
+          "tick": 13,
+          "ts": "2012-04-01T00:00:00",
+          "type": "CHALLENGER_PROMOTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "days": 21,
+            "until": "2012-04-22T00:00:00"
+          },
+          "tick": 13,
+          "ts": "2012-04-01T00:00:00",
+          "type": "PROBATION_STARTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -67.12661765829235,
+        "mae": 70.19099462992963,
+        "model_version": 1,
+        "n_rows": 671,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.051457770941831474,
+        "psi": {
+          "atemp": 2.0041099819763994,
+          "hum": 0.08748264992220896,
+          "season": 3.262377108493736,
+          "temp": 1.666529998582559,
+          "weathersit": 0.01704381723624673,
+          "windspeed": 0.04627140355875981
+        },
+        "rmse": 104.57596905569235,
+        "tick": 13,
+        "ts": "2012-04-01T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.30858743585050147
+      },
+      "tick": 13,
+      "tick_end": "2012-04-01T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "PROBATION_CONTINUE",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 167,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 14,
+          "ts": "2012-04-08T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 167
+          },
+          "tick": 14,
+          "ts": "2012-04-08T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 167
+          },
+          "tick": 14,
+          "ts": "2012-04-08T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -5.569832599325255,
+            "mae": 29.531515828389292,
+            "model_version": 2,
+            "n_rows": 167,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.07968334348672544,
+            "psi": {
+              "atemp": 2.581001293893042,
+              "hum": 1.5058541962193763,
+              "season": 7.483536373003388,
+              "temp": 2.537203038854443,
+              "weathersit": 0.12634448250423963,
+              "windspeed": 0.07767595406580162
+            },
+            "rmse": 44.19349156499704,
+            "tick": 14,
+            "ts": "2012-04-08T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.10969468056097803
+          },
+          "tick": 14,
+          "ts": "2012-04-08T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -5.569832599325255,
+        "mae": 29.531515828389292,
+        "model_version": 2,
+        "n_rows": 167,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.07968334348672544,
+        "psi": {
+          "atemp": 2.581001293893042,
+          "hum": 1.5058541962193763,
+          "season": 7.483536373003388,
+          "temp": 2.537203038854443,
+          "weathersit": 0.12634448250423963,
+          "windspeed": 0.07767595406580162
+        },
+        "rmse": 44.19349156499704,
+        "tick": 14,
+        "ts": "2012-04-08T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.10969468056097803
+      },
+      "tick": 14,
+      "tick_end": "2012-04-08T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "PROBATION_CONTINUE",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 167,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 15,
+          "ts": "2012-04-15T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 167
+          },
+          "tick": 15,
+          "ts": "2012-04-15T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 167
+          },
+          "tick": 15,
+          "ts": "2012-04-15T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 7.695949576289057,
+            "mae": 31.32428195167848,
+            "model_version": 2,
+            "n_rows": 334,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.057191273263310326,
+            "psi": {
+              "atemp": 2.4388795053196124,
+              "hum": 1.6740827751292024,
+              "season": 7.483536373003388,
+              "temp": 2.504855550497062,
+              "weathersit": 0.19580909975680671,
+              "windspeed": 0.15042307325842072
+            },
+            "rmse": 47.32264958659754,
+            "tick": 15,
+            "ts": "2012-04-15T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.1219952212203896
+          },
+          "tick": 15,
+          "ts": "2012-04-15T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 7.695949576289057,
+        "mae": 31.32428195167848,
+        "model_version": 2,
+        "n_rows": 334,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.057191273263310326,
+        "psi": {
+          "atemp": 2.4388795053196124,
+          "hum": 1.6740827751292024,
+          "season": 7.483536373003388,
+          "temp": 2.504855550497062,
+          "weathersit": 0.19580909975680671,
+          "windspeed": 0.15042307325842072
+        },
+        "rmse": 47.32264958659754,
+        "tick": 15,
+        "ts": "2012-04-15T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.1219952212203896
+      },
+      "tick": 15,
+      "tick_end": "2012-04-15T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "PROBATION_PASSED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 16,
+          "ts": "2012-04-22T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 16,
+          "ts": "2012-04-22T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 16,
+          "ts": "2012-04-22T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 10.734400902815278,
+            "mae": 37.00360655801907,
+            "model_version": 2,
+            "n_rows": 502,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.06785437434388554,
+            "psi": {
+              "atemp": 1.7999589440073225,
+              "hum": 0.8483556325809003,
+              "season": 7.483536373003388,
+              "temp": 1.6923540309254648,
+              "weathersit": 0.11854844613659098,
+              "windspeed": 0.09371912936524718
+            },
+            "rmse": 62.21160370600782,
+            "tick": 16,
+            "ts": "2012-04-22T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.1420179855513083
+          },
+          "tick": 16,
+          "ts": "2012-04-22T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "passed_at": "2012-04-22T00:00:00"
+          },
+          "tick": 16,
+          "ts": "2012-04-22T00:00:00",
+          "type": "PROBATION_PASSED"
+        }
+      ],
+      "snapshot": {
+        "bias": 10.734400902815278,
+        "mae": 37.00360655801907,
+        "model_version": 2,
+        "n_rows": 502,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.06785437434388554,
+        "psi": {
+          "atemp": 1.7999589440073225,
+          "hum": 0.8483556325809003,
+          "season": 7.483536373003388,
+          "temp": 1.6923540309254648,
+          "weathersit": 0.11854844613659098,
+          "windspeed": 0.09371912936524718
+        },
+        "rmse": 62.21160370600782,
+        "tick": 16,
+        "ts": "2012-04-22T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.1420179855513083
+      },
+      "tick": 16,
+      "tick_end": "2012-04-22T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 17,
+          "ts": "2012-04-29T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 17,
+          "ts": "2012-04-29T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 17,
+          "ts": "2012-04-29T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 12.941623673383521,
+            "mae": 35.600740542550184,
+            "model_version": 2,
+            "n_rows": 670,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.037316169934689274,
+            "psi": {
+              "atemp": 1.8390587092727209,
+              "hum": 0.6477596156277093,
+              "season": 7.483536373003388,
+              "temp": 1.7321002635607758,
+              "weathersit": 0.03251544543275603,
+              "windspeed": 0.10629794218806016
+            },
+            "rmse": 58.411399532443795,
+            "tick": 17,
+            "ts": "2012-04-29T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.14692202037295576
+          },
+          "tick": 17,
+          "ts": "2012-04-29T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 12.941623673383521,
+        "mae": 35.600740542550184,
+        "model_version": 2,
+        "n_rows": 670,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.037316169934689274,
+        "psi": {
+          "atemp": 1.8390587092727209,
+          "hum": 0.6477596156277093,
+          "season": 7.483536373003388,
+          "temp": 1.7321002635607758,
+          "weathersit": 0.03251544543275603,
+          "windspeed": 0.10629794218806016
+        },
+        "rmse": 58.411399532443795,
+        "tick": 17,
+        "ts": "2012-04-29T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.14692202037295576
+      },
+      "tick": 17,
+      "tick_end": "2012-04-29T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 18,
+          "ts": "2012-05-06T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 18,
+          "ts": "2012-05-06T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 18,
+          "ts": "2012-05-06T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 16.600128490742083,
+            "mae": 38.18727327138454,
+            "model_version": 2,
+            "n_rows": 671,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.03478795428218077,
+            "psi": {
+              "atemp": 1.7133075305695449,
+              "hum": 0.31443832361710866,
+              "season": 7.483536373003388,
+              "temp": 1.5912922137921706,
+              "weathersit": 0.0031972373315160806,
+              "windspeed": 0.04456359007093452
+            },
+            "rmse": 62.283044232311475,
+            "tick": 18,
+            "ts": "2012-05-06T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.15937689156890436
+          },
+          "tick": 18,
+          "ts": "2012-05-06T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 16.600128490742083,
+        "mae": 38.18727327138454,
+        "model_version": 2,
+        "n_rows": 671,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.03478795428218077,
+        "psi": {
+          "atemp": 1.7133075305695449,
+          "hum": 0.31443832361710866,
+          "season": 7.483536373003388,
+          "temp": 1.5912922137921706,
+          "weathersit": 0.0031972373315160806,
+          "windspeed": 0.04456359007093452
+        },
+        "rmse": 62.283044232311475,
+        "tick": 18,
+        "ts": "2012-05-06T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.15937689156890436
+      },
+      "tick": 18,
+      "tick_end": "2012-05-06T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 19,
+          "ts": "2012-05-13T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 19,
+          "ts": "2012-05-13T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 19,
+          "ts": "2012-05-13T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 14.007070436486138,
+            "mae": 38.32367456688671,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.03621529429471072,
+            "psi": {
+              "atemp": 1.8567409726472834,
+              "hum": 0.22080863183792399,
+              "season": 7.483536373003388,
+              "temp": 1.755017717158713,
+              "weathersit": 0.025567665665690933,
+              "windspeed": 0.030260827600989283
+            },
+            "rmse": 61.739866118332365,
+            "tick": 19,
+            "ts": "2012-05-13T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.15695607236028467
+          },
+          "tick": 19,
+          "ts": "2012-05-13T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 14.007070436486138,
+        "mae": 38.32367456688671,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.03621529429471072,
+        "psi": {
+          "atemp": 1.8567409726472834,
+          "hum": 0.22080863183792399,
+          "season": 7.483536373003388,
+          "temp": 1.755017717158713,
+          "weathersit": 0.025567665665690933,
+          "windspeed": 0.030260827600989283
+        },
+        "rmse": 61.739866118332365,
+        "tick": 19,
+        "ts": "2012-05-13T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.15695607236028467
+      },
+      "tick": 19,
+      "tick_end": "2012-05-13T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 20,
+          "ts": "2012-05-20T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 20,
+          "ts": "2012-05-20T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 20,
+          "ts": "2012-05-20T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 14.64972839563577,
+            "mae": 37.00201506334167,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.028556454379400846,
+            "psi": {
+              "atemp": 2.010736366098676,
+              "hum": 0.17438749760432912,
+              "season": 7.483536373003388,
+              "temp": 1.8474062248969532,
+              "weathersit": 0.03635363449016492,
+              "windspeed": 0.03318845467492412
+            },
+            "rmse": 54.315516488272785,
+            "tick": 20,
+            "ts": "2012-05-20T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.1517484796231248
+          },
+          "tick": 20,
+          "ts": "2012-05-20T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 14.64972839563577,
+        "mae": 37.00201506334167,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.028556454379400846,
+        "psi": {
+          "atemp": 2.010736366098676,
+          "hum": 0.17438749760432912,
+          "season": 7.483536373003388,
+          "temp": 1.8474062248969532,
+          "weathersit": 0.03635363449016492,
+          "windspeed": 0.03318845467492412
+        },
+        "rmse": 54.315516488272785,
+        "tick": 20,
+        "ts": "2012-05-20T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.1517484796231248
+      },
+      "tick": 20,
+      "tick_end": "2012-05-20T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 21,
+          "ts": "2012-05-27T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 21,
+          "ts": "2012-05-27T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 21,
+          "ts": "2012-05-27T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 14.577691378619312,
+            "mae": 37.97933844062053,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.057777497861190935,
+            "psi": {
+              "atemp": 2.8025547990772854,
+              "hum": 0.19681848622133175,
+              "season": 7.483536373003388,
+              "temp": 2.7398968334543237,
+              "weathersit": 0.02621377314168512,
+              "windspeed": 0.07893740084982419
+            },
+            "rmse": 56.17681961859312,
+            "tick": 21,
+            "ts": "2012-05-27T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.14569829156708014
+          },
+          "tick": 21,
+          "ts": "2012-05-27T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 14.577691378619312,
+        "mae": 37.97933844062053,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.057777497861190935,
+        "psi": {
+          "atemp": 2.8025547990772854,
+          "hum": 0.19681848622133175,
+          "season": 7.483536373003388,
+          "temp": 2.7398968334543237,
+          "weathersit": 0.02621377314168512,
+          "windspeed": 0.07893740084982419
+        },
+        "rmse": 56.17681961859312,
+        "tick": 21,
+        "ts": "2012-05-27T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.14569829156708014
+      },
+      "tick": 21,
+      "tick_end": "2012-05-27T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 22,
+          "ts": "2012-06-03T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 22,
+          "ts": "2012-06-03T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 22,
+          "ts": "2012-06-03T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 17.386546623174738,
+            "mae": 38.07106882532072,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.08722139528270599,
+            "psi": {
+              "atemp": 3.4232564180089966,
+              "hum": 0.17633878960521093,
+              "season": 7.483536373003388,
+              "temp": 3.4405456066865883,
+              "weathersit": 0.013511468891832802,
+              "windspeed": 0.06361366444441001
+            },
+            "rmse": 55.19494939999839,
+            "tick": 22,
+            "ts": "2012-06-03T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.14486593234891548
+          },
+          "tick": 22,
+          "ts": "2012-06-03T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 17.386546623174738,
+        "mae": 38.07106882532072,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.08722139528270599,
+        "psi": {
+          "atemp": 3.4232564180089966,
+          "hum": 0.17633878960521093,
+          "season": 7.483536373003388,
+          "temp": 3.4405456066865883,
+          "weathersit": 0.013511468891832802,
+          "windspeed": 0.06361366444441001
+        },
+        "rmse": 55.19494939999839,
+        "tick": 22,
+        "ts": "2012-06-03T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.14486593234891548
+      },
+      "tick": 22,
+      "tick_end": "2012-06-03T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 23,
+          "ts": "2012-06-10T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 23,
+          "ts": "2012-06-10T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 23,
+          "ts": "2012-06-10T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 14.645523801129581,
+            "mae": 38.244771931287936,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.1179400743964153,
+            "psi": {
+              "atemp": 3.9221899466240933,
+              "hum": 0.14909858009933485,
+              "season": 7.483536373003388,
+              "temp": 3.905868875408598,
+              "weathersit": 0.04024322882610105,
+              "windspeed": 0.0476765891064874
+            },
+            "rmse": 55.07495947278888,
+            "tick": 23,
+            "ts": "2012-06-10T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.13973883327257525
+          },
+          "tick": 23,
+          "ts": "2012-06-10T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 14.645523801129581,
+        "mae": 38.244771931287936,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.1179400743964153,
+        "psi": {
+          "atemp": 3.9221899466240933,
+          "hum": 0.14909858009933485,
+          "season": 7.483536373003388,
+          "temp": 3.905868875408598,
+          "weathersit": 0.04024322882610105,
+          "windspeed": 0.0476765891064874
+        },
+        "rmse": 55.07495947278888,
+        "tick": 23,
+        "ts": "2012-06-10T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.13973883327257525
+      },
+      "tick": 23,
+      "tick_end": "2012-06-10T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 24,
+          "ts": "2012-06-17T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 24,
+          "ts": "2012-06-17T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 24,
+          "ts": "2012-06-17T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 10.638353383629717,
+            "mae": 36.97247576133438,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.15407787937951692,
+            "psi": {
+              "atemp": 3.9978594701628176,
+              "hum": 0.1549855053285436,
+              "season": 7.483536373003388,
+              "temp": 3.9688946663729077,
+              "weathersit": 0.03091505980117856,
+              "windspeed": 0.03693012689228562
+            },
+            "rmse": 53.55106482521938,
+            "tick": 24,
+            "ts": "2012-06-17T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.13251924789913222
+          },
+          "tick": 24,
+          "ts": "2012-06-17T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 10.638353383629717,
+        "mae": 36.97247576133438,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.15407787937951692,
+        "psi": {
+          "atemp": 3.9978594701628176,
+          "hum": 0.1549855053285436,
+          "season": 7.483536373003388,
+          "temp": 3.9688946663729077,
+          "weathersit": 0.03091505980117856,
+          "windspeed": 0.03693012689228562
+        },
+        "rmse": 53.55106482521938,
+        "tick": 24,
+        "ts": "2012-06-17T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.13251924789913222
+      },
+      "tick": 24,
+      "tick_end": "2012-06-17T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 25,
+          "ts": "2012-06-24T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 25,
+          "ts": "2012-06-24T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 25,
+          "ts": "2012-06-24T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 11.131833804584076,
+            "mae": 38.233152695448574,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.16473904501406783,
+            "psi": {
+              "atemp": 3.9393060531645956,
+              "hum": 0.1819454788778007,
+              "season": 5.675327957996195,
+              "temp": 3.9344427411605913,
+              "weathersit": 0.051736849994217016,
+              "windspeed": 0.05330501628102395
+            },
+            "rmse": 54.364988292736534,
+            "tick": 25,
+            "ts": "2012-06-24T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.13599478420603758
+          },
+          "tick": 25,
+          "ts": "2012-06-24T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 11.131833804584076,
+        "mae": 38.233152695448574,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.16473904501406783,
+        "psi": {
+          "atemp": 3.9393060531645956,
+          "hum": 0.1819454788778007,
+          "season": 5.675327957996195,
+          "temp": 3.9344427411605913,
+          "weathersit": 0.051736849994217016,
+          "windspeed": 0.05330501628102395
+        },
+        "rmse": 54.364988292736534,
+        "tick": 25,
+        "ts": "2012-06-24T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.13599478420603758
+      },
+      "tick": 25,
+      "tick_end": "2012-06-24T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 26,
+          "ts": "2012-07-01T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 26,
+          "ts": "2012-07-01T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 26,
+          "ts": "2012-07-01T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 12.389364526110723,
+            "mae": 39.913129690151855,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.16891059338746908,
+            "psi": {
+              "atemp": 3.9638917419559863,
+              "hum": 0.2912449515484794,
+              "season": 5.171714128773073,
+              "temp": 3.9488740672680476,
+              "weathersit": 0.11438164274155532,
+              "windspeed": 0.0401863926252789
+            },
+            "rmse": 55.475443971730144,
+            "tick": 26,
+            "ts": "2012-07-01T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.1407346046173166
+          },
+          "tick": 26,
+          "ts": "2012-07-01T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 12.389364526110723,
+        "mae": 39.913129690151855,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.16891059338746908,
+        "psi": {
+          "atemp": 3.9638917419559863,
+          "hum": 0.2912449515484794,
+          "season": 5.171714128773073,
+          "temp": 3.9488740672680476,
+          "weathersit": 0.11438164274155532,
+          "windspeed": 0.0401863926252789
+        },
+        "rmse": 55.475443971730144,
+        "tick": 26,
+        "ts": "2012-07-01T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.1407346046173166
+      },
+      "tick": 26,
+      "tick_end": "2012-07-01T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 27,
+          "ts": "2012-07-08T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 27,
+          "ts": "2012-07-08T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 27,
+          "ts": "2012-07-08T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 19.44562907933817,
+            "mae": 44.159889461987866,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.16310707619823148,
+            "psi": {
+              "atemp": 4.8438635958244,
+              "hum": 0.34782183911808817,
+              "season": 5.1394091973535065,
+              "temp": 4.868255730140667,
+              "weathersit": 0.11214927944734966,
+              "windspeed": 0.06584083281561817
+            },
+            "rmse": 62.79317733600784,
+            "tick": 27,
+            "ts": "2012-07-08T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.16281126093003115
+          },
+          "tick": 27,
+          "ts": "2012-07-08T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 19.44562907933817,
+        "mae": 44.159889461987866,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.16310707619823148,
+        "psi": {
+          "atemp": 4.8438635958244,
+          "hum": 0.34782183911808817,
+          "season": 5.1394091973535065,
+          "temp": 4.868255730140667,
+          "weathersit": 0.11214927944734966,
+          "windspeed": 0.06584083281561817
+        },
+        "rmse": 62.79317733600784,
+        "tick": 27,
+        "ts": "2012-07-08T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.16281126093003115
+      },
+      "tick": 27,
+      "tick_end": "2012-07-08T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 28,
+          "ts": "2012-07-15T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 28,
+          "ts": "2012-07-15T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 28,
+          "ts": "2012-07-15T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 21.197794843968897,
+            "mae": 46.4027114583493,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.1753361602510319,
+            "psi": {
+              "atemp": 4.990804072737193,
+              "hum": 0.3352714238079275,
+              "season": 5.534013838721251,
+              "temp": 5.037039689798834,
+              "weathersit": 0.06238159403797826,
+              "windspeed": 0.10965197156946047
+            },
+            "rmse": 65.90754271244671,
+            "tick": 28,
+            "ts": "2012-07-15T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.17266794449403206
+          },
+          "tick": 28,
+          "ts": "2012-07-15T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 21.197794843968897,
+        "mae": 46.4027114583493,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.1753361602510319,
+        "psi": {
+          "atemp": 4.990804072737193,
+          "hum": 0.3352714238079275,
+          "season": 5.534013838721251,
+          "temp": 5.037039689798834,
+          "weathersit": 0.06238159403797826,
+          "windspeed": 0.10965197156946047
+        },
+        "rmse": 65.90754271244671,
+        "tick": 28,
+        "ts": "2012-07-15T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.17266794449403206
+      },
+      "tick": 28,
+      "tick_end": "2012-07-15T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 29,
+          "ts": "2012-07-22T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 29,
+          "ts": "2012-07-22T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 29,
+          "ts": "2012-07-22T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 14.771915364521062,
+            "mae": 49.184759169160316,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.14732130645079508,
+            "psi": {
+              "atemp": 5.202311868157213,
+              "hum": 0.27603660844742256,
+              "season": 7.434380324106968,
+              "temp": 5.190430306869746,
+              "weathersit": 0.021152526807126208,
+              "windspeed": 0.07208388377512331
+            },
+            "rmse": 71.32484506159555,
+            "tick": 29,
+            "ts": "2012-07-22T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.18508942041773008
+          },
+          "tick": 29,
+          "ts": "2012-07-22T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 14.771915364521062,
+        "mae": 49.184759169160316,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.14732130645079508,
+        "psi": {
+          "atemp": 5.202311868157213,
+          "hum": 0.27603660844742256,
+          "season": 7.434380324106968,
+          "temp": 5.190430306869746,
+          "weathersit": 0.021152526807126208,
+          "windspeed": 0.07208388377512331
+        },
+        "rmse": 71.32484506159555,
+        "tick": 29,
+        "ts": "2012-07-22T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.18508942041773008
+      },
+      "tick": 29,
+      "tick_end": "2012-07-22T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 30,
+          "ts": "2012-07-29T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 30,
+          "ts": "2012-07-29T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 30,
+          "ts": "2012-07-29T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": 6.100225803800823,
+            "mae": 48.19009754054808,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.13968641464645018,
+            "psi": {
+              "atemp": 5.712690282204806,
+              "hum": 0.16266998409109934,
+              "season": 7.434380324106968,
+              "temp": 5.36776444925916,
+              "weathersit": 0.013111267317475566,
+              "windspeed": 0.1702623147217084
+            },
+            "rmse": 70.42653937574892,
+            "tick": 30,
+            "ts": "2012-07-29T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.17726160604770025
+          },
+          "tick": 30,
+          "ts": "2012-07-29T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": 6.100225803800823,
+        "mae": 48.19009754054808,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.13968641464645018,
+        "psi": {
+          "atemp": 5.712690282204806,
+          "hum": 0.16266998409109934,
+          "season": 7.434380324106968,
+          "temp": 5.36776444925916,
+          "weathersit": 0.013111267317475566,
+          "windspeed": 0.1702623147217084
+        },
+        "rmse": 70.42653937574892,
+        "tick": 30,
+        "ts": "2012-07-29T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.17726160604770025
+      },
+      "tick": 30,
+      "tick_end": "2012-07-29T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 31,
+          "ts": "2012-08-05T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 31,
+          "ts": "2012-08-05T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 31,
+          "ts": "2012-08-05T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -2.7973638806767025,
+            "mae": 47.20715046887484,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.13247026182716126,
+            "psi": {
+              "atemp": 5.653517525109885,
+              "hum": 0.20095968361363573,
+              "season": 7.434380324106968,
+              "temp": 5.291572558621862,
+              "weathersit": 0.00962598975959731,
+              "windspeed": 0.1668215251263688
+            },
+            "rmse": 68.33603524044608,
+            "tick": 31,
+            "ts": "2012-08-05T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.16754800998787298
+          },
+          "tick": 31,
+          "ts": "2012-08-05T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -2.7973638806767025,
+        "mae": 47.20715046887484,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.13247026182716126,
+        "psi": {
+          "atemp": 5.653517525109885,
+          "hum": 0.20095968361363573,
+          "season": 7.434380324106968,
+          "temp": 5.291572558621862,
+          "weathersit": 0.00962598975959731,
+          "windspeed": 0.1668215251263688
+        },
+        "rmse": 68.33603524044608,
+        "tick": 31,
+        "ts": "2012-08-05T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.16754800998787298
+      },
+      "tick": 31,
+      "tick_end": "2012-08-05T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 32,
+          "ts": "2012-08-12T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 32,
+          "ts": "2012-08-12T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 32,
+          "ts": "2012-08-12T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -5.711290436690346,
+            "mae": 47.29194126841935,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.10631609882751873,
+            "psi": {
+              "atemp": 5.711790361751661,
+              "hum": 0.25657125058776586,
+              "season": 7.434380324106968,
+              "temp": 5.329286162011677,
+              "weathersit": 0.016174251912990472,
+              "windspeed": 0.08335499586309882
+            },
+            "rmse": 67.37442005053356,
+            "tick": 32,
+            "ts": "2012-08-12T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.1678968350857854
+          },
+          "tick": 32,
+          "ts": "2012-08-12T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -5.711290436690346,
+        "mae": 47.29194126841935,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.10631609882751873,
+        "psi": {
+          "atemp": 5.711790361751661,
+          "hum": 0.25657125058776586,
+          "season": 7.434380324106968,
+          "temp": 5.329286162011677,
+          "weathersit": 0.016174251912990472,
+          "windspeed": 0.08335499586309882
+        },
+        "rmse": 67.37442005053356,
+        "tick": 32,
+        "ts": "2012-08-12T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.1678968350857854
+      },
+      "tick": 32,
+      "tick_end": "2012-08-12T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 33,
+          "ts": "2012-08-19T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 33,
+          "ts": "2012-08-19T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 33,
+          "ts": "2012-08-19T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -4.947498411391754,
+            "mae": 45.745209640815446,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.15592183694208833,
+            "psi": {
+              "atemp": 4.879078666580197,
+              "hum": 0.2646563544859887,
+              "season": 7.434380324106968,
+              "temp": 5.774452451890051,
+              "weathersit": 0.08732821874074716,
+              "windspeed": 0.09479286756938395
+            },
+            "rmse": 63.75238782520265,
+            "tick": 33,
+            "ts": "2012-08-19T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.1559021243464245
+          },
+          "tick": 33,
+          "ts": "2012-08-19T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -4.947498411391754,
+        "mae": 45.745209640815446,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.15592183694208833,
+        "psi": {
+          "atemp": 4.879078666580197,
+          "hum": 0.2646563544859887,
+          "season": 7.434380324106968,
+          "temp": 5.774452451890051,
+          "weathersit": 0.08732821874074716,
+          "windspeed": 0.09479286756938395
+        },
+        "rmse": 63.75238782520265,
+        "tick": 33,
+        "ts": "2012-08-19T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.1559021243464245
+      },
+      "tick": 33,
+      "tick_end": "2012-08-19T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 34,
+          "ts": "2012-08-26T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 34,
+          "ts": "2012-08-26T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 34,
+          "ts": "2012-08-26T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -3.8317309697957067,
+            "mae": 45.42713869312414,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.1513005059830884,
+            "psi": {
+              "atemp": 4.3805242309887635,
+              "hum": 0.35785978920833444,
+              "season": 7.434380324106968,
+              "temp": 5.146282140752056,
+              "weathersit": 0.017997614115278015,
+              "windspeed": 0.12782208368520911
+            },
+            "rmse": 65.42481968956889,
+            "tick": 34,
+            "ts": "2012-08-26T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.15780405792627214
+          },
+          "tick": 34,
+          "ts": "2012-08-26T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -3.8317309697957067,
+        "mae": 45.42713869312414,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.1513005059830884,
+        "psi": {
+          "atemp": 4.3805242309887635,
+          "hum": 0.35785978920833444,
+          "season": 7.434380324106968,
+          "temp": 5.146282140752056,
+          "weathersit": 0.017997614115278015,
+          "windspeed": 0.12782208368520911
+        },
+        "rmse": 65.42481968956889,
+        "tick": 34,
+        "ts": "2012-08-26T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.15780405792627214
+      },
+      "tick": 34,
+      "tick_end": "2012-08-26T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 35,
+          "ts": "2012-09-02T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 35,
+          "ts": "2012-09-02T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 35,
+          "ts": "2012-09-02T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -2.850938592296826,
+            "mae": 44.02362006613967,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.14971482083485832,
+            "psi": {
+              "atemp": 4.356244999820438,
+              "hum": 0.22088948357208132,
+              "season": 7.434380324106968,
+              "temp": 5.118917517713509,
+              "weathersit": 0.011763144811281497,
+              "windspeed": 0.1612740993938383
+            },
+            "rmse": 65.16751650757764,
+            "tick": 35,
+            "ts": "2012-09-02T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.15424092785016844
+          },
+          "tick": 35,
+          "ts": "2012-09-02T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -2.850938592296826,
+        "mae": 44.02362006613967,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.14971482083485832,
+        "psi": {
+          "atemp": 4.356244999820438,
+          "hum": 0.22088948357208132,
+          "season": 7.434380324106968,
+          "temp": 5.118917517713509,
+          "weathersit": 0.011763144811281497,
+          "windspeed": 0.1612740993938383
+        },
+        "rmse": 65.16751650757764,
+        "tick": 35,
+        "ts": "2012-09-02T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.15424092785016844
+      },
+      "tick": 35,
+      "tick_end": "2012-09-02T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 36,
+          "ts": "2012-09-09T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 36,
+          "ts": "2012-09-09T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 36,
+          "ts": "2012-09-09T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -7.033348685728508,
+            "mae": 44.39403541761076,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.12718444779838955,
+            "psi": {
+              "atemp": 4.309233286936536,
+              "hum": 0.2669331588058592,
+              "season": 7.434380324106968,
+              "temp": 4.998377236503498,
+              "weathersit": 0.013235833067368932,
+              "windspeed": 0.1754747203671619
+            },
+            "rmse": 68.52790158614036,
+            "tick": 36,
+            "ts": "2012-09-09T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.15647854876520148
+          },
+          "tick": 36,
+          "ts": "2012-09-09T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -7.033348685728508,
+        "mae": 44.39403541761076,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.12718444779838955,
+        "psi": {
+          "atemp": 4.309233286936536,
+          "hum": 0.2669331588058592,
+          "season": 7.434380324106968,
+          "temp": 4.998377236503498,
+          "weathersit": 0.013235833067368932,
+          "windspeed": 0.1754747203671619
+        },
+        "rmse": 68.52790158614036,
+        "tick": 36,
+        "ts": "2012-09-09T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.15647854876520148
+      },
+      "tick": 36,
+      "tick_end": "2012-09-09T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 37,
+          "ts": "2012-09-16T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 37,
+          "ts": "2012-09-16T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 37,
+          "ts": "2012-09-16T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -12.7767787927382,
+            "mae": 43.66875866211059,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.11654087364688792,
+            "psi": {
+              "atemp": 4.086065174891996,
+              "hum": 0.2536855905430593,
+              "season": 7.434380324106968,
+              "temp": 4.08762277356608,
+              "weathersit": 0.025464688913828387,
+              "windspeed": 0.16944219901406252
+            },
+            "rmse": 67.4289878491447,
+            "tick": 37,
+            "ts": "2012-09-16T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.14942337388647298
+          },
+          "tick": 37,
+          "ts": "2012-09-16T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -12.7767787927382,
+        "mae": 43.66875866211059,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.11654087364688792,
+        "psi": {
+          "atemp": 4.086065174891996,
+          "hum": 0.2536855905430593,
+          "season": 7.434380324106968,
+          "temp": 4.08762277356608,
+          "weathersit": 0.025464688913828387,
+          "windspeed": 0.16944219901406252
+        },
+        "rmse": 67.4289878491447,
+        "tick": 37,
+        "ts": "2012-09-16T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.14942337388647298
+      },
+      "tick": 37,
+      "tick_end": "2012-09-16T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 38,
+          "ts": "2012-09-23T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 38,
+          "ts": "2012-09-23T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 38,
+          "ts": "2012-09-23T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -16.306656514231133,
+            "mae": 43.29869065234171,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.10998846743240277,
+            "psi": {
+              "atemp": 3.841441269747539,
+              "hum": 0.22517324163962948,
+              "season": 7.434380324106968,
+              "temp": 3.8551277414031455,
+              "weathersit": 0.06979546468968913,
+              "windspeed": 0.07655686854463109
+            },
+            "rmse": 65.26263797758845,
+            "tick": 38,
+            "ts": "2012-09-23T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.14571747714268216
+          },
+          "tick": 38,
+          "ts": "2012-09-23T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -16.306656514231133,
+        "mae": 43.29869065234171,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.10998846743240277,
+        "psi": {
+          "atemp": 3.841441269747539,
+          "hum": 0.22517324163962948,
+          "season": 7.434380324106968,
+          "temp": 3.8551277414031455,
+          "weathersit": 0.06979546468968913,
+          "windspeed": 0.07655686854463109
+        },
+        "rmse": 65.26263797758845,
+        "tick": 38,
+        "ts": "2012-09-23T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.14571747714268216
+      },
+      "tick": 38,
+      "tick_end": "2012-09-23T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 39,
+          "ts": "2012-09-30T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 39,
+          "ts": "2012-09-30T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 39,
+          "ts": "2012-09-30T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -22.804180216577567,
+            "mae": 44.22039639252543,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.12121431507070869,
+            "psi": {
+              "atemp": 3.385448994930227,
+              "hum": 0.19130086658063766,
+              "season": 5.353967329722502,
+              "temp": 3.4009078621607562,
+              "weathersit": 0.050430624551695516,
+              "windspeed": 0.06725219701333371
+            },
+            "rmse": 65.46164465197468,
+            "tick": 39,
+            "ts": "2012-09-30T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.14457296917339885
+          },
+          "tick": 39,
+          "ts": "2012-09-30T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -22.804180216577567,
+        "mae": 44.22039639252543,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.12121431507070869,
+        "psi": {
+          "atemp": 3.385448994930227,
+          "hum": 0.19130086658063766,
+          "season": 5.353967329722502,
+          "temp": 3.4009078621607562,
+          "weathersit": 0.050430624551695516,
+          "windspeed": 0.06725219701333371
+        },
+        "rmse": 65.46164465197468,
+        "tick": 39,
+        "ts": "2012-09-30T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.14457296917339885
+      },
+      "tick": 39,
+      "tick_end": "2012-09-30T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 40,
+          "ts": "2012-10-07T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 40,
+          "ts": "2012-10-07T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 40,
+          "ts": "2012-10-07T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -27.14631734650532,
+            "mae": 45.344875626956366,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.1334485662148497,
+            "psi": {
+              "atemp": 3.729292806284568,
+              "hum": 0.11312333143572754,
+              "season": 5.180822243139072,
+              "temp": 3.611746573916866,
+              "weathersit": 0.03785867860445202,
+              "windspeed": 0.08642733509308567
+            },
+            "rmse": 68.44024525168297,
+            "tick": 40,
+            "ts": "2012-10-07T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.14554161295572715
+          },
+          "tick": 40,
+          "ts": "2012-10-07T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -27.14631734650532,
+        "mae": 45.344875626956366,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.1334485662148497,
+        "psi": {
+          "atemp": 3.729292806284568,
+          "hum": 0.11312333143572754,
+          "season": 5.180822243139072,
+          "temp": 3.611746573916866,
+          "weathersit": 0.03785867860445202,
+          "windspeed": 0.08642733509308567
+        },
+        "rmse": 68.44024525168297,
+        "tick": 40,
+        "ts": "2012-10-07T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.14554161295572715
+      },
+      "tick": 40,
+      "tick_end": "2012-10-07T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 41,
+          "ts": "2012-10-14T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 41,
+          "ts": "2012-10-14T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 41,
+          "ts": "2012-10-14T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -29.645908166247462,
+            "mae": 48.28286820249867,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.08223849093529312,
+            "psi": {
+              "atemp": 2.1575331874851207,
+              "hum": 0.1382614284825338,
+              "season": 5.38931280544355,
+              "temp": 1.974615258937303,
+              "weathersit": 0.002398387197127324,
+              "windspeed": 0.057583099529375084
+            },
+            "rmse": 73.63757489348755,
+            "tick": 41,
+            "ts": "2012-10-14T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.16346953624513363
+          },
+          "tick": 41,
+          "ts": "2012-10-14T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -29.645908166247462,
+        "mae": 48.28286820249867,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.08223849093529312,
+        "psi": {
+          "atemp": 2.1575331874851207,
+          "hum": 0.1382614284825338,
+          "season": 5.38931280544355,
+          "temp": 1.974615258937303,
+          "weathersit": 0.002398387197127324,
+          "windspeed": 0.057583099529375084
+        },
+        "rmse": 73.63757489348755,
+        "tick": 41,
+        "ts": "2012-10-14T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.16346953624513363
+      },
+      "tick": 41,
+      "tick_end": "2012-10-14T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 42,
+          "ts": "2012-10-21T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 42,
+          "ts": "2012-10-21T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 42,
+          "ts": "2012-10-21T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -32.780852678950815,
+            "mae": 50.75443886347156,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.06067059565426705,
+            "psi": {
+              "atemp": 2.1630158284046526,
+              "hum": 0.15087183104243443,
+              "season": 7.575966787742653,
+              "temp": 2.0129979592636515,
+              "weathersit": 0.0003787381819948313,
+              "windspeed": 0.0484033933568049
+            },
+            "rmse": 78.98472222725944,
+            "tick": 42,
+            "ts": "2012-10-21T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.17324797791541993
+          },
+          "tick": 42,
+          "ts": "2012-10-21T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -32.780852678950815,
+        "mae": 50.75443886347156,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.06067059565426705,
+        "psi": {
+          "atemp": 2.1630158284046526,
+          "hum": 0.15087183104243443,
+          "season": 7.575966787742653,
+          "temp": 2.0129979592636515,
+          "weathersit": 0.0003787381819948313,
+          "windspeed": 0.0484033933568049
+        },
+        "rmse": 78.98472222725944,
+        "tick": 42,
+        "ts": "2012-10-21T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.17324797791541993
+      },
+      "tick": 42,
+      "tick_end": "2012-10-21T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 43,
+          "ts": "2012-10-28T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 43,
+          "ts": "2012-10-28T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 43,
+          "ts": "2012-10-28T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -34.59308603671056,
+            "mae": 51.44199739921313,
+            "model_version": 2,
+            "n_rows": 672,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.04824377505632833,
+            "psi": {
+              "atemp": 2.2933852038487803,
+              "hum": 0.19225096664643565,
+              "season": 7.575966787742653,
+              "temp": 2.2126277876625955,
+              "weathersit": 0.01644365836267344,
+              "windspeed": 0.10523400727210268
+            },
+            "rmse": 79.1929350323976,
+            "tick": 43,
+            "ts": "2012-10-28T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.177653297765376
+          },
+          "tick": 43,
+          "ts": "2012-10-28T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -34.59308603671056,
+        "mae": 51.44199739921313,
+        "model_version": 2,
+        "n_rows": 672,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.04824377505632833,
+        "psi": {
+          "atemp": 2.2933852038487803,
+          "hum": 0.19225096664643565,
+          "season": 7.575966787742653,
+          "temp": 2.2126277876625955,
+          "weathersit": 0.01644365836267344,
+          "windspeed": 0.10523400727210268
+        },
+        "rmse": 79.1929350323976,
+        "tick": 43,
+        "ts": "2012-10-28T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.177653297765376
+      },
+      "tick": 43,
+      "tick_end": "2012-10-28T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 132,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 44,
+          "ts": "2012-11-04T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 132
+          },
+          "tick": 44,
+          "ts": "2012-11-04T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 132
+          },
+          "tick": 44,
+          "ts": "2012-11-04T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -34.24949496852754,
+            "mae": 51.953180423463174,
+            "model_version": 2,
+            "n_rows": 636,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.03139799044595566,
+            "psi": {
+              "atemp": 2.459313487058786,
+              "hum": 0.2397657197155944,
+              "season": 7.575966787742653,
+              "temp": 2.071027750165599,
+              "weathersit": 0.056215881896629204,
+              "windspeed": 0.035204639274955554
+            },
+            "rmse": 78.74574406343787,
+            "tick": 44,
+            "ts": "2012-11-04T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.1905834943493406
+          },
+          "tick": 44,
+          "ts": "2012-11-04T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -34.24949496852754,
+        "mae": 51.953180423463174,
+        "model_version": 2,
+        "n_rows": 636,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.03139799044595566,
+        "psi": {
+          "atemp": 2.459313487058786,
+          "hum": 0.2397657197155944,
+          "season": 7.575966787742653,
+          "temp": 2.071027750165599,
+          "weathersit": 0.056215881896629204,
+          "windspeed": 0.035204639274955554
+        },
+        "rmse": 78.74574406343787,
+        "tick": 44,
+        "ts": "2012-11-04T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.1905834943493406
+      },
+      "tick": 44,
+      "tick_end": "2012-11-04T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 167,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 45,
+          "ts": "2012-11-11T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 167
+          },
+          "tick": 45,
+          "ts": "2012-11-11T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 167
+          },
+          "tick": 45,
+          "ts": "2012-11-11T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -38.87819809694732,
+            "mae": 52.50820666751531,
+            "model_version": 2,
+            "n_rows": 635,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.024784073774366547,
+            "psi": {
+              "atemp": 1.6074067858159573,
+              "hum": 0.2333417116544836,
+              "season": 7.575966787742653,
+              "temp": 1.220939784199481,
+              "weathersit": 0.05040732465019189,
+              "windspeed": 0.008654600813779879
+            },
+            "rmse": 78.92363066203013,
+            "tick": 45,
+            "ts": "2012-11-11T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.19933229251681228
+          },
+          "tick": 45,
+          "ts": "2012-11-11T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -38.87819809694732,
+        "mae": 52.50820666751531,
+        "model_version": 2,
+        "n_rows": 635,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.024784073774366547,
+        "psi": {
+          "atemp": 1.6074067858159573,
+          "hum": 0.2333417116544836,
+          "season": 7.575966787742653,
+          "temp": 1.220939784199481,
+          "weathersit": 0.05040732465019189,
+          "windspeed": 0.008654600813779879
+        },
+        "rmse": 78.92363066203013,
+        "tick": 45,
+        "ts": "2012-11-11T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.19933229251681228
+      },
+      "tick": 45,
+      "tick_end": "2012-11-11T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 46,
+          "ts": "2012-11-18T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 46,
+          "ts": "2012-11-18T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 46,
+          "ts": "2012-11-18T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -44.73798328663134,
+            "mae": 54.732502851433644,
+            "model_version": 2,
+            "n_rows": 635,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.07990666130337477,
+            "psi": {
+              "atemp": 1.6510144093606554,
+              "hum": 0.25738998241097344,
+              "season": 7.575966787742653,
+              "temp": 1.257644207841622,
+              "weathersit": 0.04379711487243054,
+              "windspeed": 0.0339525530053661
+            },
+            "rmse": 82.05129247167791,
+            "tick": 46,
+            "ts": "2012-11-18T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.2196605990991162
+          },
+          "tick": 46,
+          "ts": "2012-11-18T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -44.73798328663134,
+        "mae": 54.732502851433644,
+        "model_version": 2,
+        "n_rows": 635,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.07990666130337477,
+        "psi": {
+          "atemp": 1.6510144093606554,
+          "hum": 0.25738998241097344,
+          "season": 7.575966787742653,
+          "temp": 1.257644207841622,
+          "weathersit": 0.04379711487243054,
+          "windspeed": 0.0339525530053661
+        },
+        "rmse": 82.05129247167791,
+        "tick": 46,
+        "ts": "2012-11-18T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.2196605990991162
+      },
+      "tick": 46,
+      "tick_end": "2012-11-18T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 47,
+          "ts": "2012-11-25T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 47,
+          "ts": "2012-11-25T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 47,
+          "ts": "2012-11-25T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -35.53426509941161,
+            "mae": 57.65203489282917,
+            "model_version": 2,
+            "n_rows": 635,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.39588339455414717,
+            "psi": {
+              "atemp": 2.5360564268699455,
+              "hum": 0.4015150726042258,
+              "season": 7.575966787742653,
+              "temp": 2.6858753717578367,
+              "weathersit": 0.030663312009810487,
+              "windspeed": 0.02481379831572122
+            },
+            "rmse": 86.40171933247703,
+            "tick": 47,
+            "ts": "2012-11-25T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.2690140216991206
+          },
+          "tick": 47,
+          "ts": "2012-11-25T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -35.53426509941161,
+        "mae": 57.65203489282917,
+        "model_version": 2,
+        "n_rows": 635,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.39588339455414717,
+        "psi": {
+          "atemp": 2.5360564268699455,
+          "hum": 0.4015150726042258,
+          "season": 7.575966787742653,
+          "temp": 2.6858753717578367,
+          "weathersit": 0.030663312009810487,
+          "windspeed": 0.02481379831572122
+        },
+        "rmse": 86.40171933247703,
+        "tick": 47,
+        "ts": "2012-11-25T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.2690140216991206
+      },
+      "tick": 47,
+      "tick_end": "2012-11-25T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 167,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 48,
+          "ts": "2012-12-02T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 167
+          },
+          "tick": 48,
+          "ts": "2012-12-02T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 167
+          },
+          "tick": 48,
+          "ts": "2012-12-02T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -36.9077308765433,
+            "mae": 56.704886349290454,
+            "model_version": 2,
+            "n_rows": 670,
+            "numeric_drift_share": 0.75,
+            "prediction_psi": 0.516425625613161,
+            "psi": {
+              "atemp": 2.352580474344226,
+              "hum": 0.4488189791695485,
+              "season": 7.575966787742653,
+              "temp": 2.466308800986754,
+              "weathersit": 0.059981656697148694,
+              "windspeed": 0.028009725155868893
+            },
+            "rmse": 85.35237670575812,
+            "tick": 48,
+            "ts": "2012-12-02T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.2696706074076872
+          },
+          "tick": 48,
+          "ts": "2012-12-02T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -36.9077308765433,
+        "mae": 56.704886349290454,
+        "model_version": 2,
+        "n_rows": 670,
+        "numeric_drift_share": 0.75,
+        "prediction_psi": 0.516425625613161,
+        "psi": {
+          "atemp": 2.352580474344226,
+          "hum": 0.4488189791695485,
+          "season": 7.575966787742653,
+          "temp": 2.466308800986754,
+          "weathersit": 0.059981656697148694,
+          "windspeed": 0.028009725155868893
+        },
+        "rmse": 85.35237670575812,
+        "tick": 48,
+        "ts": "2012-12-02T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.2696706074076872
+      },
+      "tick": 48,
+      "tick_end": "2012-12-02T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 49,
+          "ts": "2012-12-09T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 49,
+          "ts": "2012-12-09T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 49,
+          "ts": "2012-12-09T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -38.07822117581675,
+            "mae": 58.40267427699871,
+            "model_version": 2,
+            "n_rows": 671,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.4464382327422864,
+            "psi": {
+              "atemp": 1.9384848239356098,
+              "hum": 0.15249282838911216,
+              "season": 7.575966787742653,
+              "temp": 2.2266638140974164,
+              "weathersit": 0.07319023821991168,
+              "windspeed": 0.08141278614974623
+            },
+            "rmse": 88.636551992039,
+            "tick": 49,
+            "ts": "2012-12-09T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.2776606732456134
+          },
+          "tick": 49,
+          "ts": "2012-12-09T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -38.07822117581675,
+        "mae": 58.40267427699871,
+        "model_version": 2,
+        "n_rows": 671,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.4464382327422864,
+        "psi": {
+          "atemp": 1.9384848239356098,
+          "hum": 0.15249282838911216,
+          "season": 7.575966787742653,
+          "temp": 2.2266638140974164,
+          "weathersit": 0.07319023821991168,
+          "windspeed": 0.08141278614974623
+        },
+        "rmse": 88.636551992039,
+        "tick": 49,
+        "ts": "2012-12-09T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.2776606732456134
+      },
+      "tick": 49,
+      "tick_end": "2012-12-09T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 50,
+          "ts": "2012-12-16T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 50,
+          "ts": "2012-12-16T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 50,
+          "ts": "2012-12-16T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -37.251441467648156,
+            "mae": 57.35580482102317,
+            "model_version": 2,
+            "n_rows": 671,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.544164399709982,
+            "psi": {
+              "atemp": 2.0975787012310376,
+              "hum": 0.06047744696618142,
+              "season": 7.575966787742653,
+              "temp": 2.336917002630365,
+              "weathersit": 0.084501279785991,
+              "windspeed": 0.10934021659313922
+            },
+            "rmse": 86.41568628805162,
+            "tick": 50,
+            "ts": "2012-12-16T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.28078872514760767
+          },
+          "tick": 50,
+          "ts": "2012-12-16T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -37.251441467648156,
+        "mae": 57.35580482102317,
+        "model_version": 2,
+        "n_rows": 671,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.544164399709982,
+        "psi": {
+          "atemp": 2.0975787012310376,
+          "hum": 0.06047744696618142,
+          "season": 7.575966787742653,
+          "temp": 2.336917002630365,
+          "weathersit": 0.084501279785991,
+          "windspeed": 0.10934021659313922
+        },
+        "rmse": 86.41568628805162,
+        "tick": 50,
+        "ts": "2012-12-16T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.28078872514760767
+      },
+      "tick": 50,
+      "tick_end": "2012-12-16T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "SCORED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 51,
+          "ts": "2012-12-23T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 168
+          },
+          "tick": 51,
+          "ts": "2012-12-23T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 168
+          },
+          "tick": 51,
+          "ts": "2012-12-23T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -40.19708025567897,
+            "mae": 53.00786764912355,
+            "model_version": 2,
+            "n_rows": 671,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.6011566773161399,
+            "psi": {
+              "atemp": 2.1244210455594517,
+              "hum": 0.07254512497555457,
+              "season": 4.841200336807113,
+              "temp": 2.36955700338317,
+              "weathersit": 0.11385830793846156,
+              "windspeed": 0.06100597325054083
+            },
+            "rmse": 81.6663320072324,
+            "tick": 51,
+            "ts": "2012-12-23T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.2611512591415579
+          },
+          "tick": 51,
+          "ts": "2012-12-23T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -40.19708025567897,
+        "mae": 53.00786764912355,
+        "model_version": 2,
+        "n_rows": 671,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.6011566773161399,
+        "psi": {
+          "atemp": 2.1244210455594517,
+          "hum": 0.07254512497555457,
+          "season": 4.841200336807113,
+          "temp": 2.36955700338317,
+          "weathersit": 0.11385830793846156,
+          "windspeed": 0.06100597325054083
+        },
+        "rmse": 81.6663320072324,
+        "tick": 51,
+        "ts": "2012-12-23T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.2611512591415579
+      },
+      "tick": 51,
+      "tick_end": "2012-12-23T00:00:00",
+      "validation_verdict": "PASS"
+    },
+    {
+      "action": "REJECTED",
+      "champion_version": 2,
+      "events": [
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 166,
+            "verdict": "PASS",
+            "warnings": []
+          },
+          "tick": 52,
+          "ts": "2012-12-30T00:00:00",
+          "type": "BATCH_VALIDATED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "model_version": 2,
+            "rows": 166
+          },
+          "tick": 52,
+          "ts": "2012-12-30T00:00:00",
+          "type": "BATCH_SCORED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "rows": 166
+          },
+          "tick": 52,
+          "ts": "2012-12-30T00:00:00",
+          "type": "LABELS_INGESTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "bias": -16.934212685766724,
+            "mae": 53.62276443872864,
+            "model_version": 2,
+            "n_rows": 670,
+            "numeric_drift_share": 0.5,
+            "prediction_psi": 0.6567555442872612,
+            "psi": {
+              "atemp": 1.8983229891202669,
+              "hum": 0.16183488673764995,
+              "season": 3.8279219201958594,
+              "temp": 2.2781156750986185,
+              "weathersit": 0.1826277777587602,
+              "windspeed": 0.02115865459268887
+            },
+            "rmse": 80.7282136603004,
+            "tick": 52,
+            "ts": "2012-12-30T00:00:00",
+            "verdict": "PASS",
+            "wape": 0.3151596285336297
+          },
+          "tick": 52,
+          "ts": "2012-12-30T00:00:00",
+          "type": "SNAPSHOT_COMPUTED"
+        },
+        {
+          "model_version": 2,
+          "payload": {
+            "cut": "2012-12-16T00:00:00",
+            "holdout_window": "2012-12-16T00:00:00/2012-12-30T00:00:00",
+            "outcome": "PERFORMANCE_SLO_BREACH",
+            "trigger": "PERFORMANCE_SLO_BREACH"
+          },
+          "tick": 52,
+          "ts": "2012-12-30T00:00:00",
+          "type": "RETRAIN_TRIGGERED"
+        },
+        {
+          "model_version": 3,
+          "payload": {
+            "data_fingerprint": "0436e5cec72861afd3e6ce0f9ee7ff3b82b7db86ec8f55d0fd3fa063e0de2e11",
+            "holdout_rows": 334,
+            "metrics": {
+              "bias": 47.73967569456821,
+              "mae": 53.51263086600074,
+              "n": 334,
+              "rmse": 78.16966424639202,
+              "wape": 0.45356592166787413
+            },
+            "training_rows": 16997
+          },
+          "tick": 52,
+          "ts": "2012-12-30T00:00:00",
+          "type": "CHALLENGER_REGISTERED"
+        },
+        {
+          "model_version": 3,
+          "payload": {
+            "approved": false,
+            "champion_version": 2,
+            "failed_gates": [
+              "ABS_WAPE",
+              "IMPROVEMENT",
+              "SIGNIFICANCE"
+            ],
+            "gate_report": {
+              "approved": false,
+              "results": [
+                {
+                  "detail": "training frame validation verdict is WARN",
+                  "name": "DATA_VALID",
+                  "observed": "WARN",
+                  "passed": true,
+                  "threshold": "not FAIL"
+                },
+                {
+                  "detail": "challenger holdout WAPE 0.4536 vs budget 0.3000",
+                  "name": "ABS_WAPE",
+                  "observed": 0.45356592166787413,
+                  "passed": false,
+                  "threshold": 0.3
+                },
+                {
+                  "detail": "challenger RMSE 78.170 must be <= 0.85 x baseline 133.750",
+                  "name": "BEATS_BASELINE",
+                  "observed": 78.16966424639202,
+                  "passed": true,
+                  "threshold": 113.68739019636713
+                },
+                {
+                  "detail": "champion RMSE 71.808 -> challenger 78.170 (-8.86%)",
+                  "name": "IMPROVEMENT",
+                  "observed": -0.08858686535051087,
+                  "passed": false,
+                  "threshold": 0.05
+                },
+                {
+                  "detail": "95% CI of mean squared-error improvement: [-2994.629, 1198.791]",
+                  "name": "SIGNIFICANCE",
+                  "observed": -2994.628612636265,
+                  "passed": false,
+                  "threshold": 0.0
+                },
+                {
+                  "detail": "workingday=0.0: +7.2% (champion 66.281, challenger 71.023); workingday=1.0: +9.6% (champion 74.692, challenger 81.858)",
+                  "name": "SEGMENT",
+                  "observed": 0.09593474566804842,
+                  "passed": true,
+                  "threshold": 0.1
+                }
+              ]
+            },
+            "reason": "ABS_WAPE, IMPROVEMENT, SIGNIFICANCE"
+          },
+          "tick": 52,
+          "ts": "2012-12-30T00:00:00",
+          "type": "GATES_EVALUATED"
+        },
+        {
+          "model_version": 3,
+          "payload": {
+            "failed_gates": [
+              "ABS_WAPE",
+              "IMPROVEMENT",
+              "SIGNIFICANCE"
+            ],
+            "reason": "ABS_WAPE, IMPROVEMENT, SIGNIFICANCE"
+          },
+          "tick": 52,
+          "ts": "2012-12-30T00:00:00",
+          "type": "CHALLENGER_REJECTED"
+        }
+      ],
+      "snapshot": {
+        "bias": -16.934212685766724,
+        "mae": 53.62276443872864,
+        "model_version": 2,
+        "n_rows": 670,
+        "numeric_drift_share": 0.5,
+        "prediction_psi": 0.6567555442872612,
+        "psi": {
+          "atemp": 1.8983229891202669,
+          "hum": 0.16183488673764995,
+          "season": 3.8279219201958594,
+          "temp": 2.2781156750986185,
+          "weathersit": 0.1826277777587602,
+          "windspeed": 0.02115865459268887
+        },
+        "rmse": 80.7282136603004,
+        "tick": 52,
+        "ts": "2012-12-30T00:00:00",
+        "verdict": "PASS",
+        "wape": 0.3151596285336297
+      },
+      "tick": 52,
+      "tick_end": "2012-12-30T00:00:00",
+      "validation_verdict": "PASS"
+    }
+  ],
+  "weeks": 52
+}
