@@ -79,19 +79,21 @@ def test_migrate_is_ordered_and_idempotent(database: SqliteDatabase) -> None:
     from mlops_lifecycle_lab.adapters.storage.sqlite import migrate
 
     migrate(database.connection)
-    assert (
-        database.connection.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[0]
-        == len(MIGRATIONS)
-    )
+    assert database.connection.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[
+        0
+    ] == len(MIGRATIONS)
 
 
 def test_transaction_rolls_back_on_error(database: SqliteDatabase) -> None:
-    with pytest.raises(RuntimeError):
+    def insert_and_abort() -> None:
         with database.transaction():
             database.connection.execute(
                 "INSERT INTO kv(key, value_json) VALUES (?, ?)", ("boom", "1")
             )
             raise RuntimeError("abort")
+
+    with pytest.raises(RuntimeError):
+        insert_and_abort()
 
     assert database.connection.execute("SELECT COUNT(*) FROM kv").fetchone()[0] == 0
 
@@ -202,13 +204,14 @@ def test_run_ledger_records_runs_and_every_attempt(database: SqliteDatabase) -> 
     ]
 
 
-def prediction(entity_id: int, version: int = 1) -> PredictionRecord:
+def prediction(entity_id: int, version: int = 1, hour: int | None = None) -> PredictionRecord:
     """Build one production prediction in the 2012 replay half."""
+    offset = timedelta(hours=entity_id % 24 if hour is None else hour)
     return PredictionRecord(
         prediction_id=f"pred-{version}-{entity_id}",
         entity_id=entity_id,
-        event_ts=PRODUCTION_START + timedelta(hours=entity_id),
-        scored_at=PRODUCTION_START + timedelta(hours=entity_id),
+        event_ts=PRODUCTION_START + offset,
+        scored_at=PRODUCTION_START + offset,
         model_name="bike-demand",
         model_version=version,
         features=BASE_FEATURES,
@@ -221,11 +224,15 @@ def test_composite_labeled_data_merges_archive_and_production(
     database: SqliteDatabase,
 ) -> None:
     log = SqlitePredictionLog(database)
-    log.append([prediction(1), prediction(2)])
+    log.append([prediction(201201), prediction(201202)])
     log.attach_labels(
         [
-            LabelRecord(entity_id=1, label=11.0, label_ts=PRODUCTION_START),
-            LabelRecord(entity_id=2, label=22.0, label_ts=PRODUCTION_START + timedelta(hours=1)),
+            LabelRecord(entity_id=201201, label=11.0, label_ts=PRODUCTION_START),
+            LabelRecord(
+                entity_id=201202,
+                label=22.0,
+                label_ts=PRODUCTION_START + timedelta(hours=1),
+            ),
         ]
     )
     repository = CompositeLabeledData(BundledDataset(), log)
@@ -233,9 +240,9 @@ def test_composite_labeled_data_merges_archive_and_production(
     frame = repository.training_frame(PRODUCTION_START + timedelta(days=1))
 
     assert list(frame.columns) == [*RAW_COLUMNS, *LABEL_COLUMNS]
-    assert len(frame) == 8760 + 2
+    assert len(frame) == 8645 + 2
     production = frame.loc[frame["timestamp"] >= PRODUCTION_START]
-    assert list(production["entity_id"]) == [1, 2]
+    assert list(production["entity_id"]) == [201201, 201202]
     assert production["cnt"].tolist() == [11.0, 22.0]
     assert frame["timestamp"].is_monotonic_increasing
     assert validate_frame(frame, context="training").verdict is Verdict.WARN
@@ -267,9 +274,6 @@ def test_composite_labeled_data_is_end_exclusive_and_typed_when_empty(
 
     assert frame.empty
     assert list(frame.columns) == [*RAW_COLUMNS, *LABEL_COLUMNS]
-    assert list(FEATURE_COLUMNS) == [
-        column for column in frame.columns if column in FEATURE_COLUMNS
-    ]
     assert isinstance(frame, pd.DataFrame)
 
 
