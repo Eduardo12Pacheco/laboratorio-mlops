@@ -1,0 +1,510 @@
+{
+  "first_retrain_tick": 13,
+  "metrics": {
+    "as_served": {
+      "mae": 45.888781487080166,
+      "n": 8686,
+      "rmse": 70.71965997525061,
+      "wape": 0.19490465323201148
+    },
+    "counterfactual_frozen_v1": {
+      "mae": 74.52202762664507,
+      "n": 8686,
+      "rmse": 109.92492712351017,
+      "wape": 0.31651940805634626
+    }
+  },
+  "retrain_tick_slack": 1,
+  "scenario": "drift",
+  "schema": "drill-golden/v1",
+  "summary": {
+    "promotions": 1,
+    "quarantined_batches": 0,
+    "rejections": 1,
+    "rollbacks": 0,
+    "versions": 3
+  },
+  "ticks": [
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 1
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 2
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED",
+        "PROBATION_PASSED"
+      ],
+      "tick": 3
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 4
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 5
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 6
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 7
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 8
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 9
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 10
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 11
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 12
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED",
+        "RETRAIN_TRIGGERED",
+        "CHALLENGER_REGISTERED",
+        "GATES_EVALUATED",
+        "CHALLENGER_PROMOTED",
+        "PROBATION_STARTED"
+      ],
+      "tick": 13
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 14
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 15
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED",
+        "PROBATION_PASSED"
+      ],
+      "tick": 16
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 17
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 18
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 19
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 20
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 21
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 22
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 23
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 24
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 25
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 26
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 27
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 28
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 29
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 30
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 31
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 32
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 33
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 34
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 35
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 36
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 37
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 38
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 39
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 40
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 41
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 42
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 43
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 44
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 45
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 46
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 47
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 48
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 49
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 50
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 51
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED",
+        "RETRAIN_TRIGGERED",
+        "CHALLENGER_REGISTERED",
+        "GATES_EVALUATED",
+        "CHALLENGER_REJECTED"
+      ],
+      "tick": 52
+    }
+  ],
+  "tolerance": 0.05,
+  "weeks": 52
+}

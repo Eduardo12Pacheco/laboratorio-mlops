@@ -1,0 +1,138 @@
+{
+  "first_retrain_tick": null,
+  "metrics": {
+    "as_served": {
+      "mae": 43.41950888579854,
+      "n": 1840,
+      "rmse": 70.3355746475892,
+      "wape": 0.2653722109835689
+    },
+    "counterfactual_frozen_v1": {
+      "mae": 43.41950888579854,
+      "n": 1840,
+      "rmse": 70.3355746475892,
+      "wape": 0.2653722109835689
+    }
+  },
+  "retrain_tick_slack": 1,
+  "scenario": "bad-batch",
+  "schema": "drill-golden/v1",
+  "summary": {
+    "promotions": 0,
+    "quarantined_batches": 1,
+    "rejections": 0,
+    "rollbacks": 0,
+    "versions": 1
+  },
+  "ticks": [
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 1
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 2
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED",
+        "PROBATION_PASSED"
+      ],
+      "tick": 3
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 4
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 5
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 6
+    },
+    {
+      "events": [
+        "BATCH_QUARANTINED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 7
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 8
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 9
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 10
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 11
+    },
+    {
+      "events": [
+        "BATCH_VALIDATED",
+        "BATCH_SCORED",
+        "LABELS_INGESTED",
+        "SNAPSHOT_COMPUTED"
+      ],
+      "tick": 12
+    }
+  ],
+  "tolerance": 0.05,
+  "weeks": 12
+}

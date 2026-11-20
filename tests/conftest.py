@@ -25,3 +25,34 @@ def mlflow_workspace(tmp_path_factory: pytest.TempPathFactory) -> MlflowWorkspac
     os.environ.setdefault("MLFLOW_DISABLE_AGENT_HINT", "1")
     root: Path = tmp_path_factory.mktemp("mlflow")
     return MlflowWorkspace(uri=f"sqlite:///{(root / 'mlflow.db').as_posix()}", root=root)
+
+
+@pytest.fixture(scope="session")
+def drift_drill_result(tmp_path_factory: pytest.TempPathFactory) -> object:
+    """One verified 52-week `drift` drill shared by the slow e2e and quality tests."""
+    from mlops_lifecycle_lab.entrypoints.drill.engine import DrillEngine
+
+    root = tmp_path_factory.mktemp("drill-drift")
+    return DrillEngine().run(
+        "drift",
+        workspace=root / "workspace",
+        report_dir=root / "reports",
+        fast=True,
+    )
+
+
+@pytest.fixture(scope="session")
+def scenario_drill_results(tmp_path_factory: pytest.TempPathFactory) -> dict[str, object]:
+    """The three fault scenarios, run once for the slow e2e suite."""
+    from mlops_lifecycle_lab.entrypoints.drill.engine import DrillEngine
+
+    root = tmp_path_factory.mktemp("drill-scenarios")
+    results: dict[str, object] = {}
+    for name in ("gate-reject", "bad-batch", "rollback"):
+        results[name] = DrillEngine().run(
+            name,
+            workspace=root / name,
+            report_dir=root / "reports",
+            fast=True,
+        )
+    return results
