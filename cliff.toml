@@ -1,0 +1,50 @@
+# git-cliff configuration: Keep-a-Changelog groups from Conventional Commits (D24, S23).
+# Release notes are generated from the local git history; commit bodies are not included
+# so generated notes stay short and link back to the repository history.
+
+[changelog]
+header = """
+# Changelog\n
+All notable changes to this project are grouped here.
+Generated with git-cliff from Conventional Commits; `CHANGELOG.md` keeps the curated
+Unreleased section between releases.\n
+"""
+body = """
+{% if version %}
+## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}
+## [Unreleased]
+{% endif %}
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group }}
+{% for commit in commits %}
+- {% if commit.scope %}**{{ commit.scope }}:** {% endif %}{{ commit.message }}
+{% endfor %}
+
+{% endfor %}
+"""
+trim = true
+render_always = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+protect_breaking_commits = true
+filter_commits = false
+sort_commits = "oldest"
+commit_parsers = [
+  { message = "^feat", group = "Added" },
+  { message = "^fix", group = "Fixed" },
+  { message = "^perf", group = "Performance" },
+  { message = "^docs", group = "Documentation" },
+  { message = "^refactor", group = "Changed" },
+  { message = "^test", group = "Tests" },
+  { message = "^ci", group = "CI" },
+  { message = "^build", group = "Build" },
+  { message = "^chore\\((release|deps|config|ci|security|changelog)\\)", group = "Changed" },
+  { message = "^chore", skip = true },
+  { message = "^style", skip = true },
+  { message = "^revert", group = "Reverted" },
+  { message = ".*", group = "Other" },
+]
