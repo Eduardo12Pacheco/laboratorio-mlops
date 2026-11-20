@@ -11,14 +11,15 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pandas as pd
-from evidently import DataDefinition, Dataset, Report
-from evidently.core.report import Snapshot
-from evidently.presets import DataDriftPreset
 
 from mlops_lifecycle_lab.domain.errors import ValidationFailedError
 from mlops_lifecycle_lab.domain.schema import MONITORED_CATEGORICAL, MONITORED_NUMERIC
+
+if TYPE_CHECKING:  # Evidently takes seconds to import; it loads on the first rendered report.
+    from evidently.core.report import Snapshot
 
 _MONITORED_COLUMNS: tuple[str, ...] = (*MONITORED_NUMERIC, *MONITORED_CATEGORICAL)
 
@@ -28,10 +29,6 @@ class EvidentlyReportRenderer:
 
     def __init__(self, timestamp: datetime | None = None) -> None:
         self._timestamp = timestamp
-        self._definition = DataDefinition(
-            numerical_columns=list(MONITORED_NUMERIC),
-            categorical_columns=list(MONITORED_CATEGORICAL),
-        )
 
     def render(
         self,
@@ -73,6 +70,9 @@ class EvidentlyReportRenderer:
 
     def _run(self, reference: pd.DataFrame, current: pd.DataFrame) -> Snapshot:
         """Build the Evidently snapshot over the monitored columns only."""
+        from evidently import DataDefinition, Dataset, Report
+        from evidently.presets import DataDriftPreset
+
         missing = [
             column
             for column in _MONITORED_COLUMNS
@@ -83,13 +83,17 @@ class EvidentlyReportRenderer:
                 failed_rules=missing,
                 message=f"missing monitored columns: {', '.join(missing)}",
             )
+        definition = DataDefinition(
+            numerical_columns=list(MONITORED_NUMERIC),
+            categorical_columns=list(MONITORED_CATEGORICAL),
+        )
         reference_dataset = Dataset.from_pandas(
             reference.loc[:, list(_MONITORED_COLUMNS)],
-            data_definition=self._definition,
+            data_definition=definition,
         )
         current_dataset = Dataset.from_pandas(
             current.loc[:, list(_MONITORED_COLUMNS)],
-            data_definition=self._definition,
+            data_definition=definition,
         )
         report = Report(
             [DataDriftPreset(method="psi")],
