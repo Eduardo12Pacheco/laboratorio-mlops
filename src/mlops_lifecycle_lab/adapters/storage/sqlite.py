@@ -9,6 +9,7 @@ SQLite is an implementation detail of the adapters, never of the domain.
 from __future__ import annotations
 
 import sqlite3
+import threading
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -140,7 +141,9 @@ def connect(path: Path | str) -> sqlite3.Connection:
     target = str(path)
     if target != ":memory:":
         Path(target).parent.mkdir(parents=True, exist_ok=True)
-    connection = sqlite3.connect(target, timeout=5.0)
+    # The serving API executes sync handlers in a worker thread while the scheduler may
+    # write from another one; SQLite itself is compiled in serialized mode.
+    connection = sqlite3.connect(target, timeout=5.0, check_same_thread=False)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA journal_mode=WAL")
     connection.execute("PRAGMA busy_timeout=5000")
@@ -176,6 +179,7 @@ class SqliteDatabase:
     def __init__(self, path: Path | str) -> None:
         self._path = path
         self._connection = connect(path)
+        self._lock = threading.RLock()
         migrate(self._connection)
 
     @property
@@ -191,7 +195,7 @@ class SqliteDatabase:
     @contextmanager
     def transaction(self) -> Iterator[sqlite3.Connection]:
         """Commit on success, roll back when the block raises (unit of work)."""
-        with self._connection:
+        with self._lock, self._connection:
             yield self._connection
 
     def close(self) -> None:
