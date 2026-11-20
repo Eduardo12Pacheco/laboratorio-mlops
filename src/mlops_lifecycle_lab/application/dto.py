@@ -47,6 +47,8 @@ TAG_FEATURE_SPEC_VERSION = "mll.feature_spec_version"
 TAG_CREATED_AT = "mll.created_at"
 TAG_TRIGGER_REASON = "mll.trigger_reason"
 TAG_GIT_SHA = "mll.git_sha"
+TAG_REJECT_REASON = "mll.reject_reason"
+TAG_FAILED_GATES = "mll.failed_gates"
 
 METRIC_TAGS: Mapping[str, str] = MappingProxyType(
     {
@@ -412,9 +414,11 @@ __all__ = [
     "METRIC_TAGS",
     "TAG_CREATED_AT",
     "TAG_DATA_FINGERPRINT",
+    "TAG_FAILED_GATES",
     "TAG_FEATURE_SPEC_VERSION",
     "TAG_GIT_SHA",
     "TAG_HOLDOUT_WINDOW",
+    "TAG_REJECT_REASON",
     "TAG_RUN_ID",
     "TAG_STAGE",
     "TAG_TRAIN_WINDOW",

@@ -184,9 +184,7 @@ def test_a_later_challenger_is_scored_against_the_champion_on_the_same_holdout()
     assert result.champion_metrics.rmse == pytest.approx(0.0)
     assert result.challenger_metrics.rmse == pytest.approx(10.0)
     assert harness.events.events[-1].payload["approved"] is False
-    assert harness.events.events[-1].payload["failed_gates"] == list(
-        result.decision.failed_gates
-    )
+    assert harness.events.events[-1].payload["failed_gates"] == list(result.decision.failed_gates)
     assert champion_version == 1
 
 

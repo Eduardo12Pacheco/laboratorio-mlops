@@ -85,9 +85,7 @@ class Harness:
             PolicyConfig(),
         )
         self.reject_service = RejectChallenger(self.registry, self.events, self.clock)
-        self.rollback_service = RollbackChampion(
-            self.registry, self.events, self.kv, self.clock
-        )
+        self.rollback_service = RollbackChampion(self.registry, self.events, self.kv, self.clock)
 
     def train(self, tick: int = 1) -> int:
         """Train one candidate version and return its number."""

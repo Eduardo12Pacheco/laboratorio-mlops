@@ -104,12 +104,8 @@ def test_bootstrap_trains_v1_on_the_s5_windows_and_promotes_it() -> None:
     assert harness.data.requested_ends[0] == datetime(2012, 1, 1)
 
     training_run = harness.tracker.runs[0]
-    assert training_run.tags["mll.train_window"] == (
-        "2011-01-01T00:00:00/2011-10-01T00:00:00"
-    )
-    assert training_run.tags["mll.holdout_window"] == (
-        "2011-10-01T00:00:00/2012-01-01T00:00:00"
-    )
+    assert training_run.tags["mll.train_window"] == ("2011-01-01T00:00:00/2011-10-01T00:00:00")
+    assert training_run.tags["mll.holdout_window"] == ("2011-10-01T00:00:00/2012-01-01T00:00:00")
     assert training_run.tags["mll.trigger_reason"] == "BOOTSTRAP"
 
 
@@ -118,9 +114,7 @@ def test_bootstrap_uses_only_the_first_champion_gates() -> None:
 
     harness.bootstrap.execute()
 
-    evaluation_run = next(
-        run for run in harness.tracker.runs if "gate_report.json" in run.jsons
-    )
+    evaluation_run = next(run for run in harness.tracker.runs if "gate_report.json" in run.jsons)
     artifact = evaluation_run.jsons["gate_report.json"]
     assert [entry["name"] for entry in artifact["results"]] == [
         "DATA_VALID",
