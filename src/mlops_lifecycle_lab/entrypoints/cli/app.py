@@ -16,7 +16,9 @@ from mlops_lifecycle_lab.entrypoints.cli.commands.data import data_app
 from mlops_lifecycle_lab.entrypoints.cli.commands.doctor import doctor
 from mlops_lifecycle_lab.entrypoints.cli.commands.drill import drill_app
 from mlops_lifecycle_lab.entrypoints.cli.commands.monitor import monitor_app
+from mlops_lifecycle_lab.entrypoints.cli.commands.quickstart import quickstart
 from mlops_lifecycle_lab.entrypoints.cli.commands.registry import registry_app
+from mlops_lifecycle_lab.entrypoints.cli.commands.replay import replay_app
 from mlops_lifecycle_lab.entrypoints.cli.commands.score import score
 from mlops_lifecycle_lab.entrypoints.cli.commands.serve import serve
 from mlops_lifecycle_lab.entrypoints.cli.commands.train import train
@@ -34,11 +36,13 @@ app.add_typer(data_app, name="data")
 app.add_typer(registry_app, name="registry")
 app.add_typer(monitor_app, name="monitor")
 app.add_typer(drill_app, name="drill")
+app.add_typer(replay_app, name="replay")
 app.command("validate")(validate)
 app.command("bootstrap")(bootstrap)
 app.command("train")(train)
 app.command("serve")(serve)
 app.command("score")(score)
+app.command("quickstart")(quickstart)
 app.command("doctor")(doctor)
 
 
