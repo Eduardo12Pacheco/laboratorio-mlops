@@ -35,6 +35,12 @@ jobs:
         run: uv run lint-imports
       - name: Lockfile is current
         run: uv lock --check
+      - name: Validate workflow schemas
+        run: >-
+          uvx check-jsonschema --builtin-schema vendor.github-workflows
+          .github/workflows/ci.yml .github/workflows/release.yml
+      - name: Shell scripts
+        run: uvx --from shellcheck-py shellcheck install.sh scripts/*.sh
 
   test:
     name: test (${{ matrix.os }})
@@ -51,5 +57,161 @@ jobs:
           enable-cache: true
       - name: Install locked environment
         run: uv sync --locked
-      - name: Run tests
-        run: uv run pytest -q
+      - name: Run tests with coverage
+        run: >-
+          uv run pytest --cov=mlops_lifecycle_lab --cov-report=xml
+          --cov-report=term-missing --cov-fail-under=85
+          -m "not docker and not ui" -q
+      - name: Upload coverage report
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: error
+
+  macos-fast:
+    name: macos fast subset
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - name: Install libomp for LightGBM
+        run: brew install libomp
+      - name: Install locked environment
+        run: uv sync --locked
+      - name: Environment doctor
+        run: uv run mll doctor
+      - name: Fast subset
+        run: uv run pytest -m "not slow and not docker and not ui" -q
+
+  drill-smoke:
+    name: drill smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - name: Install locked environment
+        run: uv sync --locked
+      - name: Replay 16 weeks against the golden
+        run: >-
+          uv run mll drill run --scenario drift --weeks 16 --fast --check
+          --workspace "${{ runner.temp }}/ws" --report-dir "${{ runner.temp }}/reports"
+
+  ui:
+    name: dashboard ui
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - name: Install capture group
+        run: uv sync --locked --group capture
+      - name: Install Chromium
+        run: uv run playwright install --with-deps chromium
+      - name: Playwright smoke
+        run: uv run pytest -m ui -q
+
+  audit:
+    name: dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - name: Install locked environment
+        run: uv sync --locked
+      - name: Export runtime requirements
+        run: >-
+          uv export --frozen --no-dev --no-emit-project
+          -o "${{ runner.temp }}/audit-requirements.txt"
+      - name: pip-audit
+        run: >-
+          uvx pip-audit -r "${{ runner.temp }}/audit-requirements.txt"
+          --disable-pip
+
+  secrets:
+    name: secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  compose-smoke:
+    name: compose smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build, probe and tear down the stack
+        run: bash scripts/smoke_compose.sh
+
+  installer-smoke:
+    name: installer smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - name: Check prerequisites (Linux)
+        if: runner.os == 'Linux'
+        run: ./install.sh --check
+      - name: Install and start the stack (Linux)
+        if: runner.os == 'Linux'
+        run: ./install.sh --yes
+      - name: Probe the public API (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          for attempt in $(seq 1 180); do
+            if curl -fsS http://127.0.0.1:14080/readyz >/dev/null; then
+              echo "API ready after ${attempt}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "API did not become ready" >&2
+          exit 1
+      - name: Uninstall (Linux)
+        if: runner.os == 'Linux'
+        run: ./install.sh --uninstall --yes
+      - name: Install libomp (macOS)
+        if: runner.os == 'macOS'
+        run: brew install libomp
+      - name: Install locked environment (macOS and Windows)
+        if: runner.os != 'Linux'
+        run: uv sync --locked
+      - name: Check the L1 path (macOS)
+        if: runner.os == 'macOS'
+        run: ./install.sh --check --l1
+      - name: Check the L1 path (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./install.ps1 -Check -L1
+      - name: L1 quickstart (macOS and Windows)
+        if: runner.os != 'Linux'
+        run: uv run mll quickstart --workspace "${{ runner.temp }}/ws"
