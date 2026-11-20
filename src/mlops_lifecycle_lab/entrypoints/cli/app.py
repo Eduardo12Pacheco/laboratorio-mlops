@@ -11,6 +11,8 @@ import typer
 from mlops_lifecycle_lab import DISTRIBUTION_NAME, __version__
 from mlops_lifecycle_lab.config import apply_privacy_defaults
 from mlops_lifecycle_lab.entrypoints.cli.commands.data import data_app
+from mlops_lifecycle_lab.entrypoints.cli.commands.score import score
+from mlops_lifecycle_lab.entrypoints.cli.commands.serve import serve
 from mlops_lifecycle_lab.entrypoints.cli.commands.validate import validate
 
 app = typer.Typer(
@@ -23,6 +25,8 @@ app = typer.Typer(
 
 app.add_typer(data_app, name="data")
 app.command("validate")(validate)
+app.command("serve")(serve)
+app.command("score")(score)
 
 
 @app.callback()
