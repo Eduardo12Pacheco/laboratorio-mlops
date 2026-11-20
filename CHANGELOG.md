@@ -8,6 +8,17 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- APScheduler replay service: one interval job with `max_instances=1`, a persisted
+  `replay_tick` cursor, self-stop at the replay length and clean SIGINT/SIGTERM handling.
+- `mll scheduler start --mode replay|once` driving the same lifecycle tick as the drill,
+  bootstrapping v1 when the workspace has no champion.
+- `mll replay status|reset` to inspect or clear the replay cursor without building the
+  full composition root.
+- `mll doctor` with hard checks (Python 3.12, runtime imports, a real LightGBM fit,
+  SQLite WAL, writable workspace and MLflow SQLite) plus informational Docker and host-port
+  checks.
+- `mll quickstart` (doctor-lite, bootstrap and the 16-week drift drill) and
+  `mll mlflow-ui` on the documented host port.
 - Reproducible drill engine for the four S15/S16 scenarios (`drift`, `gate-reject`,
   `bad-batch`, `rollback`) with a simulated clock, replay cursor, frozen-v1
   counterfactual, as-served metrics and byte-identical `drill-report/v1` JSON/Markdown.
