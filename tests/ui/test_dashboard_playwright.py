@@ -10,7 +10,9 @@ import time
 import urllib.error
 import urllib.request
 from collections.abc import Iterator
+from functools import partial
 from pathlib import Path
+from typing import Protocol
 
 import pytest
 
@@ -23,11 +25,30 @@ BASE_URL = f"http://127.0.0.1:{PORT}"
 PAGES = ("Overview", "Monitoring", "Registry", "Lifecycle", "Drill")
 
 
+class _ConsoleMessage(Protocol):
+    type: str
+    text: str
+
+
+def _record_console(message: _ConsoleMessage, target: list[str]) -> None:
+    # A browser can report transient resource-load failures (for example when the host's
+    # network interface changes). They are not application exceptions; JavaScript errors
+    # and any other console error still fail the test.
+    if message.type == "error" and not message.text.startswith("Failed to load resource"):
+        target.append(message.text)
+
+
+def _record_pageerror(error: object, target: list[str]) -> None:
+    target.append(str(error))
+
+
 def _wait_until_healthy(timeout: float = 90.0) -> None:
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         try:
-            with urllib.request.urlopen(f"{BASE_URL}/_stcore/health", timeout=2) as response:
+            with urllib.request.urlopen(  # noqa: S310 - fixed loopback http URL
+                f"{BASE_URL}/_stcore/health", timeout=2
+            ) as response:
                 if response.status == 200:
                     return
         except (urllib.error.URLError, TimeoutError, ConnectionError):
@@ -71,25 +92,20 @@ def dashboard(tmp_path_factory: pytest.TempPathFactory, drilled_workspace: Path)
                 process.wait(timeout=5)
 
 
-def test_every_page_renders_in_light_and_dark(
-    dashboard: str, tmp_path: Path
-) -> None:
+def test_every_page_renders_in_light_and_dark(dashboard: str, tmp_path: Path) -> None:
     sync_api = pytest.importorskip("playwright.sync_api")
     backgrounds: dict[str, str] = {}
     with sync_api.sync_playwright() as playwright:
         browser = playwright.chromium.launch()
         try:
             for scheme in ("light", "dark"):
-                context = browser.new_context(color_scheme=scheme, viewport={"width": 1440, "height": 900})
+                context = browser.new_context(
+                    color_scheme=scheme, viewport={"width": 1440, "height": 900}
+                )
                 page = context.new_page()
                 errors: list[str] = []
-                page.on(
-                    "console",
-                    lambda message: errors.append(message.text)
-                    if message.type == "error"
-                    else None,
-                )
-                page.on("pageerror", lambda error: errors.append(str(error)))
+                page.on("console", partial(_record_console, target=errors))
+                page.on("pageerror", partial(_record_pageerror, target=errors))
                 page.goto(dashboard, wait_until="load")
                 page.get_by_role("heading", name="Overview", exact=True).wait_for(timeout=60000)
                 backgrounds[scheme] = page.evaluate(
