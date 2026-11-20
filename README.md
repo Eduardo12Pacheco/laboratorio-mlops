@@ -72,10 +72,10 @@ git clone https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab; cd mlops-life
 # Open http://127.0.0.1:14501
 ```
 
-L1 without Docker (Python 3.12 + `uv`; uses the wheel from the latest release):
+L1 without Docker (Python 3.12 + `uv`, no clone needed; each release also attaches the wheel):
 
 ```bash
-uv tool install https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab/releases/latest/download/mlops_lifecycle_lab-1.0.0-py3-none-any.whl
+uv tool install git+https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab
 mll quickstart
 mll dashboard
 ```
@@ -107,8 +107,8 @@ mll drill run --scenario drift --weeks 52 --check
 ```
 
 The drill replays 2012 week by week. Look for the trigger at the end of 2012-04-01 (28-day
-WAPE `0.3086`), the promoted v2 (RMSE `53.27` vs champion `120.93`, +55.95%, bootstrap lower
-bound `9000.84`), probation passing three ticks later and the final challenger rejected at
+WAPE `0.3086`), the promoted v2 (RMSE `53.27` vs champion `120.93`, a 55.95% improvement, bootstrap
+lower bound `9000.84`), probation passing three ticks later and the final challenger rejected at
 the end of the year. The automation cuts as-served 2012 RMSE from `109.92` (never-retrained
 v1) to `70.72`. The full timeline is in
 [docs/results/drill-drift.md](docs/results/drill-drift.md); `--scenario all` runs
@@ -126,13 +126,14 @@ Screenshots of every page in both themes live in
 - The model is deliberately simple (one LightGBM Poisson model, no tuning/AutoML/deep
   learning); the lifecycle, not benchmark accuracy, is the product.
 - Drift PSI is informational and never triggers a retrain; only label-based WAPE does, by
-  design. Engineered covariates hit the PSI threshold in every 2012 week.
+  design: in every 2012 weekly window at least half of the four weather features exceed PSI 0.2
+  (seasonality, not model harm).
 - The challenger is evaluated on a holdout and promoted without refitting on it, so the
   promoted artifact is exactly the evaluated one.
 - Model artifacts execute code on load: the local registry is trusted state (see
   [SECURITY.md](SECURITY.md)).
-- Timing numbers are from this machine; cross-OS floating-point differences can move the
-  retrain tick by one week, which the golden tests tolerate explicitly.
+- Reference numbers were produced on Linux x86_64; cross-OS floating-point differences can
+  move the retrain tick by one week, which the golden tests tolerate explicitly.
 
 ## License and data
 

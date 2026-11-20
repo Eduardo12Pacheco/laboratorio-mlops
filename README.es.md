@@ -77,10 +77,10 @@ git clone https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab; cd mlops-life
 # Abrir http://127.0.0.1:14501
 ```
 
-L1 sin Docker (Python 3.12 + `uv`; usa el wheel del último release):
+L1 sin Docker (Python 3.12 + `uv`, sin clonar; cada release adjunta además el wheel):
 
 ```bash
-uv tool install https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab/releases/latest/download/mlops_lifecycle_lab-1.0.0-py3-none-any.whl
+uv tool install git+https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab
 mll quickstart
 mll dashboard
 ```
@@ -112,7 +112,7 @@ mll drill run --scenario drift --weeks 52 --check
 ```
 
 El drill reproduce 2012 semana a semana. Busca el disparo al final del 2012-04-01 (WAPE de
-28 días `0.3086`), la v2 promovida (RMSE `53.27` contra `120.93` del campeón, +55.95%, cota
+28 días `0.3086`), la v2 promovida (RMSE `53.27` contra `120.93` del campeón, mejora de 55.95%, cota
 inferior del bootstrap `9000.84`), la probation superada tres ticks después y el retador
 final rechazado al terminar el año. La automatización reduce el RMSE servido de 2012 de
 `109.92` (v1 nunca reentrenada) a `70.72`. La línea de tiempo completa está en
@@ -133,12 +133,13 @@ Las capturas de cada página en ambos temas están en
 - El modelo es deliberadamente simple (un LightGBM Poisson, sin tuning/AutoML/deep
   learning); el producto es el ciclo de vida, no la precisión de benchmark.
 - El PSI de drift es informativo y nunca dispara un reentrenamiento; solo lo hace el WAPE con
-  etiquetas, por diseño. Las covariables alcanzan el umbral de PSI en cada semana de 2012.
+  etiquetas, por diseño: en cada semana de 2012 al menos la mitad de las 4 variables de clima supera
+  PSI 0.2 (estacionalidad, no daño al modelo).
 - El retador se evalúa en un holdout y se promueve sin reentrenar sobre él, así el artefacto
   promovido es exactamente el evaluado.
 - Los artefactos ejecutan código al cargarse: el registro local es estado de confianza (ver
   [SECURITY.md](SECURITY.md)).
-- Los tiempos son de esta máquina; diferencias de punto flotante entre SO pueden mover el
+- Los números de referencia son de Linux x86_64; el punto flotante entre SO puede mover el
   tick de reentrenamiento una semana, algo que los tests golden toleran explícitamente.
 
 ## Licencia y datos
