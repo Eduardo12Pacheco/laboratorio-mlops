@@ -46,6 +46,14 @@ class NoPreviousChampionError(DomainError):
     """A rollback was requested but there is no previous champion to restore."""
 
 
+class NoChampionError(DomainError):
+    """Serving was requested but the registry has no champion to load."""
+
+
+class UnknownModelVersionError(DomainError):
+    """A model version referenced by a use case does not exist in the registry."""
+
+
 class NotEnoughLabelsError(DomainError):
     """A metric or decision needs more labeled rows than are available."""
 
