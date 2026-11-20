@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from typing import Annotated
 
 import typer
 
-from mlops_lifecycle_lab.bootstrap.container import build_container
+from mlops_lifecycle_lab.adapters.clock import SimulatedClock
+from mlops_lifecycle_lab.bootstrap.container import Container, build_container
 from mlops_lifecycle_lab.config import Settings, apply_privacy_defaults
 from mlops_lifecycle_lab.domain.errors import DomainError
 
@@ -17,6 +19,13 @@ def bootstrap(
         bool,
         typer.Option("--if-missing", help="Do nothing when a champion already exists."),
     ] = False,
+    at: Annotated[
+        datetime | None,
+        typer.Option(
+            "--at",
+            help="Bootstrap at a simulated instant so replay workspaces start on their clock.",
+        ),
+    ] = None,
     workspace: Annotated[
         Path | None, typer.Option("--workspace", help="Workspace directory (default: .mll).")
     ] = None,
@@ -26,7 +35,11 @@ def bootstrap(
     settings = Settings()
     if workspace is not None:
         settings = settings.model_copy(update={"workspace": workspace})
-    container = build_container(settings)
+    container: Container = (
+        build_container(settings, clock=SimulatedClock(at))
+        if at is not None
+        else build_container(settings)
+    )
     try:
         existing = container.registry.get_champion()
         if if_missing and existing is not None:
