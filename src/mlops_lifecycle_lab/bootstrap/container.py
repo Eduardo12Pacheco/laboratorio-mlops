@@ -178,6 +178,7 @@ def build_container(
         else (NullReportRenderer() if settings.fast else EvidentlyReportRenderer())
     )
 
+    batch_source = ReplayBatchSource(dataset)
     prediction_service = PredictionService(
         registry,
         prediction_log,
@@ -230,7 +231,7 @@ def build_container(
         kv=kv,
         ledger=ledger,
         gateway=gateway,
-        batch_source=ReplayBatchSource(dataset),
+        batch_source=batch_source,
         monitoring=monitoring,
         training=training,
         evaluation=evaluation,
@@ -259,7 +260,7 @@ def build_container(
         renderer=active_renderer,
         prediction_service=prediction_service,
         gateway=gateway,
-        batch_source=ReplayBatchSource(dataset),
+        batch_source=batch_source,
         policies=policies,
         monitoring=monitoring,
         bootstrap=bootstrap,
