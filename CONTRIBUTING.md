@@ -38,9 +38,30 @@ uv run mypy src
 uv run lint-imports
 uv run pytest --cov=mlops_lifecycle_lab --cov-fail-under=85 -m "not docker and not ui" -q
 uv lock --check
+uv run python scripts/check_docs.py
+uv run python scripts/render_results_table.py --check
 uvx --from shellcheck-py shellcheck install.sh scripts/*.sh
 uvx check-jsonschema --builtin-schema vendor.github-workflows .github/workflows/*.yml
 ```
+
+## Documentation
+
+- `docs/ARCHITECTURE.md`, `docs/DATA.md`, `docs/MODEL_CARD.md` and `docs/OPERATIONS.md`
+  describe the system; the nine ADRs in `docs/adr/` keep the
+  Context / Decision / Consequences / Evidence shape.
+- Every number in the docs comes from a committed `docs/results/drill-*.json` or a
+  documented command. Never hand-edit `docs/results/results-table.md`; regenerate it with
+  `uv run python scripts/render_results_table.py`.
+- `uv run python scripts/check_docs.py` validates relative links, ADR structure, the drill
+  JSON schema, the generated table, the README/model-card results blocks and the report
+  bundle size. It prints `docs OK` on success.
+- To regenerate the committed drill results:
+  `uv run mll drill run --scenario all --report-dir docs/results --workspace "$(mktemp -d)"`.
+  Regenerating goldens is a separate, explicit step (`scripts/regen_golden.py`) and must be
+  justified in the commit body.
+- The curated Evidently reports under `docs/assets/reports/` are regenerated with
+  `uv run python scripts/render_drift_reports.py`; they share one extracted JavaScript
+  bundle and must stay under the 5 MB budget.
 
 The full suite includes the slow drill tests. `tests/installers` drives the shell
 installer through `PATH` shims, so it never touches the real Docker daemon. The

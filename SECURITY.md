@@ -31,6 +31,15 @@ default.
 - Telemetry is disabled by default for MLflow, Evidently/iterative-telemetry and
   Streamlit, so the lab does not phone home.
 
+## Documentation and report assets
+
+The committed `docs/results/` JSON/Markdown files are generated from the trusted bundled
+dataset and the local drill, and the curated Evidently HTML reports under
+`docs/assets/reports/` contain no remote scripts: their JavaScript bundle is extracted
+into a local file so the docs work offline. Review generated HTML before publishing a
+release; it is static output, never executable server-side code. The data attribution and
+license are recorded in `docs/DATA.md`.
+
 ## Supply chain and container posture
 
 - Runtime and development dependencies are locked in `uv.lock`; CI runs

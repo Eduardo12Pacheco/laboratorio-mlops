@@ -121,3 +121,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - MLflow experiment tracker (params, metrics, JSON artifacts and registered models) and
   the tags-and-aliases model registry; the shared registry/prediction-log contract suites
   now run against the real adapters, and the bootstrap quality gate proves the S5 numbers.
+- Complete documentation set: `docs/ARCHITECTURE.md` (layers, ports, patterns, tick
+  sequence, lineage, failure modes), `docs/DATA.md` (provenance and result artifacts),
+  `docs/MODEL_CARD.md` and `docs/OPERATIONS.md` (commands, environment variables and
+  troubleshooting).
+- Seven additional ADRs (0003–0009) covering registry aliases, the label-based trigger,
+  the promotion gates and day-block bootstrap, native PSI plus Evidently, APScheduler and
+  the run ledger, SQLite in WAL mode, and the trend feature with the Poisson objective.
+- Committed drill results for all four scenarios (`docs/results/drill-*.{json,md}`), a
+  generated results table, two curated Evidently drift reports and the
+  `scripts/render_results_table.py`, `scripts/render_drift_reports.py` and
+  `scripts/check_docs.py` gates with their unit tests.
