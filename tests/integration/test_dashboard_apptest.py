@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -42,17 +41,13 @@ def _assert_heading(at: AppTest, page: str) -> None:
     assert not at.exception
 
 
-def test_overview_renders_metrics(
-    monkeypatch: pytest.MonkeyPatch, drilled_workspace: Path
-) -> None:
+def test_overview_renders_metrics(monkeypatch: pytest.MonkeyPatch, drilled_workspace: Path) -> None:
     at = _app(monkeypatch, drilled_workspace, "Overview")
     _assert_heading(at, "Overview")
     assert len(at.metric) >= 4
 
 
-def test_monitoring_renders_plots(
-    monkeypatch: pytest.MonkeyPatch, drilled_workspace: Path
-) -> None:
+def test_monitoring_renders_plots(monkeypatch: pytest.MonkeyPatch, drilled_workspace: Path) -> None:
     at = _app(monkeypatch, drilled_workspace, "Monitoring")
     _assert_heading(at, "Monitoring")
     assert at.get("plotly_chart") or at.dataframe
