@@ -57,6 +57,22 @@ class Predictor(Protocol):
 
 
 @dataclass(frozen=True, slots=True)
+class ServingModel:
+    """A loaded champion: its registry metadata plus the ready artifact."""
+
+    model: ModelVersion
+    predictor: Predictor
+
+
+class ServingModelProvider(Protocol):
+    """Source of the currently loaded serving model (the API `ModelHolder`)."""
+
+    def current(self) -> ServingModel | None:
+        """Return the loaded model, or `None` before the first successful load."""
+        ...
+
+
+@dataclass(frozen=True, slots=True)
 class TrainedModel:
     """A fitted predictor plus the hyper-parameters that produced it."""
 
@@ -328,6 +344,8 @@ __all__ = [
     "RunHandle",
     "RunLedger",
     "ScoringGateway",
+    "ServingModel",
+    "ServingModelProvider",
     "SnapshotStore",
     "TrainedModel",
 ]

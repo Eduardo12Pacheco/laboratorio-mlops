@@ -26,10 +26,12 @@ from mlops_lifecycle_lab.application.ports import (
     Clock,
     ModelRegistry,
     PredictionLog,
+    ServingModelProvider,
 )
 from mlops_lifecycle_lab.application.services._data import clip_predictions
 from mlops_lifecycle_lab.domain.errors import NoChampionError, ValidationFailedError
 from mlops_lifecycle_lab.domain.features import build_features
+from mlops_lifecycle_lab.domain.lifecycle import ModelVersion
 from mlops_lifecycle_lab.domain.schema import FEATURE_COLUMNS
 from mlops_lifecycle_lab.domain.validation import Severity, Verdict, validate_frame
 
@@ -56,11 +58,13 @@ class PredictionService:
         clock: Clock,
         *,
         model_name: str = "bike-demand",
+        serving_model: ServingModelProvider | None = None,
     ) -> None:
         self._registry = registry
         self._log = prediction_log
         self._clock = clock
         self._model_name = model_name
+        self._serving_model = serving_model
 
     def predict(
         self,
@@ -76,9 +80,19 @@ class PredictionService:
             ValidationFailedError: when the batch fails the data contract; nothing is
                 logged in that case.
         """
-        champion = self._registry.get_champion()
-        if champion is None:
-            raise NoChampionError("no champion model is available for serving")
+        champion: ModelVersion
+        if self._serving_model is not None:
+            serving = self._serving_model.current()
+            if serving is None:
+                raise NoChampionError("no champion model is available for serving")
+            champion = serving.model
+            predictor = serving.predictor
+        else:
+            registry_champion = self._registry.get_champion()
+            if registry_champion is None:
+                raise NoChampionError("no champion model is available for serving")
+            champion = registry_champion
+            predictor = self._registry.load_predictor(champion.version)
         validation = validate_frame(rows, context="batch")
         if validation.verdict is Verdict.FAIL:
             failed = tuple(
@@ -89,7 +103,6 @@ class PredictionService:
             raise ValidationFailedError(failed_rules=failed)
 
         features = build_features(rows)
-        predictor = self._registry.load_predictor(champion.version)
         predictions = clip_predictions(predictor.predict(features.loc[:, list(FEATURE_COLUMNS)]))
         scored_at = self._clock.now()
 
