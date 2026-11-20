@@ -12,16 +12,19 @@ import typer
 
 from mlops_lifecycle_lab.entrypoints.cli.commands.dashboard import (
     dashboard,
+    dashboard_app_path,
     dashboard_command,
 )
-from mlops_lifecycle_lab.entrypoints.dashboard import app as dashboard_app
 
 
 def test_dashboard_command_runs_the_packaged_app() -> None:
     argv = dashboard_command(host="127.0.0.1", port=14511)
     assert argv[:3] == [sys.executable, "-m", "streamlit"]
     assert argv[3] == "run"
-    assert argv[4] == str(Path(dashboard_app.__file__).resolve())
+    app = Path(argv[4])
+    assert app.is_file()
+    assert app.parts[-4:] == ("mlops_lifecycle_lab", "entrypoints", "dashboard", "app.py")
+    assert app == dashboard_app_path()
     assert "--server.port" in argv
     assert argv[argv.index("--server.port") + 1] == "14511"
     assert "--theme.light.primaryColor" in argv

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import os
 import subprocess
 import sys
@@ -11,12 +12,25 @@ from typing import Annotated
 import typer
 
 from mlops_lifecycle_lab.config import Settings, apply_privacy_defaults
-from mlops_lifecycle_lab.entrypoints.dashboard import app as dashboard_app
 from mlops_lifecycle_lab.entrypoints.dashboard.theme import DARK, LIGHT
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 14501
 """L4 reserves host port 14501 for this dashboard."""
+
+_APP_MODULE = "mlops_lifecycle_lab.entrypoints.dashboard.app"
+
+
+def dashboard_app_path() -> Path:
+    """Locate the Streamlit script without importing it.
+
+    The script runs the whole app when imported, so importing it from the CLI would start
+    Streamlit, load the workspace and print warnings on every ``mll`` command.
+    """
+    spec = importlib.util.find_spec(_APP_MODULE)
+    if spec is None or spec.origin is None:  # pragma: no cover - the wheel always ships it
+        raise RuntimeError(f"the packaged dashboard app {_APP_MODULE} is missing")
+    return Path(spec.origin).resolve()
 
 
 def dashboard_command(
@@ -25,7 +39,7 @@ def dashboard_command(
     port: int = DEFAULT_PORT,
 ) -> list[str]:
     """Build the argv for ``python -m streamlit run`` against the packaged app."""
-    app_path = Path(dashboard_app.__file__).resolve()
+    app_path = dashboard_app_path()
     return [
         sys.executable,
         "-m",
