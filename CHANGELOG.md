@@ -8,6 +8,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Reproducible drill engine for the four S15/S16 scenarios (`drift`, `gate-reject`,
+  `bad-batch`, `rollback`) with a simulated clock, replay cursor, frozen-v1
+  counterfactual, as-served metrics and byte-identical `drill-report/v1` JSON/Markdown.
+- Fault-injection decorator (`PoisonedTrainer`) and Celsius-scale batch corruption,
+  isolated from production paths and armed only for the scenario tick.
+- Golden expectations with per-tick event sequences, relative metric tolerances and the
+  documented ±1 week first-retrain slack; committed goldens for all four scenarios.
+- `mll bootstrap`, `mll train`, `mll registry list|show|promote|rollback`,
+  `mll monitor snapshot` and `mll drill run` (including `--check`).
 - Serving API (S8): typed Pydantic v2 schemas with hourly timestamp and numeric-domain
   validation, `/healthz`, `/readyz`, `/v1/model`, `/v1/predict`, `/v1/predict/batch`,
   `/v1/labels`, `/v1/admin/reload` and Prometheus `/metrics`.
