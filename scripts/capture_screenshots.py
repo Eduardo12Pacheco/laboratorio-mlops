@@ -154,11 +154,28 @@ def _settle(page: Page) -> None:
     page.wait_for_timeout(800)
 
 
+def _scroll_to_top(page: Page) -> None:
+    """Streamlit keeps the previous page's scroll offset when the sidebar page changes."""
+    page.evaluate(
+        """() => {
+            const selector = [
+                '[data-testid="stMain"]',
+                '[data-testid="stAppViewContainer"]',
+                'section.main',
+            ].join(', ');
+            document.querySelectorAll(selector).forEach((element) => element.scrollTo(0, 0));
+            window.scrollTo(0, 0);
+        }"""
+    )
+    page.wait_for_timeout(300)
+
+
 def _open_page(page: Page, name: str) -> None:
     if name != "Overview":
         page.locator('[data-testid="stSidebar"] label').filter(has_text=name).first.click()
     page.get_by_role("heading", name=name, exact=True).wait_for(timeout=SETTLE_TIMEOUT_MS)
     _settle(page)
+    _scroll_to_top(page)
 
 
 def _screenshot(page: Page, path: Path) -> None:
@@ -279,7 +296,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     if not args.reuse_workspace:
         _reset_workspace(args.workspace)
-    _seed(args.workspace, args.weeks, fast=args.fast)
+        _seed(args.workspace, args.weeks, fast=args.fast)
     with _dashboard(args.workspace) as base_url:
         _capture(base_url, args.output, args.hero_output)
     written = sorted(path.name for path in args.output.glob("*.png"))
