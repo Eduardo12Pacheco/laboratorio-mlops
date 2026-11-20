@@ -1,0 +1,13 @@
+[theme.light]
+primaryColor = "#0B5394"
+font = "sans serif"
+
+[theme.dark]
+primaryColor = "#79C0FF"
+font = "sans serif"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

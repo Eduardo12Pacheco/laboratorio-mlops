@@ -51,7 +51,7 @@ STATUS_LABELS: Mapping[str, str] = MappingProxyType(
 class ViewError(Exception):
     """A page cannot be rendered with the current workspace, with a safe explanation."""
 
-    def __init__(self, message: str, *, hint: str = QUICKSTART_HINT) -> None:
+    def __init__(self, message: str, *, hint: str = "") -> None:
         super().__init__(message)
         self.message = message
         self.hint = hint
@@ -311,10 +311,10 @@ def _optional_float(value: object) -> float | None:
     return None
 
 
-def _require_workspace(container: Container) -> None:
+def require_workspace(container: Container) -> None:
     if container.registry.list_versions() or container.events.list(limit=1):
         return
-    raise ViewError(f"This workspace has no lifecycle data yet. {QUICKSTART_HINT}")
+    raise ViewError("This workspace has no lifecycle data yet.", hint=QUICKSTART_HINT)
 
 
 def _reference_now(container: Container) -> datetime:
@@ -351,7 +351,7 @@ def _event_row(event: LifecycleEvent) -> EventRow:
 # -- page view models -----------------------------------------------------------------
 def overview(container: Container) -> OverviewView:
     """Status, KPI tiles and the last five events."""
-    _require_workspace(container)
+    require_workspace(container)
     champion = container.registry.get_champion()
     snapshots = container.snapshots.list(limit=1)
     latest = snapshots[-1] if snapshots else None
@@ -412,7 +412,7 @@ def overview(container: Container) -> OverviewView:
 
 def performance_series(container: Container) -> PerformanceView:
     """WAPE per tick with champion bands and the last 14 days of actuals vs predictions."""
-    _require_workspace(container)
+    require_workspace(container)
     snapshots = container.snapshots.list()
     points = tuple(
         SeriesPoint(
@@ -461,7 +461,7 @@ def performance_series(container: Container) -> PerformanceView:
 
 def drift_matrix(container: Container) -> DriftView:
     """PSI per monitored feature and tick."""
-    _require_workspace(container)
+    require_workspace(container)
     snapshots = container.snapshots.list()
     features = tuple(sorted({feature for snapshot in snapshots for feature in snapshot.psi}))
     values: dict[str, Mapping[int, float]] = {}
@@ -484,7 +484,7 @@ def registry_table(container: Container) -> RegistryView:
     """Every registered version with its aliases, metrics and lineage."""
     versions = container.registry.list_versions()
     if not versions:
-        raise ViewError(f"No model versions are registered in this workspace. {QUICKSTART_HINT}")
+        raise ViewError("No model versions are registered in this workspace.", hint=QUICKSTART_HINT)
     alias_versions = {
         alias: container.registry.get_alias(alias)
         for alias in (
@@ -722,4 +722,5 @@ __all__ = [
     "overview",
     "performance_series",
     "registry_table",
+    "require_workspace",
 ]

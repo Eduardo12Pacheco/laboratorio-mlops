@@ -129,9 +129,11 @@ def test_empty_workspace_raises_a_view_error_with_the_quickstart_hint(
 ) -> None:
     empty = build_container(Settings(workspace=tmp_path / "empty", fast=True))
     try:
-        with pytest.raises(ViewError, match="mll quickstart"):
+        with pytest.raises(ViewError, match="no lifecycle data") as error:
             overview(empty)
-        with pytest.raises(ViewError, match="quickstart"):
+        assert "mll quickstart" in error.value.hint
+        with pytest.raises(ViewError, match="No model versions") as versions_error:
             registry_table(empty)
+        assert "mll quickstart" in versions_error.value.hint
     finally:
         empty.close()

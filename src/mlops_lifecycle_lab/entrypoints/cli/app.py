@@ -12,6 +12,7 @@ import typer
 from mlops_lifecycle_lab import DISTRIBUTION_NAME, __version__
 from mlops_lifecycle_lab.config import apply_privacy_defaults
 from mlops_lifecycle_lab.entrypoints.cli.commands.bootstrap import bootstrap
+from mlops_lifecycle_lab.entrypoints.cli.commands.dashboard import dashboard
 from mlops_lifecycle_lab.entrypoints.cli.commands.data import data_app
 from mlops_lifecycle_lab.entrypoints.cli.commands.doctor import doctor
 from mlops_lifecycle_lab.entrypoints.cli.commands.drill import drill_app
@@ -48,6 +49,7 @@ app.command("score")(score)
 app.command("quickstart")(quickstart)
 app.command("mlflow-ui")(mlflow_ui)
 app.command("doctor")(doctor)
+app.command("dashboard")(dashboard)
 
 
 @app.callback()
