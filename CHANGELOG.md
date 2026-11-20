@@ -35,3 +35,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   prediction logging and the in-process scoring gateway.
 - In-memory doubles for every port and shared registry/prediction-log contract suites
   that the SQLite and MLflow adapters will run unchanged.
+- SQLite operational store with ordered migrations, WAL/busy-timeout pragmas, the
+  idempotent prediction log, event/snapshot/key-value stores, the run ledger and the
+  archive-plus-production labeled-data repository.
+- LightGBM trainer with the fixed S5 Poisson hyper-parameters and deterministic fits,
+  plus wall-clock and simulated replay clocks.
+- MLflow experiment tracker (params, metrics, JSON artifacts and registered models) and
+  the tags-and-aliases model registry; the shared registry/prediction-log contract suites
+  now run against the real adapters, and the bootstrap quality gate proves the S5 numbers.
