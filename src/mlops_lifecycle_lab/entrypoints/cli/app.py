@@ -15,6 +15,7 @@ from mlops_lifecycle_lab.entrypoints.cli.commands.bootstrap import bootstrap
 from mlops_lifecycle_lab.entrypoints.cli.commands.data import data_app
 from mlops_lifecycle_lab.entrypoints.cli.commands.doctor import doctor
 from mlops_lifecycle_lab.entrypoints.cli.commands.drill import drill_app
+from mlops_lifecycle_lab.entrypoints.cli.commands.mlflow_ui import mlflow_ui
 from mlops_lifecycle_lab.entrypoints.cli.commands.monitor import monitor_app
 from mlops_lifecycle_lab.entrypoints.cli.commands.quickstart import quickstart
 from mlops_lifecycle_lab.entrypoints.cli.commands.registry import registry_app
@@ -45,6 +46,7 @@ app.command("train")(train)
 app.command("serve")(serve)
 app.command("score")(score)
 app.command("quickstart")(quickstart)
+app.command("mlflow-ui")(mlflow_ui)
 app.command("doctor")(doctor)
 
 
