@@ -23,3 +23,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Naive profile baseline (the promotion-gate floor), native PSI drift statistics for the
   monitored numeric/categorical features and the day-block paired bootstrap used by the
   significance gate.
+- Model lifecycle state machine with five stages, a validated transition table and
+  immutable model versions, plus the domain event audit log with JSON round-trip.
+- Champion/challenger promotion gates G1-G6, the label-based retrain trigger policy
+  (probation veto, manual override, cooldown and SLO breach) and the probation policy
+  that decides between continuing, passing and rolling back.
