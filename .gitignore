@@ -1,0 +1,38 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments and local workspaces
+.venv/
+.mll/
+
+# Tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.cache/
+
+# Build and coverage artifacts
+dist/
+build/
+*.egg-info/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# Runtime reports (curated copies under docs/assets/reports are kept)
+reports/evidently/
+*.html
+!docs/assets/reports/*.html
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local environment
+.env

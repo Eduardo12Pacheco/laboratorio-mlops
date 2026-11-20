@@ -1,0 +1,166 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mlops-lifecycle-lab"
+version = "0.1.0"
+description = "End-to-end, local-first MLOps lifecycle lab on the UCI Bike Sharing dataset"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "Eduardo Pacheco" }]
+keywords = ["mlops", "model-registry", "drift", "lightgbm", "mlflow"]
+classifiers = [
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "mlflow>=3.18,<4",
+  "lightgbm>=4.7,<5",
+  "scikit-learn>=1.9,<2",
+  "pandas>=3.0.6,<3.1",
+  "numpy>=2.3",
+  "scipy>=1.18,<2",
+  "fastapi>=0.165,<1",
+  "uvicorn>=0.54",
+  "httpx>=0.28",
+  "pydantic>=2.14,<3",
+  "pydantic-settings>=2.16",
+  "evidently>=0.7.23,<0.8",
+  "apscheduler>=3.11.3,<4",
+  "streamlit>=1.67,<2",
+  "plotly>=5.24,<6",
+  "typer>=0.29",
+  "structlog>=26",
+  "prometheus-client>=0.26",
+]
+
+[project.scripts]
+mll = "mlops_lifecycle_lab.entrypoints.cli.app:main"
+
+[dependency-groups]
+dev = [
+  "pytest>=9.2",
+  "pytest-cov>=7",
+  "pytest-socket>=0.8",
+  "hypothesis>=6.170",
+  "ruff>=0.17",
+  "mypy>=2.4",
+  "import-linter>=2.17",
+  "pandas-stubs",
+  "check-jsonschema>=0.39",
+]
+capture = [
+  "playwright>=1.65",
+  "pillow>=13",
+]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mlops_lifecycle_lab"]
+
+[tool.pytest.ini_options]
+addopts = """-ra --strict-markers --disable-socket --allow-unix-socket --allow-hosts=127.0.0.1,localhost -m "not docker and not ui" """
+testpaths = ["tests"]
+markers = [
+  "slow: end-to-end or long-running tests",
+  "docker: tests that need a Docker daemon",
+  "ui: tests that need a browser and Streamlit",
+]
+
+[tool.coverage.run]
+source = ["mlops_lifecycle_lab"]
+omit = ["*/__main__.py"]
+
+[tool.coverage.report]
+fail_under = 85
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4", "PT", "RUF", "S", "N", "A", "ANN", "TID"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["mlops_lifecycle_lab"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+files = ["src"]
+show_error_codes = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = [
+  "mlflow.*",
+  "lightgbm.*",
+  "evidently.*",
+  "apscheduler.*",
+  "streamlit.*",
+  "plotly.*",
+]
+ignore_missing_imports = true
+
+[tool.importlinter]
+root_package = "mlops_lifecycle_lab"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Layers"
+type = "layers"
+layers = [
+  "mlops_lifecycle_lab.entrypoints",
+  "mlops_lifecycle_lab.bootstrap | mlops_lifecycle_lab.config | mlops_lifecycle_lab.logging_setup",
+  "mlops_lifecycle_lab.adapters",
+  "mlops_lifecycle_lab.application",
+  "mlops_lifecycle_lab.domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "Domain and application framework independence"
+type = "forbidden"
+source_modules = ["mlops_lifecycle_lab.domain", "mlops_lifecycle_lab.application"]
+forbidden_modules = [
+  "mlflow",
+  "fastapi",
+  "starlette",
+  "uvicorn",
+  "streamlit",
+  "lightgbm",
+  "sklearn",
+  "sqlite3",
+  "evidently",
+  "apscheduler",
+  "httpx",
+  "typer",
+  "structlog",
+  "pydantic",
+  "pydantic_settings",
+  "prometheus_client",
+  "plotly",
+]
+
+[[tool.importlinter.contracts]]
+name = "Adapter independence"
+type = "independence"
+modules = [
+  "mlops_lifecycle_lab.adapters.data",
+  "mlops_lifecycle_lab.adapters.storage",
+  "mlops_lifecycle_lab.adapters.tracking",
+  "mlops_lifecycle_lab.adapters.registry",
+  "mlops_lifecycle_lab.adapters.models",
+  "mlops_lifecycle_lab.adapters.drift",
+  "mlops_lifecycle_lab.adapters.scheduling",
+  "mlops_lifecycle_lab.adapters.serving_client",
+]
