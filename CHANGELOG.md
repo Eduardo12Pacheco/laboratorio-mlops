@@ -8,6 +8,16 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Monitoring snapshot service: trailing labelled metrics for the current champion,
+  native PSI drift against its training reference and prediction-distribution PSI from the
+  `reference_predictions.json` artifact, persisted with a `SNAPSHOT_COMPUTED` event.
+- Evidently PSI report adapter for human-readable drift HTML (Null Object in fast mode)
+  and the replay batch source that keeps labels separate from the scoring frame.
+- Lifecycle tick use case: batch validation/quarantine, scoring, label ingestion,
+  monitoring, probation rollback/pass, retrain trigger, gates, promotion/rejection and a
+  retrying run ledger with idempotent per-tick state.
+- Typed composition root (`build_container`) wiring the SQLite stores, MLflow
+  tracker/registry, LightGBM trainer, in-process gateway, policies and use cases.
 - Project scaffold: packaging with uv, lint/type/architecture gates, MIT license and
   community health files.
 - Typed settings (`MLL_*` environment variables), structlog configuration and the

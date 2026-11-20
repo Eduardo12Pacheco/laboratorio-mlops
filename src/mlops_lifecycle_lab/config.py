@@ -64,6 +64,8 @@ class Settings(BaseSettings):
     replay_start: date = date(2012, 1, 1)
     replay_interval_seconds: float = Field(default=20.0, gt=0)
     replay_weeks: int = Field(default=52, gt=0)
+    serving_mode: Literal["inprocess", "http"] = "inprocess"
+    fast: bool = False
 
     log_level: str = "INFO"
     log_format: Literal["json", "console"] = "console"
