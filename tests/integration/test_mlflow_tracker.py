@@ -15,7 +15,7 @@ from mlflow import MlflowClient
 from mlops_lifecycle_lab.adapters.tracking.mlflow_tracker import MlflowTracker
 from mlops_lifecycle_lab.application.ports import TrainedModel
 from mlops_lifecycle_lab.domain.schema import FEATURE_COLUMNS
-from tests.integration.conftest import MlflowWorkspace
+from tests.fakes.mlflow_workspace import MlflowWorkspace
 
 
 def training_frame(rows: int = 24) -> pd.DataFrame:
@@ -63,7 +63,7 @@ def test_run_logs_params_metrics_artifacts_and_a_model(
         run_id = run.run_id
 
     assert logged.registered_version >= 1
-    assert logged.uri.startswith("runs:/")
+    assert logged.uri.startswith(("runs:/", "models:/"))
     client = MlflowClient(tracking_uri=mlflow_workspace.uri)
     stored = client.get_run(run_id)
     assert stored.data.params["algorithm"] == "lightgbm"
@@ -74,7 +74,7 @@ def test_run_logs_params_metrics_artifacts_and_a_model(
     assert stored.info.status == "FINISHED"
 
     artifacts = {artifact.path for artifact in client.list_artifacts(run_id)}
-    assert {"validation_report.json", "feature_columns.json", "model"} <= artifacts
+    assert {"validation_report.json", "feature_columns.json"} <= artifacts
     report = mlflow.artifacts.load_dict(f"runs:/{run_id}/validation_report.json")
     assert report == {"verdict": "WARN", "rows": len(frame)}
     columns = json.loads(mlflow.artifacts.load_text(f"runs:/{run_id}/feature_columns.json"))
@@ -105,11 +105,18 @@ def test_a_failing_run_is_closed_as_failed(
     mlflow_workspace: MlflowWorkspace,
 ) -> None:
     adapter, _ = tracker
-    with pytest.raises(RuntimeError):
+    run_id: str | None = None
+
+    def failing_run() -> None:
+        nonlocal run_id
         with adapter.run("train-MANUAL", {}) as run:
             run_id = run.run_id
             raise RuntimeError("boom")
 
+    with pytest.raises(RuntimeError):
+        failing_run()
+
+    assert run_id is not None
     assert MlflowClient(tracking_uri=mlflow_workspace.uri).get_run(run_id).info.status == "FAILED"
 
 

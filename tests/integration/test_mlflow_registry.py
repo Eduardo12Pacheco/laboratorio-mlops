@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 from uuid import uuid4
 
 import numpy as np
@@ -19,7 +20,7 @@ from mlops_lifecycle_lab.domain.errors import IllegalTransitionError
 from mlops_lifecycle_lab.domain.lifecycle import ModelStage, ModelVersion
 from mlops_lifecycle_lab.domain.schema import FEATURE_COLUMNS
 from mlops_lifecycle_lab.domain.windows import TimeWindow
-from tests.integration.conftest import MlflowWorkspace
+from tests.fakes.mlflow_workspace import MlflowWorkspace
 
 
 def candidate(version: int) -> ModelVersion:
@@ -60,7 +61,8 @@ def register(tracker: MlflowTracker, frame: pd.DataFrame) -> int:
         frame, np.linspace(1, 10, len(frame))
     )
     with tracker.run("train-MANUAL", {}) as run:
-        return run.log_model(TrainedModel(model, {"algorithm": "lightgbm"}), frame).registered_version
+        logged = run.log_model(TrainedModel(model, {"algorithm": "lightgbm"}), frame)
+        return logged.registered_version
 
 
 def frame() -> pd.DataFrame:
@@ -75,8 +77,9 @@ def test_stage_lives_in_a_tag_and_aliases_move_atomically(
     tracker, registry, name = workspace
     same_frame = frame()
     first = register(tracker, same_frame)
-    second = register(tracker, same_frame)
     adopted = registry.adopt_candidate(first, encode_version_tags(candidate(first)))
+    registry.promote(first)
+    second = register(tracker, same_frame)
     registry.adopt_candidate(second, encode_version_tags(candidate(second)))
 
     promoted = registry.promote(second)
@@ -87,15 +90,15 @@ def test_stage_lives_in_a_tag_and_aliases_move_atomically(
     assert first_raw.tags["mll.stage"] == ModelStage.ARCHIVED.value
     assert second_raw.tags["mll.stage"] == ModelStage.CHAMPION.value
     assert promoted.stage is ModelStage.CHAMPION
-    assert client.get_model_version_by_alias(name, "previous-champion").version == str(first)
-    assert client.get_model_version_by_alias(name, "champion").version == str(second)
+    assert client.get_model_version_by_alias(name, "previous-champion").version == first
+    assert client.get_model_version_by_alias(name, "champion").version == second
     assert adopted.stage is ModelStage.CANDIDATE
 
     restored = registry.rollback("poisoned")
 
     assert restored.version == first
     assert client.get_model_version(name, str(second)).tags["mll.stage"] == "ROLLED_BACK"
-    assert client.get_model_version_by_alias(name, "champion").version == str(first)
+    assert client.get_model_version_by_alias(name, "champion").version == first
 
 
 def test_an_illegal_transition_never_writes_a_tag(
@@ -113,4 +116,10 @@ def test_an_illegal_transition_never_writes_a_tag(
         registry.promote(version)
 
     assert client.get_model_version(name, str(version)).tags == before
-    assert client.get_model_version_by_alias(name, "champion").version == str(version)
+    assert client.get_model_version_by_alias(name, "champion").version == version
+
+
+def test_the_adapter_never_uses_deprecated_stage_apis() -> None:
+    source = Path("src/mlops_lifecycle_lab/adapters/registry/mlflow_registry.py").read_text()
+    assert "transition_model_version_stage" not in source
+    assert "get_latest_versions" not in source

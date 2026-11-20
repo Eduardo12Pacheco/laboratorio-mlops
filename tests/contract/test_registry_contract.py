@@ -18,8 +18,7 @@ from lightgbm import LGBMRegressor
 from mlops_lifecycle_lab.adapters.registry.mlflow_registry import MlflowRegistry
 from mlops_lifecycle_lab.adapters.tracking.mlflow_tracker import MlflowTracker
 from mlops_lifecycle_lab.application.dto import encode_version_tags
-from mlops_lifecycle_lab.application.ports import TrainedModel
-from mlops_lifecycle_lab.application.ports import ALIAS_CHAMPION, ModelRegistry
+from mlops_lifecycle_lab.application.ports import ALIAS_CHAMPION, ModelRegistry, TrainedModel
 from mlops_lifecycle_lab.domain.errors import (
     IllegalTransitionError,
     NoPreviousChampionError,
@@ -28,8 +27,8 @@ from mlops_lifecycle_lab.domain.errors import (
 from mlops_lifecycle_lab.domain.lifecycle import ModelStage, ModelVersion
 from mlops_lifecycle_lab.domain.schema import FEATURE_COLUMNS
 from mlops_lifecycle_lab.domain.windows import TimeWindow
+from tests.fakes.mlflow_workspace import MlflowWorkspace
 from tests.fakes.registry import InMemoryRegistry
-from tests.integration.conftest import MlflowWorkspace
 
 CREATED_AT = datetime(2012, 1, 1)
 
