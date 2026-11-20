@@ -114,6 +114,12 @@ Unreleased section between releases.
 
 
 
+### Build
+
+- keep shell scripts and the Dockerfile LF on Windows checkouts
+
+
+
 ### CI
 
 - add lint and test skeleton workflow
@@ -124,11 +130,15 @@ Unreleased section between releases.
 
 - release workflow and compose bundle
 
+- **deps:** ignore dependency versions the stack cannot run
+
 
 
 ### Changed
 
 - **bootstrap:** share one replay source across the container
+
+- **release:** 1.0.0
 
 
 
@@ -164,6 +174,8 @@ Unreleased section between releases.
 
 - screenshots and hero gif captured from the app
 
+- refresh screenshots and fix README install command and wording
+
 
 
 ### Fixed
@@ -173,6 +185,18 @@ Unreleased section between releases.
 - **storage:** share the sqlite connection with serving worker threads
 
 - **config:** treat an empty admin api key as unset
+
+- **cli:** stop executing the dashboard on import and disable MLflow telemetry first
+
+- **dashboard:** stop chart titles colliding with legends and hide the Deploy button
+
+- **docs:** capture every dashboard page from the top and honour --reuse-workspace
+
+
+
+### Performance
+
+- **drift:** import Evidently when the first report is rendered
 
 
 
@@ -239,5 +263,7 @@ Unreleased section between releases.
 - **install:** installer exit-code and PowerShell contracts
 
 - **docs:** add documentation consistency contract
+
+- **registry:** read the adapter source with an explicit encoding
 
 
