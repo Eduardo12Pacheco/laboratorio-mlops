@@ -8,6 +8,25 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- `install.sh` and `install.ps1`: shared exit-code contract, prerequisite checks
+  (Docker >= 24, Compose v2, a reachable Linux engine, host ports 14000/14080/14501,
+  4 GB free disk), an idempotent L2 install, the Docker-free `--l1` path, safe
+  `--uninstall` and a no-side-effect `--check`/`-Check` mode.
+- `scripts/build_compose_bundle.py`, a reproducible source-only release bundle
+  (installers, Compose stack, locked project, package source) with executable bits and a
+  fixed timestamp so repeated builds are byte-identical.
+- Full CI matrix: lint/types/architecture plus workflow-schema and shellcheck gates,
+  coverage on ubuntu and windows, the macOS fast subset, a 16-week drill smoke on both
+  systems, the Playwright UI job, `pip-audit`, the gitleaks history scan, the Compose
+  smoke and an installer smoke matrix (Linux L2, macOS/Windows L1).
+- `release.yml` and `cliff.toml`: `v*` tags build the wheel, sdist and Compose bundle,
+  write `SHA256SUMS`, generate Keep-a-Changelog groups from Conventional Commits and
+  publish the GitHub release.
+- Dependabot coverage for `uv`, GitHub Actions and Docker with grouped, prefixed pull
+  requests, and pre-commit hooks for shellcheck, workflow schemas and TOML.
+- `tests/installers`: hermetic shim-driven exit-code matrix for `install.sh`, the static
+  PowerShell contract plus a real parse when `pwsh` exists, and bundle-content and
+  reproducibility checks.
 - Multi-stage container image built with `uv sync --locked --no-dev --no-editable`,
   `libgomp1` for LightGBM, a non-root `mll` user (uid 10001) and the documented offline
   environment defaults.
