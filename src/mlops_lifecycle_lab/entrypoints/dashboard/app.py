@@ -68,7 +68,8 @@ def main() -> None:
     try:
         container = container_for(str(settings.workspace), settings.fast)
         require_workspace(container)
-        PAGES[page](container, theme)
+        with st.spinner(f"Loading {page}…"):
+            PAGES[page](container, theme)
     except ViewError as exc:
         message = exc.message if not exc.hint else f"{exc.message}\n\n{exc.hint}"
         st.info(message)
