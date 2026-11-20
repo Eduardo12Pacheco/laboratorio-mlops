@@ -1,134 +1,243 @@
 # Changelog
 
-All notable changes to this project will be documented here.
-The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
-project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable changes to this project are grouped here.
+Generated with git-cliff from Conventional Commits; `CHANGELOG.md` keeps the curated
+Unreleased section between releases.
 
-## [Unreleased]
+
+## [1.0.0] - 2026-11-20
+
 
 ### Added
 
-- `install.sh` and `install.ps1`: shared exit-code contract, prerequisite checks
-  (Docker >= 24, Compose v2, a reachable Linux engine, host ports 14000/14080/14501,
-  4 GB free disk), an idempotent L2 install, the Docker-free `--l1` path, safe
-  `--uninstall` and a no-side-effect `--check`/`-Check` mode.
-- `scripts/build_compose_bundle.py`, a reproducible source-only release bundle
-  (installers, Compose stack, locked project, package source) with executable bits and a
-  fixed timestamp so repeated builds are byte-identical.
-- Full CI matrix: lint/types/architecture plus workflow-schema and shellcheck gates,
-  coverage on ubuntu and windows, the macOS fast subset, a 16-week drill smoke on both
-  systems, the Playwright UI job, `pip-audit`, the gitleaks history scan, the Compose
-  smoke and an installer smoke matrix (Linux L2, macOS/Windows L1).
-- `release.yml` and `cliff.toml`: `v*` tags build the wheel, sdist and Compose bundle,
-  write `SHA256SUMS`, generate Keep-a-Changelog groups from Conventional Commits and
-  publish the GitHub release.
-- Dependabot coverage for `uv`, GitHub Actions and Docker with grouped, prefixed pull
-  requests, and pre-commit hooks for shellcheck, workflow schemas and TOML.
-- `tests/installers`: hermetic shim-driven exit-code matrix for `install.sh`, the static
-  PowerShell contract plus a real parse when `pwsh` exists, and bundle-content and
-  reproducibility checks.
-- Multi-stage container image built with `uv sync --locked --no-dev --no-editable`,
-  `libgomp1` for LightGBM, a non-root `mll` user (uid 10001) and the documented offline
-  environment defaults.
-- Compose stack (`mlflow`, `init`, `api`, `scheduler`, `dashboard`, `tools`-profile
-  `cli`) on host ports 14000/14080/14501, with healthchecks, loopback-only publishing,
-  `read_only` root filesystems, dropped capabilities, a shared `mll-data` volume and the
-  real lifecycle replay through the API.
-- `scripts/smoke_compose.sh` and the docker-marked pytest wrapper: builds the stack,
-  probes every health endpoint, verifies the non-root uid and waits for the first
-  automated promotion (`SMOKE OK champion=2`).
-- `mll bootstrap --at <ISO timestamp>` so the Compose `init` service bootstraps on the
-  replay clock and the persisted probation window is consistent with 2012.
-- Empty `MLL_ADMIN_API_KEY` values now mean "unset", and Compose forwards the optional
-  key to the API.
-- Streamlit Control Room with five pages (Overview, Monitoring, Registry, Lifecycle,
-  Drill), light/dark palettes that pass WCAG contrast checks, explicit loading/empty/error
-  states and status marks that never rely on colour alone.
-- Read-only dashboard view models over the existing ports (champion health, trailing
-  metrics, PSI matrix, registry aliases and gate evidence, audit timeline, run ledger and
-  committed drill reports) plus `mll dashboard` on host port 14501.
-- APScheduler replay service: one interval job with `max_instances=1`, a persisted
-  `replay_tick` cursor, self-stop at the replay length and clean SIGINT/SIGTERM handling.
-- `mll scheduler start --mode replay|once` driving the same lifecycle tick as the drill,
-  bootstrapping v1 when the workspace has no champion.
-- `mll replay status|reset` to inspect or clear the replay cursor without building the
-  full composition root.
-- `mll doctor` with hard checks (Python 3.12, runtime imports, a real LightGBM fit,
-  SQLite WAL, writable workspace and MLflow SQLite) plus informational Docker and host-port
-  checks.
-- `mll quickstart` (doctor-lite, bootstrap and the 16-week drift drill) and
-  `mll mlflow-ui` on the documented host port.
-- Reproducible drill engine for the four S15/S16 scenarios (`drift`, `gate-reject`,
-  `bad-batch`, `rollback`) with a simulated clock, replay cursor, frozen-v1
-  counterfactual, as-served metrics and byte-identical `drill-report/v1` JSON/Markdown.
-- Fault-injection decorator (`PoisonedTrainer`) and Celsius-scale batch corruption,
-  isolated from production paths and armed only for the scenario tick.
-- Golden expectations with per-tick event sequences, relative metric tolerances and the
-  documented ±1 week first-retrain slack; committed goldens for all four scenarios.
-- `mll bootstrap`, `mll train`, `mll registry list|show|promote|rollback`,
-  `mll monitor snapshot` and `mll drill run` (including `--check`).
-- Serving API (S8): typed Pydantic v2 schemas with hourly timestamp and numeric-domain
-  validation, `/healthz`, `/readyz`, `/v1/model`, `/v1/predict`, `/v1/predict/batch`,
-  `/v1/labels`, `/v1/admin/reload` and Prometheus `/metrics`.
-- Hot-reloading `ModelHolder`: the champion artifact is loaded before the atomic swap, a
-  failing reload keeps the previous model and increments
-  `mll_model_reload_failures_total`, and request ids are echoed and logged.
-- `HttpScoringGateway` for HTTP serving mode: 1000-row chunking, exponential-backoff
-  retries on connection/5xx errors and 422-to-`ValidationFailedError` mapping.
-- `mll serve` and `mll score`, plus worker-thread-safe SQLite access for the API.
-- Monitoring snapshot service: trailing labelled metrics for the current champion,
-  native PSI drift against its training reference and prediction-distribution PSI from the
-  `reference_predictions.json` artifact, persisted with a `SNAPSHOT_COMPUTED` event.
-- Evidently PSI report adapter for human-readable drift HTML (Null Object in fast mode)
-  and the replay batch source that keeps labels separate from the scoring frame.
-- Lifecycle tick use case: batch validation/quarantine, scoring, label ingestion,
-  monitoring, probation rollback/pass, retrain trigger, gates, promotion/rejection and a
-  retrying run ledger with idempotent per-tick state.
-- Typed composition root (`build_container`) wiring the SQLite stores, MLflow
-  tracker/registry, LightGBM trainer, in-process gateway, policies and use cases.
-- Project scaffold: packaging with uv, lint/type/architecture gates, MIT license and
-  community health files.
-- Typed settings (`MLL_*` environment variables), structlog configuration and the
-  `mll --version` entry point.
-- Initial CI workflow running lint, types, architecture contracts and the test suite on
-  Linux and Windows.
-- Bundled UCI Bike Sharing dataset with a provenance manifest, CC BY 4.0 attribution and
-  `mll data verify|info|fetch` (zip and CSV checksums verified before writing).
-- Domain schema and half-open time windows, plus the pure data-contract validation engine
-  exposed as `mll validate` (PASS/WARN/FAIL with per-rule violations).
-- Shared feature pipeline (twelve columns including the `t_days` trend feature) and the
-  regression metric contract (RMSE/MAE/WAPE/bias) used by every later report.
-- Naive profile baseline (the promotion-gate floor), native PSI drift statistics for the
-  monitored numeric/categorical features and the day-block paired bootstrap used by the
-  significance gate.
-- Model lifecycle state machine with five stages, a validated transition table and
-  immutable model versions, plus the domain event audit log with JSON round-trip.
-- Champion/challenger promotion gates G1-G6, the label-based retrain trigger policy
-  (probation veto, manual override, cooldown and SLO breach) and the probation policy
-  that decides between continuing, passing and rolling back.
-- Application ports, frozen DTOs and the model-version tag codec shared with registry
-  adapters, plus the retrying `Pipeline`/`Step` runner backed by a run ledger.
-- Training, evaluation, promotion/rejection, rollback, bootstrap and scoring use cases:
-  deterministic data fingerprints, S6 lineage, gate reports, probation state, idempotent
-  prediction logging and the in-process scoring gateway.
-- In-memory doubles for every port and shared registry/prediction-log contract suites
-  that the SQLite and MLflow adapters will run unchanged.
-- SQLite operational store with ordered migrations, WAL/busy-timeout pragmas, the
-  idempotent prediction log, event/snapshot/key-value stores, the run ledger and the
-  archive-plus-production labeled-data repository.
-- LightGBM trainer with the fixed S5 Poisson hyper-parameters and deterministic fits,
-  plus wall-clock and simulated replay clocks.
-- MLflow experiment tracker (params, metrics, JSON artifacts and registered models) and
-  the tags-and-aliases model registry; the shared registry/prediction-log contract suites
-  now run against the real adapters, and the bootstrap quality gate proves the S5 numbers.
-- Complete documentation set: `docs/ARCHITECTURE.md` (layers, ports, patterns, tick
-  sequence, lineage, failure modes), `docs/DATA.md` (provenance and result artifacts),
-  `docs/MODEL_CARD.md` and `docs/OPERATIONS.md` (commands, environment variables and
-  troubleshooting).
-- Seven additional ADRs (0003–0009) covering registry aliases, the label-based trigger,
-  the promotion gates and day-block bootstrap, native PSI plus Evidently, APScheduler and
-  the run ledger, SQLite in WAL mode, and the trend feature with the Poisson objective.
-- Committed drill results for all four scenarios (`docs/results/drill-*.{json,md}`), a
-  generated results table, two curated Evidently drift reports and the
-  `scripts/render_results_table.py`, `scripts/render_drift_reports.py` and
-  `scripts/check_docs.py` gates with their unit tests.
+- settings, logging and cli version
+
+- **domain:** schema and half-open time windows
+
+- **domain:** data contract validation engine
+
+- **data:** bundle UCI bike sharing with manifest and verification
+
+- **cli:** data and validate commands with DATA docs
+
+- **domain:** shared feature pipeline and regression metrics
+
+- **domain:** baseline, drift statistics and day-block bootstrap
+
+- **domain:** model lifecycle state machine and domain events
+
+- **domain:** promotion gates
+
+- **domain:** retrain, promotion and probation policies
+
+- **app:** ports, dto and pipeline with run ledger
+
+- **app:** training and evaluation use cases
+
+- **app:** promotion, rejection, rollback and bootstrap use cases
+
+- **app:** scoring service and in-process gateway
+
+- **storage:** sqlite migrations and repositories
+
+- **models:** lightgbm trainer and replay clocks
+
+- **mlflow:** tracker and alias-tag registry adapter
+
+- **app:** monitoring snapshot service
+
+- **drift:** evidently report adapter
+
+- **app:** lifecycle tick use case with run ledger
+
+- **bootstrap:** composition root
+
+- **api:** request schemas and prometheus metrics
+
+- **api:** model holder with atomic hot reload
+
+- **api:** serving routes, request ids and app factory
+
+- **serving:** http scoring gateway and http serving mode
+
+- **cli:** serve and score commands
+
+- **drill:** fault injection and the four scenario scripts
+
+- **drill:** reproducible report model and performance summary
+
+- **drill:** replay engine and golden expectations
+
+- **cli:** bootstrap, train, registry, monitor and drill commands
+
+- **scheduler:** replay scheduler with persisted cursor
+
+- **cli:** environment doctor command
+
+- **cli:** quickstart and replay cursor commands
+
+- **cli:** scheduler start command
+
+- **cli:** mlflow ui launcher
+
+- **dashboard:** theme tokens and contrast checks
+
+- **dashboard:** lifecycle view models
+
+- **dashboard:** overview and monitoring views
+
+- **dashboard:** registry, lifecycle and drill views
+
+- **cli:** dashboard launcher and apptest smoke
+
+- **dashboard:** loading spinner for page data
+
+- **cli:** bootstrap at a simulated instant for replay workspaces
+
+- **docker:** multi-stage image with uv and a non-root runtime
+
+- **compose:** stack with healthchecks, hardening and a shared volume
+
+- **install:** bash installer with prerequisites and uninstall
+
+- **install:** PowerShell installer with prerequisites and uninstall
+
+- **install:** reproducible compose bundle builder
+
+- **docs:** generate results tables and curated drift reports
+
+- **docs:** enforce links, ADRs, reports and results tables
+
+- **docs:** capture real dashboard screenshots
+
+- **docs:** assemble the hero gif from eight frames
+
+
+
+### CI
+
+- add lint and test skeleton workflow
+
+- pin setup-uv to the published release tag
+
+- full matrix, audit, secrets and compose smoke
+
+- release workflow and compose bundle
+
+
+
+### Changed
+
+- **bootstrap:** share one replay source across the container
+
+
+
+### Documentation
+
+- **changelog:** record lifecycle, gates and policy work
+
+- **changelog:** record application layer work
+
+- **changelog:** record adapter layer work
+
+- **changelog:** record serving API work
+
+- **changelog:** record the drill engine and scenarios
+
+- **changelog:** record scheduler, doctor and quickstart work
+
+- **changelog:** record the control room dashboard
+
+- document installers, CI and the security posture
+
+- commit drill results and curated drift reports
+
+- document the architecture and model card
+
+- record registry, triggers, drift, scheduler and storage decisions
+
+- add the operations runbook
+
+- document the documentation gates and update the changelog
+
+- readme in english and spanish
+
+- screenshots and hero gif captured from the app
+
+
+
+### Fixed
+
+- **domain:** anchor PSI quantile edges on observed values
+
+- **storage:** share the sqlite connection with serving worker threads
+
+- **config:** treat an empty admin api key as unset
+
+
+
+### Tests
+
+- cover settings, logging and cli version
+
+- **domain:** schema and time window contracts
+
+- **domain:** data validation rules and verdicts
+
+- **data:** bundled provenance and checksum refusal
+
+- **cli:** data and validate command contract
+
+- **cli:** pin a wide colour-free terminal for assertions
+
+- **domain:** feature pipeline and regression metric contracts
+
+- **domain:** baseline, PSI drift and bootstrap contracts
+
+- **domain:** align baseline and bootstrap assertions with their contracts
+
+- **domain:** keep numeric properties within floating-point tolerance
+
+- **domain:** lifecycle state machine and event contracts
+
+- **domain:** promotion gate and policy contracts
+
+- **app:** pipeline, run ledger and dto contracts
+
+- **app:** training and evaluation use case contracts
+
+- **app:** promotion, rollback and bootstrap contracts
+
+- **app:** scoring service and shared registry/prediction-log contracts
+
+- **storage:** sqlite store and prediction-log contracts
+
+- **models:** lightgbm trainer and clock contracts
+
+- **mlflow:** tracker, registry and shared alias contracts
+
+- bootstrap champion quality gate through real adapters
+
+- **api:** serving integration through the real stack
+
+- **cli:** render help without colour for cross-platform assertions
+
+- **api:** serve the real stack through uvicorn on a loopback port
+
+- drill goldens, end-to-end scenarios and quality gates
+
+- **ui:** playwright smoke for the control room
+
+- **ui:** ignore transient browser resource errors
+
+- **dashboard:** tidy apptest imports
+
+- **compose:** static stack contract
+
+- **docker:** compose smoke and automated promotion check
+
+- **install:** installer exit-code and PowerShell contracts
+
+- **docs:** add documentation consistency contract
+
+
