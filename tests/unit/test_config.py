@@ -133,3 +133,17 @@ def test_privacy_defaults_do_not_override_explicit_values(
 
     assert os.environ["MLFLOW_DISABLE_TELEMETRY"] == "false"
     assert os.environ["DO_NOT_TRACK"] == "1"
+
+
+def test_empty_admin_api_key_is_treated_as_unset(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("MLL_ADMIN_API_KEY", "")
+
+    assert Settings().admin_api_key is None
+
+
+def test_configured_admin_api_key_is_preserved(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("MLL_ADMIN_API_KEY", "local-secret")
+
+    settings = Settings()
+    assert settings.admin_api_key is not None
+    assert settings.admin_api_key.get_secret_value() == "local-secret"

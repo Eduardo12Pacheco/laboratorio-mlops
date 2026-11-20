@@ -12,7 +12,7 @@ from datetime import date
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PRIVACY_DEFAULT_ENV_VARS: dict[str, str] = {
@@ -69,6 +69,14 @@ class Settings(BaseSettings):
 
     log_level: str = "INFO"
     log_format: Literal["json", "console"] = "console"
+
+    @field_validator("admin_api_key", mode="before")
+    @classmethod
+    def _empty_admin_key_is_unset(cls, value: object) -> object:
+        """Treat ``MLL_ADMIN_API_KEY=`` as absent instead of an empty required key."""
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
 
     @property
     def effective_tracking_uri(self) -> str:
