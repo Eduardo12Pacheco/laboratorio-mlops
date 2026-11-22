@@ -84,7 +84,8 @@ class MlflowTracker:
     ) -> None:
         self._tracking_uri = tracking_uri
         self._experiment_name = experiment_name
-        self._artifact_root = artifact_root
+        # MLflow stores the artifact location as a file URI, which requires an absolute path.
+        self._artifact_root = artifact_root.absolute()
         self._model_name = model_name
 
     @contextmanager
