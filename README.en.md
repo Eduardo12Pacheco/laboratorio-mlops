@@ -1,4 +1,4 @@
-# mlops-lifecycle-lab
+# laboratorio-mlops
 
 [Español](README.md) · **English**
 
