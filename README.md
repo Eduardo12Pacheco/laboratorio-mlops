@@ -1,7 +1,7 @@
 # mlops-lifecycle-lab
 
-[![CI](https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/Eduardo12Pacheco/mlops-lifecycle-lab)](https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab/releases)
+[![CI](https://github.com/Eduardo12Pacheco/laboratorio-mlops/actions/workflows/ci.yml/badge.svg)](https://github.com/Eduardo12Pacheco/laboratorio-mlops/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Eduardo12Pacheco/laboratorio-mlops)](https://github.com/Eduardo12Pacheco/laboratorio-mlops/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](pyproject.toml)
 
@@ -59,7 +59,7 @@ dependency direction is enforced by import-linter in CI; see
 Docker path (Linux/macOS, needs Docker ≥ 24 and Compose v2):
 
 ```bash
-git clone https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab && cd mlops-lifecycle-lab
+git clone https://github.com/Eduardo12Pacheco/laboratorio-mlops && cd laboratorio-mlops
 ./install.sh
 # Open http://127.0.0.1:14501 (MLflow: http://127.0.0.1:14000)
 ```
@@ -67,7 +67,7 @@ git clone https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab && cd mlops-li
 Windows PowerShell:
 
 ```powershell
-git clone https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab; cd mlops-lifecycle-lab
+git clone https://github.com/Eduardo12Pacheco/laboratorio-mlops; cd laboratorio-mlops
 .\install.ps1
 # Open http://127.0.0.1:14501
 ```
@@ -75,7 +75,7 @@ git clone https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab; cd mlops-life
 L1 without Docker (Python 3.12 + `uv`, no clone needed; each release also attaches the wheel):
 
 ```bash
-uv tool install git+https://github.com/Eduardo12Pacheco/mlops-lifecycle-lab
+uv tool install git+https://github.com/Eduardo12Pacheco/laboratorio-mlops
 mll quickstart
 mll dashboard
 ```
