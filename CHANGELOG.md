@@ -5,6 +5,18 @@ Generated with git-cliff from Conventional Commits; `CHANGELOG.md` keeps the cur
 Unreleased section between releases.
 
 
+## [Unreleased]
+
+
+### Fixed
+
+- **cli:** `mll quickstart` works with the README default relative workspace (`.mll`)
+
+- **ci:** the Linux installer smoke no longer fails in the setup-uv cache post-step
+
+- **ci:** the macOS and Windows L1 quickstart steps assert `champion: v2`
+
+
 ## [1.0.0] - 2026-11-20
 
 
