@@ -1,50 +1,55 @@
-# ADR-0008: One SQLite operational store in WAL mode
+# ADR-0008: Un único almacén operativo SQLite en modo WAL
 
-## Context
+## Contexto
 
-The lifecycle needs a prediction log, delayed labels, an audit event stream, monitoring
-snapshots, key/value state (replay cursor, probation) and a run ledger. A second database
-engine would add a service, credentials and a migration tool to a local-first project whose
-whole operational state is small. The API, scheduler, drill and dashboard also need to read
-and write concurrently without corrupting state, including on Windows.
+El ciclo de vida necesita un log de predicciones, etiquetas tardías, un stream de eventos de
+auditoría, snapshots de monitoreo, estado clave/valor (cursor del replay, probation) y un run
+ledger. Un segundo motor de base de datos añadiría un servicio, credenciales y una herramienta de
+migración a un proyecto local-first cuyo estado operativo completo es pequeño. La API, el
+scheduler, el drill y el dashboard también necesitan leer y escribir concurrentemente sin corromper
+el estado, incluido en Windows.
 
-## Decision
+## Decisión
 
-- Use stdlib `sqlite3` and one file, `<workspace>/mll.db`, for all operational tables.
-  MLflow keeps its own `mlflow.db` and artifact store; the two are never mixed.
-- Open every connection with `journal_mode=WAL`, `busy_timeout=5000`,
-  `foreign_keys=ON` and `row_factory=sqlite3.Row`. WAL gives readers a consistent snapshot
-  while a writer commits, and the busy timeout absorbs normal short overlap.
-- Version the schema with ordered migrations recorded in `schema_migrations`; the DDL lives
-  in code, so a fresh workspace and an upgraded workspace converge deterministically.
-- Use the repository pattern behind the application ports and a tiny unit of work
-  (`with db.transaction():`) for multi-row writes. Timestamps are ISO-8601 UTC-naive text,
-  matching the dataset.
-- FastAPI runs sync handlers in worker threads, so the shared connection is opened with
-  `check_same_thread=False` and guarded by an `RLock` around `transaction()`. This is a
-  serving-specific concern; the WAL and busy-timeout contract is unchanged.
+- Usar `sqlite3` de la biblioteca estándar y un único archivo, `<workspace>/mll.db`, para todas las
+  tablas operativas. MLflow mantiene su propio `mlflow.db` y su almacén de artefactos; nunca se
+  mezclan los dos.
+- Abrir cada conexión con `journal_mode=WAL`, `busy_timeout=5000`, `foreign_keys=ON` y
+  `row_factory=sqlite3.Row`. WAL da a los lectores una vista consistente mientras un escritor
+  confirma, y el busy timeout absorbe el solapamiento corto normal.
+- Versionar el esquema con migraciones ordenadas registradas en `schema_migrations`; el DDL vive en
+  el código, de modo que un workspace nuevo y uno actualizado converjan de forma determinista.
+- Usar el patrón repositorio detrás de los puertos de aplicación y una unidad de trabajo mínima
+  (`with db.transaction():`) para las escrituras de varias filas. Las marcas de tiempo son texto
+  ISO-8601 UTC sin zona, igual que el dataset.
+- FastAPI ejecuta los handlers síncronos en hilos de trabajo, así que la conexión compartida se abre
+  con `check_same_thread=False` y se protege con un `RLock` alrededor de `transaction()`. Es una
+  preocupación específica del servicio; el contrato de WAL y de busy timeout no cambia.
 
-## Consequences
+## Consecuencias
 
-- Zero external services, trivial backup (copy the workspace), and SQL is inspectable with
-  `sqlite3`. The dashboard and CLI read the same state the API writes.
-- WAL on a Docker bind mount is unsafe on some hosts, so the Compose stack keeps SQLite on
-  the named volume `mll-data` only.
-- SQLite is a single-writer engine: very high write concurrency is out of scope. The API
-  batches prediction writes per request and the scheduler has one tick at a time.
-- Migrations are additive and in code; there is no downgrade path. A breaking schema change
-  would require a new workspace or an explicit migration script.
-- A stale `-wal`/`-shm` file is normal; do not delete it while the database is open.
+- Cero servicios externos, respaldo trivial (copiar el workspace), y el SQL es inspeccionable con
+  `sqlite3`. El dashboard y la CLI leen el mismo estado que escribe la API.
+- WAL sobre un bind mount de Docker no es seguro en algunos hosts, por lo que el stack de Compose
+  mantiene SQLite solo en el volumen con nombre `mll-data`.
+- SQLite es un motor de un solo escritor: una concurrencia de escritura muy alta queda fuera de
+  alcance. La API agrupa las escrituras de predicciones por petición y el scheduler tiene un tick a
+  la vez.
+- Las migraciones son aditivas y están en el código; no hay ruta de downgrade. Un cambio de esquema
+  incompatible requeriría un workspace nuevo o un script de migración explícito.
+- Un archivo `-wal`/`-shm` residual es normal; no hay que borrarlo mientras la base de datos está
+  abierta.
 
-## Evidence
+## Evidencia
 
-- Integration tests assert `PRAGMA journal_mode` returns `wal` and that `busy_timeout` is
-  applied; the prediction-log contract suite passes against both the in-memory fake and the
-  SQLite adapter.
-- The real-stack serving test exposed the cross-thread connection bug and now passes with
-  the shared connection/RLock: online prediction, a 168-row batch, an idempotent re-send
-  and a labelled join all run through uvicorn on a loopback port.
-- The Compose smoke verifies the same code path inside the container with the volume-backed
-  database, including the scheduler writing while the API reads.
-- See [ARCHITECTURE.md](../ARCHITECTURE.md) for the storage ports and
-  [OPERATIONS.md](../OPERATIONS.md#troubleshooting) for the lock troubleshooting entry.
+- Las pruebas de integración afirman que `PRAGMA journal_mode` devuelve `wal` y que se aplica
+  `busy_timeout`; la suite de contratos del log de predicciones pasa tanto contra el fake en memoria
+  como contra el adaptador SQLite.
+- La prueba de serving con stack real expuso el error de conexión entre hilos y ahora pasa con la
+  conexión compartida/RLock: predicción online, un lote de 168 filas, un reenvío idempotente y un
+  join con etiquetas, todo ejecutado a través de uvicorn en un puerto de loopback.
+- La prueba de humo de Compose verifica la misma ruta de código dentro del contenedor con la base de
+  datos respaldada por volumen, incluido el scheduler escribiendo mientras la API lee.
+- Ver [ARCHITECTURE.md](../ARCHITECTURE.md) para los puertos de almacenamiento y
+  [OPERATIONS.md](../OPERATIONS.md#solución-de-problemas) para la entrada de solución de problemas
+  sobre locks.

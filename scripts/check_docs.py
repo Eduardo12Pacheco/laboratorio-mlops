@@ -31,7 +31,7 @@ REQUIRED_DOCS = (
     "MODEL_CARD.md",
     "OPERATIONS.md",
 )
-ADR_HEADINGS = ("## Context", "## Decision", "## Consequences", "## Evidence")
+ADR_HEADINGS = ("## Contexto", "## Decisión", "## Consecuencias", "## Evidencia")
 ADR_MIN_NON_EMPTY_LINES = 20
 ADR_MIN_COUNT = 9
 RESULT_SCHEMA = "drill-report/v1"

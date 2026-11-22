@@ -1,39 +1,41 @@
-# ADR-0002: uv, Python 3.12 and a src-layout package
+# ADR-0002: uv, Python 3.12 y paquete con layout src
 
-## Context
+## Contexto
 
-The project must install reproducibly on Linux, Windows and macOS, ship an L1 CLI path
-(`uv tool install`) and an L2 Docker Compose stack, and keep a lockfile that CI can verify
-without resolving dependencies again. The ML stack (MLflow, LightGBM, Evidently) is
-sensitive to interpreter and dependency versions; the planning probes pinned a working set
-on Python 3.12.
+El proyecto debe instalarse de forma reproducible en Linux, Windows y macOS, ofrecer una ruta CLI
+L1 (`uv tool install`) y un stack Docker Compose L2, y mantener un lockfile que CI pueda verificar
+sin volver a resolver dependencias. La pila de ML (MLflow, LightGBM, Evidently) es sensible a las
+versiones del intérprete y de las dependencias; las sondas de planificación fijaron un conjunto
+funcional sobre Python 3.12.
 
-## Decision
+## Decisión
 
-- Support only CPython 3.12 (`requires-python = ">=3.12,<3.13"`), recorded in
-  `.python-version`. Other interpreters are rejected rather than half-supported.
-- Use **uv** for environments, locking and builds. `uv.lock` is committed and CI runs
-  `uv sync --locked` plus `uv lock --check`; the lock is never edited by hand.
-- Use a `src/` layout with a single package `mlops_lifecycle_lab`, built by hatchling, and
-  expose the CLI as `mll = "mlops_lifecycle_lab.entrypoints.cli.app:main"`.
-- Pin the dependency ranges from the plan (e.g. `pandas>=3.0.6,<3.1` because Evidently
-  0.7.23 fails to import on pandas 3.1; `apscheduler<4` because 4.x is alpha). Pins are
-  documented next to the dependency so future upgrades are deliberate.
-- Keep dev and capture tooling in dependency groups (`dev` default, `capture` on demand)
-  so the runtime image and the L1 install stay lean.
+- Soportar solo CPython 3.12 (`requires-python = ">=3.12,<3.13"`), registrado en
+  `.python-version`. Otros intérpretes se rechazan en lugar de soportarse a medias.
+- Usar **uv** para entornos, locking y builds. `uv.lock` se versiona y CI ejecuta
+  `uv sync --locked` más `uv lock --check`; el lock nunca se edita a mano.
+- Usar un layout `src/` con un único paquete `mlops_lifecycle_lab`, construido con hatchling, y
+  exponer la CLI como `mll = "mlops_lifecycle_lab.entrypoints.cli.app:main"`.
+- Fijar los rangos de dependencias del plan (por ejemplo, `pandas>=3.0.6,<3.1` porque Evidently
+  0.7.23 no importa en pandas 3.1; `apscheduler<4` porque 4.x es alpha). Los pins se documentan
+  junto a la dependencia para que las actualizaciones futuras sean deliberadas.
+- Mantener las herramientas de desarrollo y captura en grupos de dependencias (`dev` por defecto,
+  `capture` bajo demanda) para que la imagen de runtime y la instalación L1 sigan siendo livianas.
 
-## Consequences
+## Consecuencias
 
-- A single lockfile reproduces the same dependency graph for CI, Docker and local runs.
-- The narrow Python range means new interpreters are adopted with an explicit lock update.
-- `uv tool install <wheel>` works without a virtualenv for the L1 path, and the same wheel
-  feeds the Compose image.
-- `pandas-stubs` is a dev dependency only and cannot leak into runtime.
+- Un único lockfile reproduce el mismo grafo de dependencias para CI, Docker y las ejecuciones
+  locales.
+- El rango estrecho de Python implica que los nuevos intérpretes se adoptan con una actualización
+  explícita del lock.
+- `uv tool install <wheel>` funciona sin virtualenv para la ruta L1, y el mismo wheel alimenta la
+  imagen de Compose.
+- `pandas-stubs` es solo una dependencia de desarrollo y no puede filtrarse al runtime.
 
-## Evidence
+## Evidencia
 
-- Planning probe: a universal `uv lock` of the whole stack on Python 3.12 resolved 182
-  packages with no conflicts; `uv sync --locked` plus MLflow/LightGBM/Evidently smoke
-  calls passed on pandas 3.0.6 and failed at Evidently import on pandas 3.1.1.
-- T1 acceptance: `uv sync --locked`, `uv lock --check` and `uv run mll --version` all
-  succeed, and the wheel includes the `_data` package for later tasks.
+- Sonda de planificación: un `uv lock` universal de toda la pila en Python 3.12 resolvió 182
+  paquetes sin conflictos; `uv sync --locked` más las llamadas de humo a MLflow/LightGBM/Evidently
+  pasaron con pandas 3.0.6 y fallaron en la importación de Evidently con pandas 3.1.1.
+- Aceptación de T1: `uv sync --locked`, `uv lock --check` y `uv run mll --version` terminan con
+  éxito, y el wheel incluye el paquete `_data` para tareas posteriores.

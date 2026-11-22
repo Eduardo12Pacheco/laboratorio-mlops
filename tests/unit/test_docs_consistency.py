@@ -45,10 +45,10 @@ def _scaffold(root: Path) -> None:
     context = "\n".join(f"Context line {index}." for index in range(18))
     adr.write_text(
         "# ADR-0001: Example\n\n"
-        f"## Context\n\n{context}\n\n"
-        "## Decision\n\nDecision line.\n\n"
-        "## Consequences\n\nConsequences line.\n\n"
-        "## Evidence\n\nEvidence line.\n"
+        f"## Contexto\n\n{context}\n\n"
+        "## Decisión\n\nDecision line.\n\n"
+        "## Consecuencias\n\nConsequences line.\n\n"
+        "## Evidencia\n\nEvidence line.\n"
     )
     report = {
         "schema": "drill-report/v1",
@@ -104,11 +104,12 @@ def test_missing_relative_link_is_reported(tmp_path: Path) -> None:
 
 def test_adr_must_keep_its_four_sections(tmp_path: Path) -> None:
     _scaffold(tmp_path)
-    (tmp_path / "docs" / "adr" / "0001-example.md").write_text("# ADR-0001\n\n## Context\n\nonly\n")
+    adr = tmp_path / "docs" / "adr" / "0001-example.md"
+    adr.write_text("# ADR-0001\n\n## Contexto\n\nonly\n")
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
     assert "0001-example.md" in completed.stdout
-    assert "Evidence" in completed.stdout
+    assert "Evidencia" in completed.stdout
 
 
 def test_drill_json_must_carry_the_report_schema(tmp_path: Path) -> None:

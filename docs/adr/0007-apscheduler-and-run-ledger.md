@@ -1,51 +1,53 @@
-# ADR-0007: APScheduler for replay and an in-house run ledger
+# ADR-0007: APScheduler para el replay y un run ledger propio
 
-## Context
+## Contexto
 
-One lifecycle tick per simulated week is all the scheduling this project needs. Airflow,
-Prefect and Dagster each bring a database, a web server, workers, a UI and their own
-concepts; adopting one would add more moving parts than the lifecycle itself and would make
-the local-first Compose stack harder to reason about. The project still needs a durable
-cursor, non-overlapping ticks, clean shutdown and an audit trail of every attempt.
+Un tick del ciclo de vida por semana simulada es todo el scheduling que necesita este proyecto.
+Airflow, Prefect y Dagster traen cada uno una base de datos, un servidor web, workers, una UI y sus
+propios conceptos; adoptar uno añadiría más piezas móviles que el propio ciclo de vida y haría más
+difícil razonar sobre el stack Compose local-first. El proyecto aún necesita un cursor durable,
+ticks que no se solapen, un apagado limpio y una pista de auditoría de cada intento.
 
-## Decision
+## Decisión
 
-- Use APScheduler 3.11 with a `BackgroundScheduler` and one interval job configured with
-  `max_instances=1`, `coalesce=True` and a `misfire_grace_time` derived from the interval.
-  This gives serialized ticks without a message broker.
-- The replay cursor lives in SQLite KV (`replay_tick`) and advances **only after** a tick
-  completes. A restart continues at `cursor + 1`; a failed tick leaves the cursor untouched.
-- Expose `mll scheduler start --mode replay|once`, share the same `RunLifecycleTick` use case
-  with the drill (which runs it without sleeping), and stop cleanly on SIGINT/SIGTERM.
-- Keep orchestration in-house and small: `Step`/`Pipeline` runs named steps with bounded
-  retries and records a row per attempt in `runs`/`run_steps` (status, duration, error).
-  The ledger is the audit source for the dashboard and the "never corrupt KV on failure"
-  guarantee.
-- Signals are installed only from the main thread, and a self-stop on the final tick uses
-  `shutdown(wait=False)` so the worker does not join itself.
+- Usar APScheduler 3.11 con un `BackgroundScheduler` y un job de intervalo configurado con
+  `max_instances=1`, `coalesce=True` y un `misfire_grace_time` derivado del intervalo. Así se
+  obtienen ticks serializados sin un broker de mensajes.
+- El cursor del replay vive en el KV de SQLite (`replay_tick`) y avanza **solo después** de que un
+  tick se completa. Un reinicio continúa en `cursor + 1`; un tick fallido deja el cursor intacto.
+- Exponer `mll scheduler start --mode replay|once`, compartir el mismo caso de uso
+  `RunLifecycleTick` con el drill (que lo ejecuta sin dormir) y detenerse limpiamente con
+  SIGINT/SIGTERM.
+- Mantener la orquestación propia y pequeña: `Step`/`Pipeline` ejecuta pasos con nombre con
+  reintentos acotados y registra una fila por intento en `runs`/`run_steps` (estado, duración,
+  error). El ledger es la fuente de auditoría para el dashboard y para la garantía de "nunca
+  corromper el KV ante un fallo".
+- Las señales solo se instalan desde el hilo principal, y una autodetención en el último tick usa
+  `shutdown(wait=False)` para que el worker no se una a sí mismo.
 
-## Consequences
+## Consecuencias
 
-- No extra infrastructure: a single Python process and the same SQLite file as the rest of
-  the operational state.
-- APScheduler is a library, not a platform; complex DAGs, backfills and cross-job
-  dependencies are out of scope by design.
-- Every retry is visible as a separate ledger row (`FAILED, FAILED, SUCCEEDED`) instead of
-  being flattened into one final status.
-- A tick that exceeds the interval is skipped rather than overlapped; `coalesce=True`
-  prevents a burst of catch-up runs after a long pause.
-- The scheduler and drill share behaviour, so a bug found in one is fixed for both.
+- Sin infraestructura adicional: un único proceso Python y el mismo archivo SQLite que el resto del
+  estado operativo.
+- APScheduler es una biblioteca, no una plataforma; los DAG complejos, los backfills y las
+  dependencias entre jobs quedan fuera de alcance por diseño.
+- Cada reintento es visible como una fila separada del ledger (`FAILED, FAILED, SUCCEEDED`) en
+  lugar de aplanarse en un único estado final.
+- Un tick que excede el intervalo se omite en lugar de solaparse; `coalesce=True` evita una ráfaga
+  de ejecuciones de recuperación tras una pausa larga.
+- El scheduler y el drill comparten comportamiento, así que un error encontrado en uno se corrige
+  para ambos.
 
-## Evidence
+## Evidencia
 
-- Scheduler tests: a slow tick longer than the interval never runs twice concurrently; a
-  second scheduler instance continues at `cursor + 1`; the cursor survives a restart; a
-  failed tick is logged as `FAILED` and does not advance the cursor; `shutdown(wait=True)`
-  returns in under two seconds; SIGTERM stops the process on POSIX.
-- The Compose smoke runs `MLL_REPLAY_INTERVAL_SECONDS=1` and reaches champion v2 through
-  the real API, which exercises the scheduler, the cursor, the API hot reload and the
-  ledger together.
-- `mll quickstart` leaves the same workspace at `tick 16 / 52`, and `mll replay reset`
-  returns it to `tick 0 / 52`, proving the cursor is a normal, inspectable state value.
-- See also [ARCHITECTURE.md](../ARCHITECTURE.md#one-lifecycle-tick) and
-  [OPERATIONS.md](../OPERATIONS.md#replay-control).
+- Pruebas del scheduler: un tick lento más largo que el intervalo nunca se ejecuta dos veces en
+  paralelo; una segunda instancia del scheduler continúa en `cursor + 1`; el cursor sobrevive a un
+  reinicio; un tick fallido se registra como `FAILED` y no avanza el cursor; `shutdown(wait=True)`
+  retorna en menos de dos segundos; SIGTERM detiene el proceso en POSIX.
+- La prueba de humo de Compose ejecuta `MLL_REPLAY_INTERVAL_SECONDS=1` y alcanza el campeón v2 a
+  través de la API real, lo que ejercita en conjunto el scheduler, el cursor, la recarga en caliente
+  de la API y el ledger.
+- `mll quickstart` deja el mismo workspace en `tick 16 / 52`, y `mll replay reset` lo devuelve a
+  `tick 0 / 52`, lo que demuestra que el cursor es un valor de estado normal e inspeccionable.
+- Ver también [ARCHITECTURE.md](../ARCHITECTURE.md#un-tick-del-ciclo-de-vida) y
+  [OPERATIONS.md](../OPERATIONS.md#control-del-replay).

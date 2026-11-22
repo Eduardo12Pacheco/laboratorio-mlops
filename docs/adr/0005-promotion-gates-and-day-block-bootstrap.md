@@ -1,59 +1,62 @@
-# ADR-0005: Six promotion gates with a day-block paired bootstrap
+# ADR-0005: Seis compuertas de promoción con bootstrap pareado por bloques de días
 
-## Context
+## Contexto
 
-A retrain trigger answers "the champion may be stale". It does not answer "is this
-challenger actually better?". A single aggregate RMSE comparison is easy to game by a lucky
-holdout, ignores uncertainty, and can hide a regression in an operationally important
-segment. The project needs an explicit, inspectable decision that a reviewer can reproduce
-from a committed report.
+Un disparo de reentrenamiento responde "el campeón puede estar desactualizado". No responde "¿este
+retador es realmente mejor?". Una comparación agregada de RMSE es fácil de manipular con un
+holdout afortunado, ignora la incertidumbre y puede ocultar una regresión en un segmento
+operativamente importante. El proyecto necesita una decisión explícita e inspeccionable que un
+revisor pueda reproducir a partir de un reporte comprometido.
 
-## Decision
+## Decisión
 
-At tick end `T`, set `cut = T − 14 days`. Train the challenger on every labelled row with
-`ts < cut` (archive plus ingested production rows) and hold out `[cut, T)`. Re-score the
-champion on exactly the same holdout and evaluate all gates, without short-circuiting:
+Al final del tick `T`, fijar `cut = T − 14 días`. Entrenar el retador con cada fila etiquetada con
+`ts < cut` (archivo más filas de producción ingeridas) y reservar `[cut, T)` como holdout. Volver a
+puntuar al campeón exactamente sobre el mismo holdout y evaluar todas las compuertas, sin
+cortocircuitos:
 
-1. `DATA_VALID` — the training frame verdict is not `FAIL`.
-2. `ABS_WAPE` — challenger holdout WAPE ≤ 0.30.
-3. `BEATS_BASELINE` — challenger RMSE ≤ 0.85 × the naive profile baseline RMSE on the same
-   rows.
-4. `IMPROVEMENT` — `(champion RMSE − challenger RMSE) / champion RMSE ≥ 0.05`.
-5. `SIGNIFICANCE` — the lower bound of the 95% day-block paired bootstrap CI of
-   `mean(champion SE − challenger SE)` is > 0, with 2000 resamples and seed 42.
-6. `SEGMENT` — challenger RMSE is not worse than the champion by more than 10% in either
-   `workingday` segment.
+1. `DATA_VALID` — el veredicto del frame de entrenamiento no es `FAIL`.
+2. `ABS_WAPE` — el WAPE del holdout del retador ≤ 0.30.
+3. `BEATS_BASELINE` — el RMSE del retador ≤ 0.85 × el RMSE del perfil ingenuo (baseline) sobre las
+   mismas filas.
+4. `IMPROVEMENT` — `(RMSE campeón − RMSE retador) / RMSE campeón ≥ 0.05`.
+5. `SIGNIFICANCE` — la cota inferior del IC 95% del bootstrap pareado por bloques de días de
+   `mean(SE campeón − SE retador)` es > 0, con 2000 remuestreos y semilla 42.
+6. `SEGMENT` — el RMSE del retador no es peor que el del campeón en más de un 10% en ninguno de
+   los segmentos `workingday`.
 
-The first champion uses gates 1–3 only. Every gate result (observed value, threshold,
-pass/fail, human-readable detail) is persisted as `gate_report.json` and as a
-`GATES_EVALUATED` event. The promoted artifact is exactly the evaluated artifact: there is
-no refit on the holdout.
+El primer campeón usa solo las compuertas 1–3. Cada resultado de compuerta (valor observado,
+umbral, aprobado/rechazado, detalle legible) se persiste como `gate_report.json` y como un evento
+`GATES_EVALUATED`. El artefacto promovido es exactamente el artefacto evaluado: no hay
+reentrenamiento sobre el holdout.
 
-The bootstrap resamples **whole calendar days**, not individual rows, because hourly errors
-are autocorrelated. The statistic compares squared errors (the RMSE scale), and the domain
-implementation is pure, seeded and property-tested.
+El bootstrap remuestrea **días calendario completos**, no filas individuales, porque los errores
+horarios están autocorrelacionados. El estadístico compara errores cuadráticos (la escala del
+RMSE), y la implementación del dominio es pura, con semilla y con pruebas de propiedades.
 
-## Consequences
+## Consecuencias
 
-- A challenger that wins on average but is noisy or regresses a segment is rejected.
-- The decision is slower and more expensive than a single RMSE threshold, but it is
-  explainable and the cost is trivial at this data size.
-- The holdout is not refit, so reported numbers are honest but slightly pessimistic; this
-  is documented as a limitation rather than hidden.
-- A forced promotion remains possible for incident response, but requires a reason and
-  emits `PROMOTION_FORCED`, so it is auditable.
-- The gate report format is shared by the application, the drill report and the dashboard.
+- Un retador que gana en promedio pero es ruidoso o regresiona un segmento se rechaza.
+- La decisión es más lenta y costosa que un umbral único de RMSE, pero es explicable y el costo es
+  trivial a este tamaño de datos.
+- El holdout no se reentrena, así que los números reportados son honestos pero algo pesimistas;
+  esto se documenta como limitación en lugar de ocultarse.
+- Una promoción forzada sigue siendo posible para la respuesta a incidentes, pero requiere un
+  motivo y emite `PROMOTION_FORCED`, por lo que queda auditada.
+- El formato del reporte de compuertas lo comparten la aplicación, el reporte del drill y el
+  dashboard.
 
-## Evidence
+## Evidencia
 
-- The domain gate tests cover the exact boundaries: 0.0499 fails and 0.0500 passes for
-  improvement, 0.1001 fails and 0.1000 passes for segment regression, 0.3001 fails and
-  0.3000 passes for absolute WAPE, 0.8501 fails and 0.8500 passes for the baseline ratio,
-  and a CI lower bound of exactly 0 fails significance.
-- The drift replay promotes v2 at tick 13 with challenger RMSE 53.2673, improvement 0.5595,
-  significance lower bound 9000.8429 and a worst-segment delta of −0.5528; the raw gate
-  table is in [`../results/drill-drift.md`](../results/drill-drift.md).
-- The gate-reject replay rejects with exactly `IMPROVEMENT`, `SIGNIFICANCE` and `SEGMENT`
-  failing, proving the protocol does not hide a marginal challenger behind an average.
-- Hypothesis tests prove `approved == all(results.passed)` and that every gate is always
-  evaluated, so a future refactor cannot reintroduce short-circuiting.
+- Las pruebas de compuertas del dominio cubren los límites exactos: 0.0499 falla y 0.0500 pasa
+  para la mejora; 0.1001 falla y 0.1000 pasa para la regresión por segmento; 0.3001 falla y 0.3000
+  pasa para el WAPE absoluto; 0.8501 falla y 0.8500 pasa para la razón contra el baseline; y una
+  cota inferior del CI exactamente igual a 0 falla la significancia.
+- El replay de drift promueve v2 en el tick 13 con RMSE del retador 53.2673, mejora 0.5595, cota
+  inferior de significancia 9000.8429 y un delta del peor segmento de −0.5528; la tabla cruda de
+  compuertas está en [`../results/drill-drift.md`](../results/drill-drift.md).
+- El replay de gate-reject rechaza con exactamente `IMPROVEMENT`, `SIGNIFICANCE` y `SEGMENT`
+  fallando, lo que demuestra que el protocolo no oculta a un retador marginal detrás de un
+  promedio.
+- Las pruebas de hipótesis demuestran que `approved == all(results.passed)` y que cada compuerta
+  siempre se evalúa, de modo que una refactorización futura no pueda reintroducir cortocircuitos.

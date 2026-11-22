@@ -1,17 +1,17 @@
-# ADR-0001: Hexagonal architecture with enforced dependency direction
+# ADR-0001: Arquitectura hexagonal con dirección de dependencias forzada
 
-## Context
+## Contexto
 
-The lab is a lifecycle system, not a notebook: data validation, feature building, training,
-registry access, serving, monitoring and scheduling all coexist. Without an explicit
-boundary the ML code tends to leak framework imports (MLflow, FastAPI, LightGBM) into the
-core, which makes the domain hard to test and easy to break when an adapter changes. The
-project standards require ports & adapters with a test that enforces the dependency
-direction.
+El laboratorio es un sistema de ciclo de vida, no un cuaderno: validación de datos, construcción
+de features, entrenamiento, acceso al registro, servicio, monitoreo y scheduling coexisten. Sin
+un límite explícito, el código de ML tiende a filtrar imports de frameworks (MLflow, FastAPI,
+LightGBM) hacia el núcleo, lo que hace que el dominio sea difícil de probar y fácil de romper
+cuando cambia un adaptador. Los estándares del proyecto exigen puertos y adaptadores con una
+prueba que haga cumplir la dirección de dependencias.
 
-## Decision
+## Decisión
 
-Use hexagonal architecture with five layers and a one-way dependency rule:
+Usar arquitectura hexagonal con cinco capas y una regla de dependencia unidireccional:
 
 ```
 entrypoints  (CLI, API, dashboard, drill)
@@ -21,28 +21,30 @@ application  (ports, DTOs, use cases, pipeline)
 domain       (pure: schema, features, metrics, drift, gates, policies, lifecycle)
 ```
 
-- The domain layer imports only the standard library, `numpy`, `pandas` and `scipy`.
-- Application services depend on Protocols ("ports"), never on concrete adapters.
-- Adapters may depend on application and domain; adapter sub-packages are independent of
-  each other (no adapter imports a sibling adapter).
-- The composition root (`bootstrap`) is the only place that instantiates real adapters.
-- The rule is executable: `import-linter` contracts live in `pyproject.toml` and run in
-  CI through `uv run lint-imports`. `tests/architecture/test_layers.py` also proves the
-  check fails on a deliberately planted violation, so the gate cannot silently rot.
+- La capa de dominio importa solo la biblioteca estándar, `numpy`, `pandas` y `scipy`.
+- Los servicios de aplicación dependen de Protocols ("puertos"), nunca de adaptadores concretos.
+- Los adaptadores pueden depender de application y domain; los subpaquetes de adaptadores son
+  independientes entre sí (ningún adaptador importa a otro hermano).
+- La raíz de composición (`bootstrap`) es el único lugar que instancia adaptadores reales.
+- La regla es ejecutable: los contratos de `import-linter` viven en `pyproject.toml` y se ejecutan
+  en CI mediante `uv run lint-imports`. `tests/architecture/test_layers.py` también demuestra que
+  la verificación falla ante una violación plantada a propósito, para que la compuerta no se
+  degrade en silencio.
 
-## Consequences
+## Consecuencias
 
-- Domain and application tests run without MLflow, a database or network.
-- Swapping adapters (e.g. an HTTP scoring gateway in Compose vs the in-process one in the
-  drill) is a composition-root change only.
-- Slightly more boilerplate: every side effect needs a port. This is accepted because the
-  alternative — framework calls sprinkled through use cases — is untestable at this size.
-- New cross-layer shortcuts fail CI instead of being discovered in review.
+- Las pruebas de dominio y de aplicación se ejecutan sin MLflow, base de datos ni red.
+- Cambiar adaptadores (por ejemplo, un gateway HTTP de scoring en Compose frente al de proceso
+  único del drill) es un cambio solo en la raíz de composición.
+- Algo más de código repetitivo: cada efecto secundario necesita un puerto. Se acepta porque la
+  alternativa —llamadas al framework dispersas en los casos de uso— no es probable de probar a
+  este tamaño.
+- Los atajos nuevos entre capas fallan en CI en lugar de descubrirse en la revisión.
 
-## Evidence
+## Evidencia
 
-- `[tool.importlinter]` in `pyproject.toml` defines the layers, forbidden-external and
-  adapter-independence contracts; T1's acceptance runs `uv run lint-imports` and expects
-  `Contracts: 3 kept, 0 broken.`
-- The negative test builds a throwaway package whose `domain` imports `adapters` and
-  asserts import-linter reports the contract broken.
+- `[tool.importlinter]` en `pyproject.toml` define las capas y los contratos de dependencias
+  externas prohibidas e independencia de adaptadores; la aceptación de T1 ejecuta
+  `uv run lint-imports` y espera `Contracts: 3 kept, 0 broken.`
+- La prueba negativa construye un paquete descartable cuyo `domain` importa `adapters` y verifica
+  que import-linter reporta el contrato roto.

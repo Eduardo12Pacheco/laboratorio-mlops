@@ -1,48 +1,53 @@
-# ADR-0004: Retraining is triggered by a label-based SLO, not by covariate drift
+# ADR-0004: El reentrenamiento se dispara por un SLO basado en etiquetas, no por drift de covariables
 
-## Context
+## Contexto
 
-The system needs a defensible answer to "when do we retrain?". The obvious input is data
-drift: compare this week's features with the champion's training window and retrain when
-PSI crosses 0.2. That rule is attractive because it needs no labels, and labels are delayed
-by a tick. But bike demand is strongly seasonal: temperature and season move every year,
-and a model trained on 2011 will always look "drifted" in 2012 even while it predicts well.
-A covariate-only rule would retrain almost every week, burning compute and producing noisy
-champion/challenger comparisons.
+El sistema necesita una respuesta defendible a "¿cuándo reentrenamos?". La entrada obvia es el
+drift de datos: comparar las features de esta semana con la ventana de entrenamiento del campeón y
+reentrenar cuando el PSI supera 0.2. Esa regla resulta atractiva porque no necesita etiquetas, y
+las etiquetas llegan con un tick de retraso. Pero la demanda de bicicletas es fuertemente
+estacional: la temperatura y la temporada cambian cada año, y un modelo entrenado con datos de 2011
+siempre parecerá "con drift" en 2012 aunque prediga bien. Una regla basada solo en covariables
+reentrenaría casi cada semana, consumiendo cómputo y produciendo comparaciones campeón/retador
+ruidosas.
 
-## Decision
+## Decisión
 
-- Retraining is triggered by a **label-based** trailing-28-day WAPE breach
-  (`WAPE >= MLL_SLO_WAPE`, default 0.30) on predictions made by the current champion, with
-  at least 300 labelled rows and at least 28 days since the last retrain attempt.
-- Probation suppresses retraining (rollback has priority), and a manual `MANUAL` trigger
-  bypasses the SLO check but not the gates.
-- Covariate PSI, numeric drift share and prediction PSI are computed, persisted and shown
-  on the dashboard, but they never trigger a retrain. They are diagnostic evidence.
-- The trigger outcome is a typed `TriggerDecision` (`PERFORMANCE_SLO_BREACH`, `MANUAL`,
-  `HEALTHY`, `INSUFFICIENT_LABELS`, `COOLDOWN`, `IN_PROBATION`), evaluated in that order and
-  unit-tested as a matrix.
+- El reentrenamiento se dispara por una caída **basada en etiquetas** del WAPE de 28 días
+  (`WAPE >= MLL_SLO_WAPE`, por defecto 0.30) sobre las predicciones hechas por el campeón actual,
+  con al menos 300 filas etiquetadas y al menos 28 días desde el último intento de reentrenamiento.
+- La probation suprime el reentrenamiento (el rollback tiene prioridad), y un disparo `MANUAL`
+  omite la comprobación del SLO pero no las compuertas.
+- El PSI de covariables, la proporción de drift numérico y el PSI de predicciones se calculan,
+  persisten y se muestran en el dashboard, pero nunca disparan un reentrenamiento. Son evidencia
+  diagnóstica.
+- El resultado del disparo es un `TriggerDecision` tipado (`PERFORMANCE_SLO_BREACH`, `MANUAL`,
+  `HEALTHY`, `INSUFFICIENT_LABELS`, `COOLDOWN`, `IN_PROBATION`), evaluado en ese orden y probado
+  unitariamente como matriz.
 
-## Consequences
+## Consecuencias
 
-- The automation reacts to what matters operationally (forecast error), not to the season.
-- Retraining waits for labels; a fresh promotion cannot be judged until enough labels exist.
-- The dashboard must separate the two questions ("is performance bad?" and "did inputs
-  move?") instead of collapsing them into one red light.
-- The policy needs a cooldown and a probation guard; without them a single noisy week could
-  start a retrain storm.
-- Drift reports remain useful for humans and for explaining *why* performance might change,
-  but a healthy WAPE with `numeric_drift_share = 1.0` is explicitly a no-op in tests.
+- La automatización reacciona a lo que importa operativamente (el error de pronóstico), no a la
+  temporada.
+- El reentrenamiento espera etiquetas; una promoción reciente no puede juzgarse hasta que existan
+  suficientes etiquetas.
+- El dashboard debe separar las dos preguntas ("¿el rendimiento es malo?" y "¿se movieron las
+  entradas?") en lugar de colapsarlas en una sola luz roja.
+- La política necesita un cooldown y una guarda de probation; sin ellos, una sola semana ruidosa
+  podría iniciar una tormenta de reentrenamientos.
+- Los reportes de drift siguen siendo útiles para las personas y para explicar *por qué* podría
+  cambiar el rendimiento, pero un WAPE sano con `numeric_drift_share = 1.0` es explícitamente un
+  no-op en las pruebas.
 
-## Evidence
+## Evidencia
 
-- The domain policy tests include a snapshot with `numeric_drift_share = 1.0` and healthy
-  WAPE and assert that it never triggers.
-- The 52-week drift replay shows `numeric_drift_share >= 0.5` in every weekly window of 2012
-  (seasonality), while the first SLO breach happens only at tick 13 (end 2012-04-01) with
-  WAPE 0.3086 on 671 labelled rows. The committed report is
+- Las pruebas de política del dominio incluyen un snapshot con `numeric_drift_share = 1.0` y WAPE
+  sano, y afirman que nunca dispara.
+- El replay de drift de 52 semanas muestra `numeric_drift_share >= 0.5` en cada ventana semanal de
+  2012 (estacionalidad), mientras que la primera caída del SLO ocurre solo en el tick 13 (fin del
+  2012-04-01) con WAPE 0.3086 sobre 671 filas etiquetadas. El reporte comprometido es
   [`../results/drill-drift.json`](../results/drill-drift.json).
-- The final tick breaches again (WAPE 0.3152) and the challenger is rejected by the gates,
-  demonstrating that a trigger is a request to evaluate, not a promotion.
-- The SLO of 0.30 leaves headroom over the bootstrap champion's validation WAPE while the
-  frozen 2011 model crosses it in late March 2012, which is the intended failure curve.
+- El último tick vuelve a superar el umbral (WAPE 0.3152) y el retador es rechazado por las
+  compuertas, lo que demuestra que un disparo es una solicitud de evaluación, no una promoción.
+- El SLO de 0.30 deja margen sobre el WAPE de validación del campeón bootstrap, mientras que el
+  modelo congelado de 2011 lo cruza a fines de marzo de 2012: es la curva de fallo prevista.
