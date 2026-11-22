@@ -64,6 +64,42 @@ def test_english_and_spanish_readmes_are_mirrors() -> None:
     assert "[Español](README.md) · **English**" in english.read_text(encoding="utf-8")
 
 
+def test_each_readme_pairs_its_hero_with_the_matching_language() -> None:
+    spanish, english = _readmes()
+    assert (ROOT / "docs" / "assets" / "readme" / "hero.svg").is_file()
+    assert (ROOT / "docs" / "assets" / "readme" / "hero.en.svg").is_file()
+    assert "docs/assets/readme/hero.svg" in spanish.read_text(encoding="utf-8")
+    assert "docs/assets/readme/hero.en.svg" in english.read_text(encoding="utf-8")
+
+
+def test_language_switcher_stays_on_the_third_line() -> None:
+    spanish, english = _readmes()
+    assert spanish.read_text(encoding="utf-8").splitlines()[2] == (
+        "**Español** · [English](README.en.md)"
+    )
+    assert english.read_text(encoding="utf-8").splitlines()[2] == (
+        "[Español](README.md) · **English**"
+    )
+
+
+def test_readmes_keep_the_same_section_structure() -> None:
+    sections = [
+        [line for line in path.read_text(encoding="utf-8").splitlines() if line.startswith("## ")]
+        for path in _readmes()
+    ]
+    assert len(sections[0]) == len(sections[1]) > 0
+
+
+def test_readme_badges_stay_within_the_assessment_cap() -> None:
+    for path in _readmes():
+        assert path.read_text(encoding="utf-8").count("[![") <= 4, path.name
+
+
+def test_readmes_have_no_hand_written_table_of_contents() -> None:
+    for path in _readmes():
+        assert "](#" not in path.read_text(encoding="utf-8"), path.name
+
+
 def test_every_page_screenshot_is_captured_in_both_themes() -> None:
     for scheme in SCHEMES:
         for page in PAGES:

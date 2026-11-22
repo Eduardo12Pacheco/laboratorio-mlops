@@ -11,7 +11,9 @@ The script is intentionally dependency-free so anyone can run it from a fresh cl
 - the README / model-card results blocks, when present, match the table verbatim;
 - the curated Evidently report bundle exists, references only local assets and stays
   within the 5 MB documentation budget;
-- no absolute owner-home paths leaked into the documentation.
+- no absolute owner-home paths leaked into the documentation;
+- every README image has alt text and a resolvable local path, and the README SVG
+  assets stay static (no scripts, foreignObject, CSS animation or remote references).
 """
 
 from __future__ import annotations
@@ -41,9 +43,21 @@ REPORT_BUNDLE_MAX_BYTES = 5_000_000
 RESULTS_START = "<!-- results:start -->"
 RESULTS_END = "<!-- results:end -->"
 
+README_NAMES = ("README.md", "README.en.md")
+SVG_FORBIDDEN_TOKENS = ("<script", "foreignObject", "@import", "@font-face", "<animate", "<style")
+
 _LINK_RE = re.compile(r"\]\(([^)]+)\)")
 _HTML_RESOURCE_RE = re.compile(r"""(?:src|href)="([^"]+)\"""")
 _ABSOLUTE_HOME_RE = re.compile(r"(/home/[^/\s]+/|C:\\\\Users\\\\)")
+_IMG_TAG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
+_IMG_SRC_RE = re.compile(r'src="([^"]+)"')
+_IMG_ALT_RE = re.compile(r'alt="([^"]*)"')
+_MARKDOWN_IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)")
+_SVG_REMOTE_RE = re.compile(r"""(?:href|src)\s*=\s*["']\s*https?:|url\(\s*['"]?https?:""")
+
+
+def _is_remote(target: str) -> bool:
+    return target.startswith(("http://", "https://", "data:", "#"))
 
 
 def _markdown_files(root: Path) -> list[Path]:
@@ -225,6 +239,45 @@ def _check_no_home_paths(root: Path) -> list[str]:
     return errors
 
 
+def _check_readme_images(root: Path) -> list[str]:
+    errors: list[str] = []
+    for name in README_NAMES:
+        path = root / name
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for tag in _IMG_TAG_RE.findall(text):
+            alt = _IMG_ALT_RE.search(tag)
+            if alt is None or not alt.group(1).strip():
+                errors.append(f"{name}: <img> without alt text")
+            source = _IMG_SRC_RE.search(tag)
+            if (
+                source
+                and not _is_remote(source.group(1))
+                and not (path.parent / source.group(1)).resolve().exists()
+            ):
+                errors.append(f"{name}: missing image {source.group(1)!r}")
+        for alt_text, target in _MARKDOWN_IMAGE_RE.findall(text):
+            if not alt_text.strip():
+                errors.append(f"{name}: markdown image without alt text ({target!r})")
+            if not _is_remote(target) and not (path.parent / target).resolve().exists():
+                errors.append(f"{name}: missing image {target!r}")
+    return errors
+
+
+def _check_readme_svgs(root: Path) -> list[str]:
+    errors: list[str] = []
+    for path in sorted((root / "docs" / "assets" / "readme").glob("*.svg")):
+        relative = path.relative_to(root).as_posix()
+        text = path.read_text(encoding="utf-8")
+        for token in SVG_FORBIDDEN_TOKENS:
+            if token in text:
+                errors.append(f"{relative}: forbidden SVG feature {token!r}")
+        if _SVG_REMOTE_RE.search(text):
+            errors.append(f"{relative}: remote reference inside the SVG")
+    return errors
+
+
 def check_tree(root: Path) -> list[str]:
     """Return every documentation problem found under `root` (empty means valid)."""
     table_module = _load_table_module()
@@ -236,6 +289,8 @@ def check_tree(root: Path) -> list[str]:
     errors.extend(_check_results_blocks(root, table_module))
     errors.extend(_check_report_bundle(root))
     errors.extend(_check_no_home_paths(root))
+    errors.extend(_check_readme_images(root))
+    errors.extend(_check_readme_svgs(root))
     return errors
 
 

@@ -144,6 +144,51 @@ def test_report_bundle_stays_under_the_size_limit(tmp_path: Path) -> None:
     assert "5 MB" in completed.stdout
 
 
+def test_readme_image_without_alt_text_is_reported(tmp_path: Path) -> None:
+    _scaffold(tmp_path)
+    (tmp_path / "README.md").write_text(
+        '# Demo\n\n<p align="center"><img src="docs/a.svg" width="100%"></p>\n'
+    )
+    (tmp_path / "docs" / "a.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"/>')
+    completed = _check_docs(tmp_path)
+    assert completed.returncode == 1
+    assert "without alt text" in completed.stdout
+
+
+def test_readme_image_with_missing_file_is_reported(tmp_path: Path) -> None:
+    _scaffold(tmp_path)
+    (tmp_path / "README.en.md").write_text("# Demo\n\n![Missing](docs/gone.gif)\n")
+    completed = _check_docs(tmp_path)
+    assert completed.returncode == 1
+    assert "docs/gone.gif" in completed.stdout
+
+
+def test_readme_svg_with_script_is_reported(tmp_path: Path) -> None:
+    _scaffold(tmp_path)
+    assets = tmp_path / "docs" / "assets" / "readme"
+    assets.mkdir(parents=True)
+    (assets / "hero.svg").write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
+    )
+    completed = _check_docs(tmp_path)
+    assert completed.returncode == 1
+    assert "hero.svg" in completed.stdout
+    assert "'<script'" in completed.stdout
+
+
+def test_readme_svg_with_remote_reference_is_reported(tmp_path: Path) -> None:
+    _scaffold(tmp_path)
+    assets = tmp_path / "docs" / "assets" / "readme"
+    assets.mkdir(parents=True)
+    (assets / "hero.svg").write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg">'
+        '<image href="https://example.com/photo.png"/></svg>'
+    )
+    completed = _check_docs(tmp_path)
+    assert completed.returncode == 1
+    assert "remote reference" in completed.stdout
+
+
 def test_results_table_renderer_is_deterministic_and_ordered(tmp_path: Path) -> None:
     results = tmp_path / "results"
     shutil.copytree(ROOT / "docs" / "results", results)
