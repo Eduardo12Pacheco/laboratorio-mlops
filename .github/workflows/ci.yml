@@ -177,7 +177,8 @@ jobs:
       - uses: astral-sh/setup-uv@v10.3.3
         with:
           python-version: "3.12"
-          enable-cache: true
+          # The Linux entry never runs uv, so it has no cache directory to save.
+          enable-cache: ${{ runner.os != 'Linux' }}
       - name: Check prerequisites (Linux)
         if: runner.os == 'Linux'
         run: ./install.sh --check
@@ -212,6 +213,20 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: ./install.ps1 -Check -L1
-      - name: L1 quickstart (macOS and Windows)
-        if: runner.os != 'Linux'
-        run: uv run mll quickstart --workspace "${{ runner.temp }}/ws"
+      - name: L1 quickstart (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          output=$(uv run mll quickstart --workspace "${{ runner.temp }}/ws")
+          echo "$output"
+          grep -Fq "champion: v2" <<<"$output"
+      - name: L1 quickstart (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $output = uv run mll quickstart --workspace "${{ runner.temp }}/ws"
+          $output
+          if ($LASTEXITCODE -ne 0) { throw "mll quickstart exited with $LASTEXITCODE" }
+          if (-not ($output | Select-String -SimpleMatch "champion: v2")) {
+            throw "mll quickstart did not report champion: v2"
+          }
