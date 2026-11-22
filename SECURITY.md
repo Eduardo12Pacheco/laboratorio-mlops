@@ -1,52 +1,49 @@
-# Security policy
+# Política de seguridad
 
-## Supported versions
+## Versiones soportadas
 
-The latest release and the current `main` branch are supported. This is a local-first
-educational lab, not a hosted service.
+Se soportan el último release y la rama `main` actual. Es un laboratorio educativo local-first, no un
+servicio alojado.
 
-## Reporting a vulnerability
+## Reportar una vulnerabilidad
 
-Open a private security advisory on GitHub (Security → Advisories) or contact the
-maintainer through the GitHub profile. Please do not open a public issue with exploit
-details before a fix is available. Expect an initial response within a few days.
+Abre un aviso de seguridad privado en GitHub (Security → Advisories) o contacta al mantenedor a través de
+su perfil de GitHub. Por favor, no abras un issue público con los detalles de un exploit antes de que
+haya una corrección disponible. La respuesta inicial se espera en pocos días.
 
-## Trust model
+## Modelo de confianza
 
-This is a local-first demo. Model artifacts stored in MLflow are treated as trusted local
-state: loading a model executes pickle-based code. Run the stack only against registries
-and artifacts you created or trust, and never point `MLL_MLFLOW_TRACKING_URI` at an
-untrusted server. The optional `MLL_ADMIN_API_KEY` only guards `POST /v1/admin/reload`;
-it is not an authentication system for the rest of the API, which binds to loopback by
-default.
+Es una demo local-first. Los artefactos de modelo almacenados en MLflow se tratan como estado local de
+confianza: cargar un modelo ejecuta código basado en pickle. Ejecuta el stack solo contra registros y
+artefactos que hayas creado o en los que confíes, y nunca apuntes `MLL_MLFLOW_TRACKING_URI` a un servidor
+no confiable. La variable opcional `MLL_ADMIN_API_KEY` solo protege `POST /v1/admin/reload`; no es un
+sistema de autenticación para el resto de la API, que por defecto escucha solo en loopback.
 
-## Secrets and accounts
+## Secretos y cuentas
 
-- Zero mandatory keys or accounts. Everything runs offline with the bundled dataset and
-  deterministic tests.
-- `.env.example` is the only environment template committed; `.env` is gitignored. Never
-  commit a real `MLL_ADMIN_API_KEY` or a registry credential.
-- The API exposes `GET /metrics` without authentication, like the rest of the local
-  endpoints; do not publish it on a public interface.
-- Telemetry is disabled by default for MLflow, Evidently/iterative-telemetry and
-  Streamlit, so the lab does not phone home.
+- Cero claves o cuentas obligatorias. Todo se ejecuta sin conexión, con el dataset incluido y con pruebas
+  deterministas.
+- `.env.example` es la única plantilla de entorno que se versiona; `.env` está en `.gitignore`. Nunca
+  comprometas un `MLL_ADMIN_API_KEY` real ni una credencial de registro.
+- La API expone `GET /metrics` sin autenticación, como el resto de los endpoints locales; no lo publiques
+  en una interfaz pública.
+- La telemetría está desactivada por defecto para MLflow, Evidently/iterative-telemetry y Streamlit, para
+  que el laboratorio no envíe datos a ningún servicio externo.
 
-## Documentation and report assets
+## Documentación y assets de reportes
 
-The committed `docs/results/` JSON/Markdown files are generated from the trusted bundled
-dataset and the local drill, and the curated Evidently HTML reports under
-`docs/assets/reports/` contain no remote scripts: their JavaScript bundle is extracted
-into a local file so the docs work offline. Review generated HTML before publishing a
-release; it is static output, never executable server-side code. The data attribution and
-license are recorded in `docs/DATA.md`.
+Los archivos JSON/Markdown comprometidos en `docs/results/` se generan a partir del dataset incluido de
+confianza y del drill local. Los reportes HTML curados de Evidently en `docs/assets/reports/` no contienen
+scripts remotos: su bundle de JavaScript se extrae a un archivo local para que la documentación funcione
+sin conexión. Revisa el HTML generado antes de publicar un release; es salida estática, nunca código
+ejecutable del lado del servidor. La atribución y la licencia de los datos se registran en `docs/DATA.md`.
 
-## Supply chain and container posture
+## Cadena de suministro y postura de contenedores
 
-- Runtime and development dependencies are locked in `uv.lock`; CI runs
-  `uv lock --check`, `pip-audit` over the exported runtime requirements and a gitleaks
-  history scan.
-- The container image runs as the non-root user `mll` (uid 10001). Every Compose service
-  drops all capabilities, sets `no-new-privileges`, uses a read-only root filesystem with
-  a `/tmp` tmpfs, and publishes ports on `127.0.0.1` only.
-- SQLite operational state and MLflow artifacts live on the named volume `mll-data`;
-  they are trusted local state and are not backed up by the lab.
+- Las dependencias de runtime y de desarrollo están fijadas en `uv.lock`; CI ejecuta `uv lock --check`,
+  `pip-audit` sobre los requisitos de runtime exportados y un escaneo gitleaks del historial.
+- La imagen de contenedor se ejecuta con el usuario no root `mll` (uid 10001). Cada servicio de Compose
+  elimina todas las capacidades, activa `no-new-privileges`, usa un sistema de archivos raíz de solo
+  lectura con un tmpfs en `/tmp` y publica puertos solo en `127.0.0.1`.
+- El estado operativo de SQLite y los artefactos de MLflow viven en el volumen con nombre `mll-data`; son
+  estado local de confianza y el laboratorio no los respalda.
