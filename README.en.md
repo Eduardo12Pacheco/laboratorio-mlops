@@ -2,41 +2,34 @@
 
 [Español](README.md) · **English**
 
+**A complete, local-first MLOps lifecycle on real hourly bike-rental demand, with automated retraining and rollback proven by a reproducible drill.**
+
 [![CI](https://github.com/Eduardo12Pacheco/laboratorio-mlops/actions/workflows/ci.yml/badge.svg)](https://github.com/Eduardo12Pacheco/laboratorio-mlops/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/Eduardo12Pacheco/laboratorio-mlops)](https://github.com/Eduardo12Pacheco/laboratorio-mlops/releases)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/github/license/Eduardo12Pacheco/laboratorio-mlops)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](pyproject.toml)
 
-**An end-to-end, local-first MLOps lifecycle on real hourly bike-rental demand data:**
-validation → shared features → tracked training → champion/challenger registry → batch and
-online serving → prediction logging → drift and performance monitoring → automated retrain
-with statistical promotion gates → probation and rollback, proven by a reproducible drill.
+<p align="center">
+  <img src="docs/assets/readme/hero.en.svg" width="100%" alt="laboratorio-mlops: complete local MLOps lifecycle on bike-rental data, with the 2012 drift drill timeline: v2 promoted in week 13, probation passed in week 16 and the final challenger rejected in week 52.">
+</p>
 
-> [Architecture](docs/ARCHITECTURE.md) · [Operations](docs/OPERATIONS.md) · [Model card](docs/MODEL_CARD.md) · [Data](docs/DATA.md)
+![Control Room with five pages of the real lifecycle: overview, monitoring, registry, lifecycle and drill](docs/assets/hero.gif)
 
-![The Control Room: five pages of the real lifecycle](docs/assets/hero.gif)
+## What it is
 
-## What it does
+A Python 3.12 MLOps lab that covers the full cycle on bike-rental data: validate, share features, train, register, serve, monitor drift and retrain behind statistical gates. It runs locally with Docker or `uv`.
 
-- **Contract-first data.** A pure validation engine runs 13 named rules; a bad batch is
-  quarantined before it is scored or logged (never a silent bad prediction).
-- **One feature function.** Batch and online paths call the same `build_features`, and a
-  parity test proves they agree; leakage columns never reach the model.
-- **Tracked training and an alias registry.** MLflow records params, metrics, tags, gate
-  evidence and the model; lifecycle lives in `mll.stage` tags plus `champion`,
-  `previous-champion` and `challenger` aliases, never deprecated stages.
-- **Serving with hot reload.** FastAPI endpoints for single/batch predictions and delayed
-  labels, a Prometheus `/metrics`, request ids and a champion that is swapped atomically.
-- **Honest monitoring.** Trailing-28-day WAPE/RMSE/MAE/bias from labeled predictions are
-  reported separately from covariate and prediction PSI against the champion's training
-  window, so seasonality is visible without being mistaken for model harm.
-- **Automated lifecycle.** A six-gate champion/challenger decision (data validity, absolute
-  WAPE, baseline ratio, improvement, day-block bootstrap significance, segment regression),
-  21-day probation, automatic rollback, a run ledger and a restart-safe replay scheduler.
-- **A finished Control Room.** Five pages, light and dark, explicit loading/empty/error
-  states and status conveyed by icon and label, never colour alone.
+**Status:** portfolio project, actively maintained; version 1.0.0 ([CHANGELOG](CHANGELOG.md)).
 
-## Architecture
+## Why it is different
+
+- **Contract-first data.** A pure validation engine runs 12 named rules; a bad batch is quarantined before it is scored or registered.
+- **One feature function.** Batch and online paths call the same `build_features`; a parity test proves they agree, and leakage columns never reach the model.
+- **Gated promotion.** Six champion/challenger gates (data validity, absolute WAPE, baseline ratio, improvement, day-block bootstrap significance and segment regression), 21 days of probation and automatic rollback.
+- **Separate monitoring.** WAPE, RMSE, MAE and bias from labeled predictions are reported apart from covariate PSI, so seasonality is not mistaken for model harm.
+- **Alias-based registry.** MLflow stores parameters, metrics, gate evidence and the model; the lifecycle lives in `mll.stage` tags and the `champion`, `previous-champion` and `challenger` aliases, never in deprecated stages.
+
+## How it works
 
 ```mermaid
 flowchart LR
@@ -51,10 +44,7 @@ flowchart LR
   log --> ui
 ```
 
-Hexagonal, typed Python 3.12: pure `domain`, `application` use cases over ports, adapters for
-SQLite, MLflow, LightGBM, Evidently and HTTP, and a composition root that wires them. The
-dependency direction is enforced by import-linter in CI; see
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and the [ADRs](docs/adr/).
+Hexagonal, typed Python 3.12: pure `domain`, `application` use cases over ports, and adapters for SQLite, MLflow, LightGBM, Evidently and HTTP. A composition root wires them together; the service reloads the champion atomically, and import-linter enforces the dependency direction in CI. Details in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and the [ADRs](docs/adr/).
 
 ## Quickstart
 
@@ -74,7 +64,7 @@ git clone https://github.com/Eduardo12Pacheco/laboratorio-mlops; cd laboratorio-
 # Open http://127.0.0.1:14501
 ```
 
-L1 without Docker (Python 3.12 + `uv`, no clone needed; each release also attaches the wheel):
+Docker-free path (Python 3.12 + `uv`, no clone needed; each release also attaches the wheel):
 
 ```bash
 uv tool install git+https://github.com/Eduardo12Pacheco/laboratorio-mlops
@@ -82,14 +72,11 @@ mll quickstart
 mll dashboard
 ```
 
-Run `./install.sh --check` (or `.\install.ps1 -Check`) for a side-effect-free prerequisite
-report, and `mll doctor` for the same checks on the L1 path.
+Run `./install.sh --check` (or `.\install.ps1 -Check`) for a side-effect-free prerequisite report, and `mll doctor` for the same checks on the Docker-free path.
 
 ## Results
 
-Every number below comes from a committed, reproducible drill run (seed 42, 52 weeks,
-schema `drill-report/v1`); see [docs/results](docs/results) and
-[docs/MODEL_CARD.md](docs/MODEL_CARD.md).
+Every number comes from a committed, reproducible drill run (seed 42, 52 weeks, schema `drill-report/v1`). Rows are regenerated from [docs/results](docs/results); do not edit them by hand.
 
 <!-- results:start -->
 | Scenario | Weeks | Versions | Promotions | Rejections | Rollbacks | Quarantined | As-served RMSE | As-served MAE | As-served WAPE | Frozen-v1 RMSE | Frozen-v1 WAPE | RMSE ratio |
@@ -102,44 +89,33 @@ schema `drill-report/v1`); see [docs/results](docs/results) and
 _Generated by `uv run python scripts/render_results_table.py` from `docs/results/drill-*.json` (seed 42, schema `drill-report/v1`); do not edit by hand._
 <!-- results:end -->
 
-## The drift drill
+Reproduce the drift drill, week by week:
 
 ```bash
 mll drill run --scenario drift --weeks 52 --check
 ```
 
-The drill replays 2012 week by week. Look for the trigger at the end of 2012-04-01 (28-day
-WAPE `0.3086`), the promoted v2 (RMSE `53.27` vs champion `120.93`, a 55.95% improvement, bootstrap
-lower bound `9000.84`), probation passing three ticks later and the final challenger rejected at
-the end of the year. The automation cuts as-served 2012 RMSE from `109.92` (never-retrained
-v1) to `70.72`. The full timeline is in
-[docs/results/drill-drift.md](docs/results/drill-drift.md); `--scenario all` runs
-`drift`, `gate-reject`, `bad-batch` and `rollback` in isolated workspaces.
+The trigger fires at the end of 2012-04-01 (28-day WAPE `0.3086`) and v2 is promoted (RMSE `53.27` vs `120.93` for the champion, a 55.95% improvement). Three weeks later it passes probation, and the final challenger is rejected on 2012-12-30. Automation cuts as-served 2012 RMSE from `109.92` (never-retrained v1) to `70.72`. Full timeline in [docs/results/drill-drift.md](docs/results/drill-drift.md).
 
-Screenshots of every page in both themes live in
-[docs/assets/screenshots](docs/assets/screenshots); they are captured from the real app by
-`scripts/capture_screenshots.py`.
+## Honest limitations
 
-## Limitations
+- Not a cloud service: no Kubernetes, managed services, auth system (only an optional admin API key), Grafana/Prometheus server or canary traffic splitting.
+- "Production" is a replay of the dataset's 2012 half; there is no live data feed or feature store.
+- The model is deliberately simple (one LightGBM Poisson model, no tuning, AutoML or deep learning); the lifecycle, not benchmark accuracy, is the product.
+- Drift PSI is informational and never triggers a retrain; only label-based WAPE does. In every 2012 weekly window at least half of the four weather features exceed PSI 0.2: that is seasonality, not model harm.
+- The challenger is evaluated on a holdout and promoted without refitting on it, so the promoted artifact is exactly the evaluated one.
+- Model artifacts execute code on load: the local registry is trusted state (see [SECURITY.md](SECURITY.md)).
+- Reference numbers were produced on Linux x86_64; cross-OS floating-point differences can move a retrain tick by one week, which the golden tests tolerate explicitly.
 
-- Not a cloud service: no Kubernetes, managed services, auth system (only an optional admin
-  API key), Grafana/Prometheus server or canary traffic splitting.
-- "Production" is a replay of the dataset's 2012 half; no live data feed or feature store.
-- The model is deliberately simple (one LightGBM Poisson model, no tuning/AutoML/deep
-  learning); the lifecycle, not benchmark accuracy, is the product.
-- Drift PSI is informational and never triggers a retrain; only label-based WAPE does, by
-  design: in every 2012 weekly window at least half of the four weather features exceed PSI 0.2
-  (seasonality, not model harm).
-- The challenger is evaluated on a holdout and promoted without refitting on it, so the
-  promoted artifact is exactly the evaluated one.
-- Model artifacts execute code on load: the local registry is trusted state (see
-  [SECURITY.md](SECURITY.md)).
-- Reference numbers were produced on Linux x86_64; cross-OS floating-point differences can
-  move the retrain tick by one week, which the golden tests tolerate explicitly.
+## Documentation
+
+[Architecture](docs/ARCHITECTURE.md) · [Operations](docs/OPERATIONS.md) · [Model card](docs/MODEL_CARD.md) · [Data](docs/DATA.md) · [ADRs](docs/adr/) · [Screenshots](docs/assets/screenshots) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 ## License and data
 
 MIT © 2026 Eduardo Pacheco — see [LICENSE](LICENSE).
-Data: UCI Bike Sharing dataset (Fanaee-T, 2013), CC BY 4.0, DOI
-[10.24432/C5W894](https://doi.org/10.24432/C5W894), bundled unchanged as a gzip with its
-checksums and attribution in [docs/DATA.md](docs/DATA.md).
+Data: UCI Bike Sharing dataset (Fanaee-T, 2013), CC BY 4.0, DOI [10.24432/C5W894](https://doi.org/10.24432/C5W894), bundled unchanged as a gzip with its checksums and attribution in [docs/DATA.md](docs/DATA.md).
+
+## Author
+
+Eduardo Pacheco · https://github.com/Eduardo12Pacheco
