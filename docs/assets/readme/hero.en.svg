@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="hero-title hero-desc">
+  <title id="hero-title">laboratorio-mlops</title>
+  <desc id="hero-desc">Complete local-first MLOps lifecycle on real bike-rental data. Below, the 2012 drift drill timeline: v2 promoted in week 13, probation passed in week 16, and the final challenger rejected in week 52.</desc>
+
+  <rect width="1200" height="420" rx="26" fill="#0E1117"/>
+
+  <text x="64" y="72" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" fill="#79C0FF" letter-spacing="1">UCI BIKE SHARING DATA · HOURLY DEMAND</text>
+  <text x="64" y="162" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="84" font-weight="700" fill="#F0F6FC">laboratorio-mlops</text>
+  <text x="64" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="40" fill="#C9D1D9">Complete local MLOps lifecycle</text>
+
+  <rect x="40" y="246" width="1120" height="150" rx="18" fill="#161B22"/>
+  <text x="72" y="278" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" fill="#C9D1D9">DRIFT DRILL · 2012 · WEEKS 1 TO 52</text>
+
+  <line x1="64" y1="342" x2="1136" y2="342" stroke="#30363D" stroke-width="2"/>
+  <line x1="64" y1="342" x2="1136" y2="342" stroke="#30363D" stroke-width="12" stroke-dasharray="2 19.0196"/>
+  <line x1="316.24" y1="342" x2="379.29" y2="342" stroke="#E3B341" stroke-width="5"/>
+
+  <g transform="translate(316.24 342)">
+    <circle r="13" fill="#3FB950"/>
+    <path d="M-6 0.5 L-1.5 5 L6.5 -4.5" fill="none" stroke="#0E1117" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g transform="translate(379.29 342)">
+    <circle r="12.5" fill="#0E1117" stroke="#E3B341" stroke-width="2.5"/>
+    <path d="M0 0 L0 -12.5 A12.5 12.5 0 0 1 12.5 0 Z" fill="#E3B341"/>
+  </g>
+  <g transform="translate(1136 342)">
+    <circle r="13" fill="#FFA198"/>
+    <path d="M-5 -5 L5 5 M5 -5 L-5 5" stroke="#0E1117" stroke-width="2.6" stroke-linecap="round"/>
+  </g>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="22" fill="#F0F6FC">
+    <text x="296" y="308">v2 promoted · 2012-04-01</text>
+    <text x="1136" y="308" text-anchor="end">challenger rejected · 2012-12-30</text>
+    <text x="352" y="386" fill="#C9D1D9">probation passed · 2012-04-22</text>
+  </g>
+  <text x="64" y="386" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" fill="#C9D1D9">wk 1</text>
+  <text x="1136" y="386" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" fill="#C9D1D9">wk 52</text>
+</svg>
