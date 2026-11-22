@@ -1,15 +1,15 @@
-# Architecture
+# Arquitectura
 
-`mlops-lifecycle-lab` is a local-first MLOps lifecycle system around one regression
-problem: hourly bike-rental demand. The product is the loop — validate, build features,
-train, evaluate gates, register, promote, serve, log predictions, ingest delayed labels,
-monitor, decide, retrain, roll back — not the model itself.
+`mlops-lifecycle-lab` es un sistema de ciclo de vida MLOps local-first alrededor de un problema de
+regresión: la demanda horaria de alquiler de bicicletas. El producto es el bucle —validar, construir
+features, entrenar, evaluar compuertas, registrar, promover, servir, registrar predicciones, ingerir
+etiquetas tardías, monitorear, decidir, reentrenar, revertir— y no el modelo en sí.
 
-The same use cases run from the CLI, the drill and the APScheduler service. Every number
-in the docs comes from a committed report under [`results/`](results/results-table.md) or
-from a documented command, never from a notebook.
+Los mismos casos de uso se ejecutan desde la CLI, el drill y el servicio APScheduler. Cada número de
+la documentación proviene de un reporte comprometido en [`results/`](results/results-table.md) o de
+un comando documentado, nunca de un notebook.
 
-## Layers and the dependency rule
+## Capas y la regla de dependencia
 
 ```
 entrypoints  (CLI, FastAPI, Streamlit, drill)
@@ -19,102 +19,102 @@ application  (ports, DTOs, pipeline, use cases)
 domain       (pure: schema, validation, features, metrics, gates, policies, lifecycle)
 ```
 
-Imports point downwards only. `domain` imports the standard library, `numpy`, `pandas`
-and `scipy`; it knows nothing about MLflow, FastAPI, SQLite or the filesystem.
-`application` depends on Protocols in [`ports.py`](../src/mlops_lifecycle_lab/application/ports.py)
-and never on a concrete adapter. `adapters` implement ports and may not import a sibling
-adapter. `bootstrap`, `config` and `logging_setup` are independent of each other and only
-`bootstrap` wires concrete adapters. `entrypoints` receive a ready container.
+Las importaciones apuntan solo hacia abajo. `domain` importa la biblioteca estándar, `numpy`,
+`pandas` y `scipy`; no conoce MLflow, FastAPI, SQLite ni el sistema de archivos. `application`
+depende de Protocols en [`ports.py`](../src/mlops_lifecycle_lab/application/ports.py) y nunca de un
+adaptador concreto. Los `adapters` implementan puertos y no pueden importar a un adaptador hermano.
+`bootstrap`, `config` y `logging_setup` son independientes entre sí, y solo `bootstrap` conecta
+adaptadores concretos. Los `entrypoints` reciben un contenedor ya listo.
 
-The rule is executed, not documented-only:
+La regla se ejecuta, no solo se documenta:
 
-- `uv run lint-imports` enforces the layer contract, a forbidden-external contract for
-  `domain`/`application`, and adapter independence. It prints `Contracts: 3 kept, 0 broken.`
-- [`tests/architecture/test_layers.py`](../tests/architecture/test_layers.py) plants a
-  temporary `domain → adapters` violation and asserts import-linter reports it broken, so
-  the gate cannot silently disappear.
+- `uv run lint-imports` aplica el contrato de capas, un contrato de externos prohibidos para
+  `domain`/`application` y la independencia de adaptadores. Imprime `Contracts: 3 kept, 0 broken.`
+- [`tests/architecture/test_layers.py`](../tests/architecture/test_layers.py) planta una violación
+  temporal `domain → adapters` y afirma que import-linter la reporta como rota, para que la compuerta
+  no pueda desaparecer en silencio.
 
-See [ADR-0001](adr/0001-hexagonal-architecture.md) and
-[ADR-0002](adr/0002-uv-python312-packaging.md).
+Ver [ADR-0001](adr/0001-hexagonal-architecture.md) y [ADR-0002](adr/0002-uv-python312-packaging.md).
 
-## Module map
+## Mapa de módulos
 
-| Path | Responsibility |
+| Ruta | Responsabilidad |
 |---|---|
-| `domain/schema.py` | raw/label/feature column contracts, leakage columns, monitored features |
-| `domain/windows.py` | half-open `TimeWindow` and weekly tick arithmetic |
-| `domain/validation.py` | pure data-contract engine with `PASS`/`WARN`/`FAIL` |
-| `domain/features.py` | the one shared `build_features` used by training, batch and API |
-| `domain/metrics.py` | RMSE, MAE, WAPE, bias |
-| `domain/baseline.py` | naive `workingday × hour` profile baseline |
-| `domain/drift.py` | native PSI statistics and the drift summary |
-| `domain/stats.py` | day-block paired bootstrap confidence interval |
-| `domain/gates.py` | six promotion gates and their evidence |
-| `domain/policies.py` | retrain trigger, first-champion/challenger promotion, probation |
-| `domain/lifecycle.py` | five-stage model state machine and `ModelVersion` |
-| `domain/events.py` | typed lifecycle audit events |
-| `application/ports.py` | every side effect as a Protocol |
-| `application/pipeline.py` | retrying `Step`/`Pipeline` with run-ledger rows |
-| `application/services/` | bootstrap, training, evaluation, promotion, scoring, monitoring, tick |
-| `adapters/storage/` | SQLite migrations, prediction log, labels, events, snapshots, KV, ledger |
-| `adapters/tracking/` | MLflow experiment tracking and artifacts |
-| `adapters/registry/` | MLflow registry with tags and aliases |
-| `adapters/models/` | deterministic LightGBM trainer |
-| `adapters/data/` | bundled dataset, UCI acquisition, weekly replay source |
-| `adapters/drift/` | Evidently HTML renderer and its Null Object |
-| `adapters/scheduling/` | APScheduler replay loop with a persisted cursor |
-| `adapters/serving_client/` | HTTP scoring gateway |
-| `bootstrap/container.py` | the only composition root |
-| `entrypoints/cli/` | Typer commands (`mll ...`) |
-| `entrypoints/api/` | FastAPI app factory, routes, schemas, hot reload, metrics |
-| `entrypoints/dashboard/` | Streamlit Control Room and testable view models |
-| `entrypoints/drill/` | replay engine, four scenarios, fault injection, reports |
+| `domain/schema.py` | contratos de columnas raw/label/feature, columnas de fuga, features monitoreadas |
+| `domain/windows.py` | `TimeWindow` semiabierto y aritmética de ticks semanales |
+| `domain/validation.py` | motor puro de contratos de datos con `PASS`/`WARN`/`FAIL` |
+| `domain/features.py` | el `build_features` compartido que usan entrenamiento, batch y API |
+| `domain/metrics.py` | RMSE, MAE, WAPE, sesgo |
+| `domain/baseline.py` | baseline ingenuo de perfil `workingday × hour` |
+| `domain/drift.py` | estadísticos PSI nativos y el resumen de drift |
+| `domain/stats.py` | intervalo de confianza bootstrap pareado por bloques de días |
+| `domain/gates.py` | seis compuertas de promoción y su evidencia |
+| `domain/policies.py` | disparo de reentrenamiento, promoción campeón/retador inicial y probation |
+| `domain/lifecycle.py` | máquina de estados del modelo de cinco etapas y `ModelVersion` |
+| `domain/events.py` | eventos de auditoría del ciclo de vida tipados |
+| `application/ports.py` | cada efecto secundario como Protocol |
+| `application/pipeline.py` | `Step`/`Pipeline` con reintentos y filas en el run ledger |
+| `application/services/` | bootstrap, entrenamiento, evaluación, promoción, scoring, monitoreo, tick |
+| `adapters/storage/` | migraciones SQLite, log de predicciones, etiquetas, eventos, snapshots, KV, ledger |
+| `adapters/tracking/` | tracking de experimentos y artefactos con MLflow |
+| `adapters/registry/` | registro MLflow con tags y aliases |
+| `adapters/models/` | entrenador LightGBM determinista |
+| `adapters/data/` | dataset incluido, adquisición UCI, fuente de replay semanal |
+| `adapters/drift/` | renderizador HTML de Evidently y su Null Object |
+| `adapters/scheduling/` | loop de replay de APScheduler con cursor persistido |
+| `adapters/serving_client/` | gateway HTTP de scoring |
+| `bootstrap/container.py` | la única raíz de composición |
+| `entrypoints/cli/` | comandos Typer (`mll ...`) |
+| `entrypoints/api/` | fábrica de la app FastAPI, rutas, schemas, recarga en caliente, métricas |
+| `entrypoints/dashboard/` | Control Room de Streamlit y view models testeables |
+| `entrypoints/drill/` | motor de replay, cuatro escenarios, inyección de fallos, reportes |
 
-## Ports and adapters
+## Puertos y adaptadores
 
-| Port | Production adapter | Test double |
+| Puerto | Adaptador de producción | Doble de prueba |
 |---|---|---|
 | `Clock` | `SystemClock`, `SimulatedClock` | `SimulatedClock` |
-| `BatchSource` | `ReplayBatchSource` over `BundledDataset` | in-memory frames |
-| `LabeledDataRepository` | `CompositeLabeledData` (archive + production labels) | in-memory |
+| `BatchSource` | `ReplayBatchSource` sobre `BundledDataset` | frames en memoria |
+| `LabeledDataRepository` | `CompositeLabeledData` (archivo + etiquetas de producción) | en memoria |
 | `PredictionLog` | `SqlitePredictionLog` | `InMemoryPredictionLog` |
-| `EventStore`, `SnapshotStore`, `KeyValueStore`, `RunLedger` | SQLite adapters | in-memory |
+| `EventStore`, `SnapshotStore`, `KeyValueStore`, `RunLedger` | adaptadores SQLite | en memoria |
 | `ExperimentTracker` | `MlflowTracker` | `InMemoryTracker` |
 | `ModelRegistry` | `MlflowRegistry` | `InMemoryRegistry` |
-| `ModelTrainer` | `LightGbmTrainer` | `FakeTrainer`, `PoisonedTrainer` (drill only) |
+| `ModelTrainer` | `LightGbmTrainer` | `FakeTrainer`, `PoisonedTrainer` (solo drill) |
 | `DriftReportRenderer` | `EvidentlyReportRenderer` | `NullReportRenderer` |
-| `ScoringGateway` | `InProcessGateway`, `HttpScoringGateway` | in-memory gateway |
-| `ServingModelProvider` | API `ModelHolder` | fixed predictor |
+| `ScoringGateway` | `InProcessGateway`, `HttpScoringGateway` | gateway en memoria |
+| `ServingModelProvider` | `ModelHolder` de la API | predictor fijo |
 
-The shared registry and prediction-log contract suites run against both the in-memory fake
-and the real adapter, so the port and the adapter cannot drift apart silently.
+Las suites de contrato compartidas del registro y del log de predicciones se ejecutan contra el fake
+en memoria y contra el adaptador real, de modo que el puerto y el adaptador no puedan separarse en
+silencio.
 
-## Patterns and where they earn their place
+## Patrones y dónde se justifican
 
-- **Hexagonal / ports and adapters** — [`application/ports.py`](../src/mlops_lifecycle_lab/application/ports.py).
-  Lets the same lifecycle run in-process in the drill and through HTTP in Compose.
-- **Strategy** — [`domain/gates.py`](../src/mlops_lifecycle_lab/domain/gates.py) defines a
-  `Gate` Protocol with six interchangeable implementations; `ModelTrainer` is a strategy
-  too. New evidence can be added without editing the evaluation service.
-- **Specification / composable policy** — `PromotionPolicy` evaluates every gate and
-  combines `all(...)`; `RetrainTriggerPolicy` encodes the ordered decision matrix.
-- **State machine** — [`domain/lifecycle.py`](../src/mlops_lifecycle_lab/domain/lifecycle.py)
-  owns the only legal `ModelStage` transitions; adapters validate before writing.
-- **Repository + unit of work** — [`adapters/storage/`](../src/mlops_lifecycle_lab/adapters/storage)
-  hides SQL behind ports and exposes `SqliteDatabase.transaction()`.
-- **Factory + composition root** — [`bootstrap/container.py`](../src/mlops_lifecycle_lab/bootstrap/container.py)
-  is the single place that knows concrete classes.
-- **Pipeline / command** — [`application/pipeline.py`](../src/mlops_lifecycle_lab/application/pipeline.py)
-  runs named steps with retries and writes every attempt to the run ledger.
-- **Decorator** — `PoisonedTrainer` in [`entrypoints/drill/faults.py`](../src/mlops_lifecycle_lab/entrypoints/drill/faults.py)
-  injects the rollback-scenario fault without touching production training.
-- **Null Object** — `NullReportRenderer` keeps `--fast` and tests free of HTML rendering.
-- **Domain events** — lifecycle events are appended to SQLite and are the audit backbone
-  for the dashboard, the drill report and promotion approval.
+- **Hexagonal / puertos y adaptadores** — [`application/ports.py`](../src/mlops_lifecycle_lab/application/ports.py).
+  Permite que el mismo ciclo de vida se ejecute en proceso en el drill y por HTTP en Compose.
+- **Strategy** — [`domain/gates.py`](../src/mlops_lifecycle_lab/domain/gates.py) define un Protocol
+  `Gate` con seis implementaciones intercambiables; `ModelTrainer` también es una estrategia. Se puede
+  añadir nueva evidencia sin editar el servicio de evaluación.
+- **Especificación / política componible** — `PromotionPolicy` evalúa cada compuerta y las combina
+  con `all(...)`; `RetrainTriggerPolicy` codifica la matriz de decisión ordenada.
+- **Máquina de estados** — [`domain/lifecycle.py`](../src/mlops_lifecycle_lab/domain/lifecycle.py)
+  es dueña de las únicas transiciones legales de `ModelStage`; los adaptadores validan antes de escribir.
+- **Repositorio + unidad de trabajo** — [`adapters/storage/`](../src/mlops_lifecycle_lab/adapters/storage)
+  oculta el SQL detrás de puertos y expone `SqliteDatabase.transaction()`.
+- **Factory + raíz de composición** — [`bootstrap/container.py`](../src/mlops_lifecycle_lab/bootstrap/container.py)
+  es el único lugar que conoce las clases concretas.
+- **Pipeline / comando** — [`application/pipeline.py`](../src/mlops_lifecycle_lab/application/pipeline.py)
+  ejecuta pasos con nombre con reintentos y escribe cada intento en el run ledger.
+- **Decorator** — `PoisonedTrainer` en [`entrypoints/drill/faults.py`](../src/mlops_lifecycle_lab/entrypoints/drill/faults.py)
+  inyecta el fallo del escenario de rollback sin tocar el entrenamiento de producción.
+- **Null Object** — `NullReportRenderer` mantiene libres de renderizado HTML a `--fast` y a las pruebas.
+- **Eventos de dominio** — los eventos del ciclo de vida se añaden a SQLite y son la columna vertebral
+  de auditoría del dashboard, del reporte del drill y de la aprobación de promociones.
 - **View model** — [`entrypoints/dashboard/viewmodels.py`](../src/mlops_lifecycle_lab/entrypoints/dashboard/viewmodels.py)
-  turns ports into frozen, testable read models; pages stay thin.
+  convierte puertos en modelos de lectura inmutables y testeables; las páginas se mantienen delgadas.
 
-## One lifecycle tick
+## Un tick del ciclo de vida
 
 ```mermaid
 sequenceDiagram
@@ -144,11 +144,11 @@ sequenceDiagram
   T-->>S: TickReport(events, snapshot, action)
 ```
 
-The full order is validation → scoring → labels → snapshot → probation/decision →
-(train → gates → promote/reject). A FAIL batch never scores, never writes a prediction and
-never trains. Re-running an already completed tick is a no-op (`ALREADY_COMPLETED`).
+El orden completo es validación → scoring → etiquetas → snapshot → probation/decisión →
+(entrenar → compuertas → promover/rechazar). Un lote `FAIL` nunca se puntúa, nunca escribe una
+predicción y nunca entrena. Volver a ejecutar un tick ya completado no hace nada (`ALREADY_COMPLETED`).
 
-## Model lifecycle
+## Ciclo de vida del modelo
 
 ```mermaid
 stateDiagram-v2
@@ -162,11 +162,10 @@ stateDiagram-v2
   ROLLED_BACK --> [*]
 ```
 
-`mll.stage` is a tag, not an MLflow stage (stages are deprecated). Aliases are
-`champion`, `previous-champion` and `challenger`. See
-[ADR-0003](adr/0003-registry-aliases-not-stages.md).
+`mll.stage` es un tag, no una etapa de MLflow (las etapas están obsoletas). Los aliases son
+`champion`, `previous-champion` y `challenger`. Ver [ADR-0003](adr/0003-registry-aliases-not-stages.md).
 
-## Data flow and lineage
+## Flujo de datos y linaje
 
 ```text
 UCI hour.csv (pinned sha256)
@@ -191,52 +190,52 @@ labels (entity_id) ────────────────────�
                          snapshot (WAPE/RMSE/PSI) + audit events
 ```
 
-Every prediction row stores the twelve features, model name/version, event timestamp,
-score timestamp, source and request id. Labels attach by `entity_id`; the
-`labeled_predictions` view joins them. The data fingerprint, run id and registry tags make
-the chain data → run → version → prediction auditable from SQLite and MLflow alone.
+Cada fila de predicción guarda las doce features, el nombre y la versión del modelo, la marca de tiempo
+del evento, la marca de tiempo del scoring, la fuente y el request id. Las etiquetas se asocian por
+`entity_id`; la vista `labeled_predictions` las une. La huella de datos, el run id y los tags del
+registro hacen auditable la cadena datos → run → versión → predicción solo desde SQLite y MLflow.
 
-## Failure modes
+## Modos de fallo
 
-| Failure | Behaviour |
+| Fallo | Comportamiento |
 |---|---|
-| Invalid batch | `BATCH_QUARANTINED`; the week is never scored, logged or trained on; next week continues normally |
-| Hot-reload failure | Previous predictor keeps serving; `mll_model_reload_failures_total` increments; the new version is retried next interval |
-| Delayed labels | The window is scored before labels exist; monitoring only counts labeled rows of the current champion |
-| Scheduler restart | The cursor lives in SQLite KV and only advances after a completed tick; a restart continues at `cursor + 1` |
-| SQLite lock | WAL mode, `busy_timeout=5000`, one connection with an `RLock`; serving worker threads share it safely |
-| MLflow unavailable | Training/evaluation fail loudly and are recorded in the ledger; serving keeps the loaded champion |
-| No champion | `/readyz` returns 503 and predict endpoints return 503 until bootstrap/init completes |
-| Evidently unavailable | `--fast` / tests use the Null renderer; native PSI is independent of Evidently |
-| Corrupt workspace | The dashboard shows an error state with a safe message and technical detail, not a stack trace alone |
+| Lote inválido | `BATCH_QUARANTINED`; la semana nunca se puntúa, se registra ni se entrena; la siguiente semana continúa con normalidad |
+| Falla de la recarga en caliente | El predictor anterior sigue sirviendo; `mll_model_reload_failures_total` aumenta; la nueva versión se reintenta en el siguiente intervalo |
+| Etiquetas tardías | La ventana se puntúa antes de que existan etiquetas; el monitoreo solo cuenta filas etiquetadas del campeón actual |
+| Reinicio del scheduler | El cursor vive en el KV de SQLite y solo avanza tras completar un tick; un reinicio continúa en `cursor + 1` |
+| Lock de SQLite | Modo WAL, `busy_timeout=5000`, una conexión con un `RLock`; los hilos de trabajo del servicio la comparten de forma segura |
+| MLflow no disponible | Entrenamiento y evaluación fallan de forma visible y quedan registrados en el ledger; el servicio conserva el campeón cargado |
+| Sin campeón | `/readyz` devuelve 503 y los endpoints de predicción devuelven 503, hasta que bootstrap/init termina |
+| Evidently no disponible | `--fast` y las pruebas usan el renderizador Null; el PSI nativo es independiente de Evidently |
+| Workspace corrupto | El dashboard muestra un estado de error con un mensaje seguro y detalle técnico, no solo un stack trace |
 
-## Extension points
+## Puntos de extensión
 
-- A new drift statistic: add a pure function in `domain/drift.py` and surface it in
-  `DriftSummary`; Evidently stays an optional renderer.
-- A new gate: implement the `Gate` Protocol and add it to the policy list; the report and
-  dashboard pick it up through the existing serialisation.
-- A new model flavour: implement `ModelTrainer` and register through the same
-  flavor-agnostic `Predictor`/`ModelRegistry` ports.
-- A new batch source: implement `BatchSource`; the tick and drill do not change.
-- A new front end: consume the dashboard view models or the API; no domain code moves.
+- Un nuevo estadístico de drift: añadir una función pura en `domain/drift.py` y exponerla en
+  `DriftSummary`; Evidently sigue siendo un renderizador opcional.
+- Una nueva compuerta: implementar el Protocol `Gate` y añadirla a la lista de la política; el reporte
+  y el dashboard la recogen mediante la serialización existente.
+- Un nuevo flavor de modelo: implementar `ModelTrainer` y registrarlo mediante los mismos puertos
+  `Predictor`/`ModelRegistry`, independientes del flavor.
+- Una nueva fuente de lotes: implementar `BatchSource`; el tick y el drill no cambian.
+- Un nuevo front end: consumir los view models del dashboard o la API; no se mueve código de dominio.
 
-## Testing strategy
+## Estrategia de pruebas
 
-The pyramid is explicit and the markers are part of the contract:
+La pirámide es explícita y los marcadores forman parte del contrato:
 
-- **Unit** — domain and application with in-memory fakes; hypothesis properties for
-  metrics, PSI, metrics invariants, gates, bootstrap and the state machine.
-- **Contract** — the same suite runs against fake and real registry / prediction log.
-- **Integration** — SQLite in a temp workspace, MLflow SQLite, FastAPI `TestClient`,
-  uvicorn on a loopback port, APScheduler, Evidently.
-- **End-to-end** (`slow`) — the four drill scenarios and the CLI commands.
-- **Quality** — the S5 bootstrap quality gate and the drift-drill acceptance numbers.
-- **UI** (`ui`) — Streamlit AppTest plus Playwright screenshots of the real dashboard.
-- **Docker** (`docker`) — the real Compose smoke through `scripts/smoke_compose.sh`.
-- **Architecture** — import-linter positives and a planted-violation negative test.
+- **Unitarias** — dominio y aplicación con fakes en memoria; propiedades de hypothesis para métricas,
+  PSI, invariantes de métricas, compuertas, bootstrap y la máquina de estados.
+- **Contrato** — la misma suite corre contra el fake y contra el registro y el log de predicciones reales.
+- **Integración** — SQLite en un workspace temporal, SQLite de MLflow, `TestClient` de FastAPI,
+  uvicorn en un puerto de loopback, APScheduler, Evidently.
+- **End-to-end** (`slow`) — los cuatro escenarios del drill y los comandos de la CLI.
+- **Calidad** — la compuerta de calidad bootstrap S5 y los números de aceptación del drill de drift.
+- **UI** (`ui`) — Streamlit AppTest más capturas de Playwright del dashboard real.
+- **Docker** (`docker`) — el smoke real de Compose a través de `scripts/smoke_compose.sh`.
+- **Arquitectura** — positivos de import-linter y una prueba negativa con violación plantada.
 
-`pytest-socket` blocks non-loopback sockets in every test, telemetry is disabled and all
-seeds are fixed. CI enforces `ruff`, `mypy --strict` on `src/`, import-linter,
-`uv lock --check`, coverage ≥ 85% and `pip-audit`/gitleaks. See
-[CONTRIBUTING.md](../CONTRIBUTING.md) for the exact commands.
+`pytest-socket` bloquea los sockets que no son de loopback en todas las pruebas, la telemetría está
+desactivada y todas las semillas están fijadas. CI aplica `ruff`, `mypy --strict` sobre `src/`,
+import-linter, `uv lock --check`, cobertura ≥ 85% y `pip-audit`/gitleaks. Ver
+[CONTRIBUTING.md](../CONTRIBUTING.md) para los comandos exactos.

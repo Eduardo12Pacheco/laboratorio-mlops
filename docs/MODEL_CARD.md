@@ -1,56 +1,57 @@
-# Model card — bike-demand champion
+# Model card — campeón de bike-demand
 
-This card describes the production model family used by the lab: a LightGBM regressor
-predicting hourly bike rentals (`cnt`) for Washington DC, plus the champion/challenger
-lifecycle around it. It follows the spirit of the Model Cards for Model Reporting paper;
-the lifecycle, not model sophistication, is the product.
+Esta ficha describe la familia de modelos de producción que usa el laboratorio: un regresor LightGBM
+que predice los alquileres horarios de bicicletas (`cnt`) en Washington D. C., junto con el ciclo de
+vida campeón/retador que lo rodea. Sigue el espíritu del artículo *Model Cards for Model Reporting*;
+el producto es el ciclo de vida, no la sofisticación del modelo.
 
-## Intended use
+## Uso previsto
 
-- Demonstrate an end-to-end, local-first MLOps loop on a real temporal dataset.
-- Serve hourly demand predictions through the FastAPI endpoints.
-- Compare a champion and a challenger on a labelled holdout with explicit gates.
-- Monitor trailing performance and covariate drift, and trigger a retrain on a
-  label-based SLO breach.
+- Demostrar un bucle MLOps completo y local-first sobre un dataset temporal real.
+- Servir predicciones horarias de demanda a través de los endpoints de FastAPI.
+- Comparar un campeón y un retador sobre un holdout etiquetado con compuertas explícitas.
+- Monitorear el rendimiento móvil y el drift de covariables, y disparar un reentrenamiento ante una
+  caída del SLO basada en etiquetas.
 
-Out of scope: real-time demand forecasting for operations, capacity planning, pricing,
-person-level decisions, or any hosted/production service. The replay's "production" is the
-2012 half of the bundled dataset ([ADR-0009](adr/0009-trend-feature-and-poisson-objective.md)).
+Fuera de alcance: pronóstico de demanda en tiempo real para operaciones, planificación de capacidad,
+precios, decisiones a nivel de persona, o cualquier servicio alojado o de producción. La "producción"
+del replay es la mitad de 2012 del dataset incluido ([ADR-0009](adr/0009-trend-feature-and-poisson-objective.md)).
 
-## Data
+## Datos
 
-| Item | Value |
+| Elemento | Valor |
 |---|---|
-| Dataset | UCI Bike Sharing Dataset (hourly), Fanaee-T 2013 |
+| Dataset | UCI Bike Sharing Dataset (horario), Fanaee-T 2013 |
 | DOI | [10.24432/C5W894](https://doi.org/10.24432/C5W894) |
-| License | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
-| Bundled artifact | `src/mlops_lifecycle_lab/_data/hour.csv.gz` |
-| Rows / window | 17,379 rows, 2011-01-01 00:00 → 2012-12-31 23:00 |
+| Licencia | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Artefacto incluido | `src/mlops_lifecycle_lab/_data/hour.csv.gz` |
+| Filas / ventana | 17,379 filas, 2011-01-01 00:00 → 2012-12-31 23:00 |
 | Target | `cnt` (casual + registered) |
-| Attribution | `_data/ATTRIBUTION.txt` and [DATA.md](DATA.md) |
+| Atribución | `_data/ATTRIBUTION.txt` y [DATA.md](DATA.md) |
 
-The data is bundled and validated offline. The only labels are historical `cnt`; the
-replay scores a week before its labels arrive and then ingests them by `entity_id`. The
-dataset is `WARN` (not `FAIL`) because 22 rows on 2011-03-10 have `hum = 0`; that warning
-is visible in every validation report and never silently ignored.
+Los datos van incluidos y se validan sin conexión. Las únicas etiquetas son el `cnt` histórico; el
+replay puntúa una semana antes de que lleguen sus etiquetas y luego las ingiere por `entity_id`. El
+dataset es `WARN` (no `FAIL`) porque 22 filas del 2011-03-10 tienen `hum = 0`; esa advertencia aparece
+en todos los reportes de validación y nunca se ignora en silencio.
 
 ## Features
 
-The twelve feature columns, in order:
+Las doce columnas de features, en orden:
 
 ```text
 season, mnth, hr, holiday, weekday, workingday, weathersit,
 temp, atemp, hum, windspeed, t_days
 ```
 
-`t_days` is fractional days since 2011-01-01 00:00 and captures the system's growth; without
-it trees cannot extrapolate the 2012 demand level, and retraining barely helps. `yr`,
-`instant`, `casual`, `registered` and `cnt` are leakage/time proxies and never become
-features. `mnth`, `hr` and `weekday` are derived from the timestamp and proven equal to the
-original UCI columns on all 17,379 rows. Training, batch scoring and the API share the same
-pure `build_features` function, so train/serve parity is enforced by construction.
+`t_days` son los días fraccionarios desde 2011-01-01 00:00 y capturan el crecimiento del sistema; sin
+esta columna los árboles no pueden extrapolar el nivel de demanda de 2012, y reentrenar apenas ayuda.
+`yr`, `instant`, `casual`, `registered` y `cnt` son columnas de fuga o proxies temporales y nunca se
+convierten en features. `mnth`, `hr` y `weekday` se derivan del timestamp y se comprobó que son iguales
+a las columnas originales de UCI en las 17,379 filas. El entrenamiento, el scoring por lotes y la API
+comparten la misma función pura `build_features`, de modo que la paridad entre entrenamiento y servicio
+se garantiza por construcción.
 
-## Model and training protocol
+## Modelo y protocolo de entrenamiento
 
 ```text
 LGBMRegressor(
@@ -60,30 +61,29 @@ LGBMRegressor(
 )
 ```
 
-- **Bootstrap champion (v1):** train `2011-01-01 ≤ ts < 2011-10-01` (6,442 rows),
-  validate `2011-10-01 ≤ ts < 2012-01-01` (2,203 rows). First-champion gates are
-  `DATA_VALID`, `ABS_WAPE` and `BEATS_BASELINE`; the committed quality test
-  (`tests/quality/test_bootstrap_champion.py`) checks RMSE, WAPE, the baseline ratio and
-  the ±2.0 RMSE reproduction tolerance through the real adapters.
-- **Challenger (retrain) at tick end `T`:** `cut = T − 14 days`; train on every labelled row
-  with `ts < cut` (archive plus ingested production labels), hold out `[cut, T)`, and
-  re-score the champion on the same holdout. Six gates are evaluated without
-  short-circuiting; the promoted artifact is exactly the evaluated artifact (no refit).
-- **Rollback/probation:** a promoted challenger is watched for 21 days; with at least 150
-  labelled rows a trailing WAPE above the SLO triggers automatic rollback to
-  `previous-champion`.
-- **Trigger policy:** a label-based 28-day WAPE breach only. Covariate PSI is reported but
-  never triggers a retrain ([ADR-0004](adr/0004-label-based-slo-trigger.md)).
+- **Campeón bootstrap (v1):** entrenar con `2011-01-01 ≤ ts < 2011-10-01` (6,442 filas) y validar con
+  `2011-10-01 ≤ ts < 2012-01-01` (2,203 filas). Las compuertas del primer campeón son `DATA_VALID`,
+  `ABS_WAPE` y `BEATS_BASELINE`; la prueba de calidad comprometida
+  (`tests/quality/test_bootstrap_champion.py`) verifica el RMSE, el WAPE, la razón contra el baseline y
+  la tolerancia de reproducción de RMSE de ±2.0 a través de los adaptadores reales.
+- **Retador (reentrenamiento) al final del tick `T`:** `cut = T − 14 días`; entrenar con cada fila
+  etiquetada con `ts < cut` (archivo más etiquetas de producción ingeridas), reservar `[cut, T)` como
+  holdout y volver a puntuar al campeón sobre el mismo holdout. Se evalúan seis compuertas sin
+  cortocircuitos; el artefacto promovido es exactamente el artefacto evaluado (sin reentrenar).
+- **Rollback/probation:** un retador promovido se vigila durante 21 días; con al menos 150 filas
+  etiquetadas, un WAPE móvil por encima del SLO dispara un rollback automático a `previous-champion`.
+- **Política de disparo:** solo una caída del WAPE de 28 días basada en etiquetas. El PSI de
+  covariables se reporta, pero nunca dispara un reentrenamiento ([ADR-0004](adr/0004-label-based-slo-trigger.md)).
 
-The baseline used by `BEATS_BASELINE` is deliberately weak: the mean `cnt` by
-`(workingday, hr)` over the same training rows. It is a floor, not a competitor.
+El baseline que usa `BEATS_BASELINE` es deliberadamente débil: la media de `cnt` por `(workingday, hr)`
+sobre las mismas filas de entrenamiento. Es un piso, no un competidor.
 
-## Metrics
+## Métricas
 
-The table below is generated from the four committed `drill-report/v1` documents by
-`scripts/render_results_table.py`. "As-served" is what the system actually predicted over
-each replay; "frozen-v1" is the counterfactual where the bootstrap champion is never
-replaced. Ratios below 1.0 mean the lifecycle beat the never-retrained model.
+La tabla siguiente se genera a partir de los cuatro documentos `drill-report/v1` comprometidos mediante
+`scripts/render_results_table.py`. "As-served" es lo que el sistema predijo realmente en cada replay;
+"frozen-v1" es el contrafáctico en el que el campeón bootstrap nunca se reemplaza. Las razones menores
+que 1.0 significan que el ciclo de vida superó al modelo que nunca se reentrenó.
 
 <!-- results:start -->
 
@@ -98,48 +98,47 @@ _Generated by `uv run python scripts/render_results_table.py` from `docs/results
 
 <!-- results:end -->
 
-The drift scenario is the headline: 52 weekly ticks, one promotion at tick 13, one
-rejection at tick 52 and no rollback. The full timeline, gate reports and per-tick metrics
-are in [`results/drill-drift.md`](results/drill-drift.md); the raw JSON is the source of
-truth. The two curated Evidently drift reports (trigger and final tick) are committed under
+El escenario de drift es el principal: 52 ticks semanales, una promoción en el tick 13, un rechazo en
+el tick 52 y ningún rollback. La línea de tiempo completa, los reportes de compuertas y las métricas
+por tick están en [`results/drill-drift.md`](results/drill-drift.md); el JSON crudo es la fuente de
+verdad. Los dos reportes curados de drift de Evidently (disparo y tick final) están comprometidos en
 [`assets/reports/`](assets/reports/).
 
-## Evaluation caveats
+## Advertencias de evaluación
 
-- Metrics come from a weekly replay, not independent production traffic. Windows overlap
-  by design (trailing 28 days), so consecutive snapshots are correlated.
-- Labels are delayed by one tick; a snapshot only evaluates labelled rows from the current
-  champion. A newly promoted model needs some labels before its probation can conclude.
-- The holdout is not refit after selection. This is honest but slightly pessimistic:
-  light hyper-parameter adaptation to the holdout would improve reported numbers and was
-  deliberately rejected.
-- The trend feature extrapolates growth. A structural break (new city, new pricing,
-  pandemic) would invalidate it; the SLO trigger and rollback are the safety net, not a
-  guarantee.
-- Cross-platform floating-point differences can move the retrain tick by one week; the
-  golden tests assert event order and tolerances, not bit-equality across operating
-  systems.
+- Las métricas provienen de un replay semanal, no de tráfico de producción independiente. Las ventanas
+  se solapan por diseño (28 días móviles), así que los snapshots consecutivos están correlacionados.
+- Las etiquetas llegan con un tick de retraso; un snapshot solo evalúa filas etiquetadas del campeón
+  actual. Un modelo recién promovido necesita algunas etiquetas antes de que su probation pueda concluir.
+- El holdout no se reentrena después de la selección. Es honesto pero algo pesimista: un ajuste ligero
+  de hiperparámetros sobre el holdout mejoraría los números reportados, y se rechazó deliberadamente.
+- La feature de tendencia extrapola el crecimiento. Una ruptura estructural (nueva ciudad, nueva
+  política de precios, pandemia) la invalidaría; el disparo por SLO y el rollback son la red de
+  seguridad, no una garantía.
+- Las diferencias de punto flotante entre plataformas pueden mover el tick de reentrenamiento una
+  semana; las pruebas golden verifican el orden de los eventos y las tolerancias, no la igualdad de
+  bits entre sistemas operativos.
 
-## Limitations
+## Limitaciones
 
-- No cloud, Kubernetes, managed registry or auth system beyond the optional admin API key.
-- No live feed: "production" is the dataset's 2012 half replayed week by week.
-- No feature store product, AutoML, hyper-parameter search or deep learning.
-- Champion/challenger is evaluated offline on a labelled holdout; shadow/canary traffic
-  splitting is out of scope.
-- The Prometheus endpoint is exposed; scraping and Grafana are not bundled.
-- Model artifacts are trusted local state: loading one executes pickle-based code. Only use
-  registries and artifacts you created or trust. See [SECURITY.md](../SECURITY.md).
+- Sin nube, Kubernetes, registro gestionado ni sistema de auth más allá de la API key de administración opcional.
+- Sin feed en vivo: la "producción" es la mitad de 2012 del dataset, reproducida semana a semana.
+- Sin producto de feature store, AutoML, búsqueda de hiperparámetros ni deep learning.
+- Campeón/retador se evalúa offline sobre un holdout etiquetado; el shadow/canary traffic splitting
+  queda fuera de alcance.
+- El endpoint de Prometheus está expuesto; el scraping y Grafana no vienen incluidos.
+- Los artefactos del modelo son estado local de confianza: cargar uno ejecuta código basado en pickle.
+  Usa solo registros y artefactos que hayas creado o en los que confíes. Ver [SECURITY.md](../SECURITY.md).
 
-## Ethical considerations
+## Consideraciones éticas
 
-The dataset is aggregate hourly bike-rental counts, with no personal data, no faces and no
-individual trajectories. Predictions describe system demand; they should not be used to
-rank, price or exclude people. The replay's historical demand reflects 2011–2012
-Washington DC and may encode pre-existing service patterns; any real deployment would need
-an equity and coverage review that this lab does not perform.
+El dataset son conteos horarios agregados de alquileres de bicicletas, sin datos personales, sin
+rostros y sin trayectorias individuales. Las predicciones describen la demanda del sistema; no deben
+usarse para clasificar, fijar precios ni excluir personas. La demanda histórica del replay refleja el
+Washington D. C. de 2011–2012 y puede codificar patrones de servicio preexistentes; cualquier despliegue
+real necesitaría una revisión de equidad y cobertura que este laboratorio no realiza.
 
-## Reproducibility
+## Reproducibilidad
 
 ```bash
 uv run mll data verify

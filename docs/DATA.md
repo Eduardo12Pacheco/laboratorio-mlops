@@ -1,55 +1,54 @@
-# Data
+# Datos
 
-One problem, one dataset: hourly bike rentals in Washington DC, 2011–2012, from the UCI
-Machine Learning Repository. The dataset is bundled in the wheel so the project works
-fully offline; the optional acquisition command exists only to reproduce the bundle.
+Un problema, un dataset: alquileres horarios de bicicletas en Washington D. C., 2011–2012, del
+UCI Machine Learning Repository. El dataset va incluido en el wheel para que el proyecto funcione
+por completo sin conexión; el comando de adquisición opcional existe solo para reproducir el bundle.
 
-## Provenance
+## Procedencia
 
-| Field | Value |
+| Campo | Valor |
 |---|---|
-| Dataset | Bike Sharing Dataset (hourly) |
-| Author | Hadi Fanaee-T (2013) |
-| Landing page | <https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset> |
+| Dataset | Bike Sharing Dataset (horario) |
+| Autor | Hadi Fanaee-T (2013) |
+| Página del dataset | <https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset> |
 | DOI | [10.24432/C5W894](https://doi.org/10.24432/C5W894) |
-| License | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
-| Pinned archive | <https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip> |
-| Bundled file | `src/mlops_lifecycle_lab/_data/hour.csv.gz` |
-| Manifest | `src/mlops_lifecycle_lab/_data/manifest.json` |
-| Attribution | `src/mlops_lifecycle_lab/_data/ATTRIBUTION.txt` |
+| Licencia | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Archivo fijado | <https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip> |
+| Archivo incluido | `src/mlops_lifecycle_lab/_data/hour.csv.gz` |
+| Manifiesto | `src/mlops_lifecycle_lab/_data/manifest.json` |
+| Atribución | `src/mlops_lifecycle_lab/_data/ATTRIBUTION.txt` |
 
-The bundled `.csv.gz` is an unmodified gzip compression of `hour.csv` from the pinned
-archive. The decompressed bytes are the identity that matters and are what the CLI
-verifies.
+El `.csv.gz` incluido es una compresión gzip sin modificaciones de `hour.csv` del archivo fijado.
+Los bytes descomprimidos son la identidad que importa, y son los que verifica la CLI.
 
-## Checksums
+## Sumas de verificación
 
-| Artifact | sha256 | Size |
+| Artefacto | sha256 | Tamaño |
 |---|---|---|
-| UCI zip | `b70182d0d0508e9abbb79306ce5c0cec34869000f8220175ac83d11dbe845401` | 279,992 B |
-| `hour.csv` (decompressed) | `e03de4ee4ef4dc376ac6e04bf829673c6269e8eba5c60fa121640fa2f829504f` | 1,156,736 B |
-| `hour.csv.gz` (committed) | derived by gzip; not a provenance identity | 256,659 B |
+| ZIP de UCI | `b70182d0d0508e9abbb79306ce5c0cec34869000f8220175ac83d11dbe845401` | 279,992 B |
+| `hour.csv` (descomprimido) | `e03de4ee4ef4dc376ac6e04bf829673c6269e8eba5c60fa121640fa2f829504f` | 1,156,736 B |
+| `hour.csv.gz` (incluido) | derivado por gzip; no es una identidad de procedencia | 256,659 B |
 
-`day.csv` (731 rows) and `Readme.txt` are present in the archive but unused. The archive
-`Readme.txt` is the source for the normalisation constants (`temp` uses −8…+39 °C,
-`atemp` uses −16…+50 °C, `hum` and `windspeed` are divided by 100 and 67 respectively).
+`day.csv` (731 filas) y `Readme.txt` están presentes en el archivo pero no se usan. El `Readme.txt`
+del archivo es la fuente de las constantes de normalización (`temp` usa −8…+39 °C, `atemp` usa
+−16…+50 °C, y `hum` y `windspeed` se dividen entre 100 y 67, respectivamente).
 
-## Schema
+## Esquema
 
-Raw contract (`mll validate`, batch source, serving API), in order:
+Contrato raw (`mll validate`, fuente de lotes y API de serving), en orden:
 
 ```text
 entity_id, timestamp, season, holiday, workingday, weathersit,
 temp, atemp, hum, windspeed
 ```
 
-Labels (archive and training only): `casual, registered, cnt`; the target is `cnt`, and
-`cnt == casual + registered` on every row. `timestamp` is derived from the UCI
-`dteday` + `hr` columns and `entity_id` is the UCI `instant`. The feature contract
-(`FEATURE_COLUMNS`) is defined once in `domain/schema.py`; `yr`, `instant`, `casual`,
-`registered` and `cnt` are leakage/time proxies and never become features.
+Etiquetas (solo archivo y entrenamiento): `casual, registered, cnt`. El target es `cnt`, y
+`cnt == casual + registered` en cada fila. `timestamp` se deriva de las columnas `dteday` + `hr` de
+UCI, y `entity_id` es el `instant` de UCI. El contrato de features (`FEATURE_COLUMNS`) se define una
+sola vez en `domain/schema.py`; `yr`, `instant`, `casual`, `registered` y `cnt` son columnas de fuga
+o proxies temporales y nunca se convierten en features.
 
-## Lineage
+## Linaje
 
 ```text
 UCI archive zip (pinned sha256)
@@ -62,58 +61,57 @@ UCI archive zip (pinned sha256)
             └─ BundledDataset.window()    -> 2012 weekly replay batches
 ```
 
-`mll data fetch --source uci --dest DIR` re-downloads the pinned zip, verifies the zip
-sha256 and then the inner `hour.csv` sha256 before writing anything. It is optional,
-never used by tests or the default runtime path, and refuses mismatches with
-`ChecksumMismatchError` (CLI exit code 2).
+`mll data fetch --source uci --dest DIR` vuelve a descargar el ZIP fijado, verifica el sha256 del ZIP
+y luego el sha256 del `hour.csv` interno antes de escribir nada. Es opcional, nunca lo usan las
+pruebas ni la ruta de ejecución por defecto, y rechaza las discrepancias con `ChecksumMismatchError`
+(código de salida 2 de la CLI).
 
-## Validation rules
+## Reglas de validación
 
-`mll validate` implements the data contract in `domain/validation.py`. It is a pure
-function: rules are all evaluated (no short-circuit) and the input frame is never
-mutated. A failed `ERROR` rule makes the verdict `FAIL`; a failed `WARN` rule makes it
-`WARN`; otherwise `PASS`. A `FAIL` batch is quarantined by the lifecycle tick: never
-scored, never logged, never trained on.
+`mll validate` implementa el contrato de datos de `domain/validation.py`. Es una función pura: todas
+las reglas se evalúan (sin cortocircuito) y el frame de entrada nunca se modifica. Una regla `ERROR`
+fallida hace que el veredicto sea `FAIL`; una regla `WARN` fallida lo convierte en `WARN`; en otro
+caso es `PASS`. Un lote `FAIL` se pone en cuarentena en el tick del ciclo de vida: nunca se puntúa,
+nunca se registra y nunca se entrena con él.
 
-| Rule | Context | Severity | Tolerance |
+| Regla | Contexto | Severidad | Tolerancia |
 |---|---|---|---|
-| `required_columns` | both | ERROR | 0 |
-| `no_nulls` | both | ERROR | 0 |
-| `timestamp_hourly` | both | ERROR | 0 |
-| `timestamp_unique` | both | ERROR | 0 |
-| `timestamp_monotonic` | both | ERROR | 0 |
-| `season_domain` (1–4) | both | ERROR | 0 |
-| `binary_domain` (`holiday`, `workingday`) | both | ERROR | 0 |
-| `weathersit_domain` (1–4) | both | ERROR | 0 |
-| `numeric_range` (`temp/atemp/hum/windspeed` ∈ [0,1]) | both | ERROR | 0 |
-| `hum_positive` | both | WARN | 0 |
-| `gap_hours` (max gap ≤ 48 h) | both | WARN | 0 |
-| `label_consistency` (`cnt == casual + registered`, `cnt ≥ 0`) | training | ERROR | 0 |
-| `batch_size` (1…1000 rows) | batch | ERROR | 0 |
+| `required_columns` | ambos | ERROR | 0 |
+| `no_nulls` | ambos | ERROR | 0 |
+| `timestamp_hourly` | ambos | ERROR | 0 |
+| `timestamp_unique` | ambos | ERROR | 0 |
+| `timestamp_monotonic` | ambos | ERROR | 0 |
+| `season_domain` (1–4) | ambos | ERROR | 0 |
+| `binary_domain` (`holiday`, `workingday`) | ambos | ERROR | 0 |
+| `weathersit_domain` (1–4) | ambos | ERROR | 0 |
+| `numeric_range` (`temp/atemp/hum/windspeed` ∈ [0,1]) | ambos | ERROR | 0 |
+| `hum_positive` | ambos | WARN | 0 |
+| `gap_hours` (hueco máximo ≤ 48 h) | ambos | WARN | 0 |
+| `label_consistency` (`cnt == casual + registered`, `cnt ≥ 0`) | entrenamiento | ERROR | 0 |
+| `batch_size` (1…1000 filas) | lote | ERROR | 0 |
 
-The bundled dataset validates as `WARN` with exactly one failed rule: `hum_positive`,
-22 rows, all on 2011-03-10. There are zero failed `ERROR` rules. The plan mentioned a
-0.5% tolerance for `hum_positive`; S3 and the T2 acceptance require those 22 rows to be
-reported as the single warning, so the implemented tolerance is zero and any zero
-humidity is visible.
+El dataset incluido se valida como `WARN` con exactamente una regla fallida: `hum_positive`, 22 filas,
+todas del 2011-03-10. No hay reglas `ERROR` fallidas. El plan mencionaba una tolerancia de 0.5% para
+`hum_positive`; S3 y la aceptación de T2 exigen que esas 22 filas se reporten como la única
+advertencia, así que la tolerancia implementada es cero y cualquier humedad nula queda visible.
 
-## Known quirks
+## Particularidades conocidas
 
-- The UCI landing page says 17,389 instances; the actual `hour.csv` has 17,379 rows.
-- 165 hours are absent because there were no rentals in those hours (0 nulls, 0
-  duplicate timestamps). The largest gap between consecutive rows is 1 day 13 hours.
-- `windspeed = 0` on 2,180 rows; `weathersit = 4` on only 3 rows.
-- `hum = 0` on 22 rows, all on 2011-03-10, which is why the dataset is `WARN`, not
-  `PASS`.
-- The committed gzip is produced with `gzip -9 -n` (no filename or mtime in the
-  header), hence 256,659 bytes; the planning note's 256,668 bytes came from a gzip run
-  that stored the header metadata. The decompressed sha256 is the binding identity.
-- The replay treats the 2012 half as production. Labels arrive one tick late by design;
-  the data itself has no missing labels.
+- La página de UCI indica 17,389 instancias; el `hour.csv` real tiene 17,379 filas.
+- Faltan 165 horas porque no hubo alquileres en esas horas (0 nulos, 0 marcas de tiempo duplicadas).
+  El mayor hueco entre filas consecutivas es de 1 día 13 horas.
+- `windspeed = 0` en 2,180 filas; `weathersit = 4` solo en 3 filas.
+- `hum = 0` en 22 filas, todas del 2011-03-10; por eso el dataset es `WARN` y no `PASS`.
+- El gzip comprometido se produce con `gzip -9 -n` (sin nombre de archivo ni mtime en el encabezado),
+  de ahí los 256,659 bytes; la nota de planificación decía 256,668 bytes porque provenía de una
+  ejecución de gzip que guardó metadatos del encabezado. El sha256 descomprimido es la identidad
+  vinculante.
+- El replay trata la mitad de 2012 como producción. Las etiquetas llegan con un tick de retraso por
+  diseño; los datos en sí no tienen etiquetas faltantes.
 
-## Result artifacts
+## Artefactos de resultados
 
-The committed drill results are generated by:
+Los resultados comprometidos del drill se generan con:
 
 ```bash
 uv run mll drill run --scenario all \
@@ -121,15 +119,15 @@ uv run mll drill run --scenario all \
 uv run python scripts/render_results_table.py
 ```
 
-`docs/results/drill-*.json` is the reproducible source of truth (`schema:
-drill-report/v1`, seed 42); the `.md` files are rendered from it and
-[`results-table.md`](results/results-table.md) is generated from all four JSON reports by
-`scripts/render_results_table.py --check` in the docs gate. The two curated Evidently
-reports under `assets/reports/` use the dataset windows described there and share one
-extracted JavaScript bundle so the directory stays under 5 MB; regenerate them with
-`uv run python scripts/render_drift_reports.py`.
+`docs/results/drill-*.json` es la fuente de verdad reproducible (`schema: drill-report/v1`, semilla
+42); los archivos `.md` se renderizan a partir de él, y
+[`results-table.md`](results/results-table.md) se genera a partir de los cuatro reportes JSON con
+`scripts/render_results_table.py --check` en la compuerta de documentación. Los dos reportes curados
+de Evidently en `assets/reports/` usan las ventanas del dataset descritas allí y comparten un único
+bundle de JavaScript extraído, para que el directorio se mantenga por debajo de 5 MB. Para
+regenerarlos, ejecuta `uv run python scripts/render_drift_reports.py`.
 
-## Reproducing the bundle
+## Reproducir el bundle
 
 ```bash
 tmp="$(mktemp -d)"
