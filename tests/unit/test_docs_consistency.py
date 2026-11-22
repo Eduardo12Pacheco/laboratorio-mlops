@@ -8,6 +8,7 @@ reproducible from the JSON reports. The tests drive the same script a reviewer r
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -24,6 +25,8 @@ def _run_script(*args: str, cwd: Path = ROOT) -> subprocess.CompletedProcess[str
         cwd=cwd,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        env={**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
         check=False,
     )
 
