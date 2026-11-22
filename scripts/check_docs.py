@@ -48,7 +48,7 @@ _ABSOLUTE_HOME_RE = re.compile(r"(/home/[^/\s]+/|C:\\\\Users\\\\)")
 
 def _markdown_files(root: Path) -> list[Path]:
     files = sorted((root / "docs").rglob("*.md"))
-    for name in ("README.md", "CONTRIBUTING.md", "SECURITY.md"):
+    for name in ("README.md", "README.en.md", "CONTRIBUTING.md", "SECURITY.md"):
         candidate = root / name
         if candidate.is_file():
             files.append(candidate)
@@ -173,7 +173,7 @@ def _check_results_blocks(root: Path, table_module: ModuleType) -> list[str]:
         expected = table_module.render_table(results_dir).strip()
     except (FileNotFoundError, ValueError):
         return errors
-    for name in ("README.md", "docs/MODEL_CARD.md"):
+    for name in ("README.md", "README.en.md", "docs/MODEL_CARD.md"):
         path = root / name
         if not path.is_file():
             continue

@@ -23,6 +23,7 @@ TOP_LEVEL_FILES = (
     ".env.example",
     "Dockerfile",
     "LICENSE",
+    "README.en.md",
     "README.md",
     "compose.yaml",
     "install.ps1",

@@ -25,6 +25,7 @@ REQUIRED = {
     "uv.lock",
     ".env.example",
     "LICENSE",
+    "README.en.md",
     "README.md",
 }
 EXCLUDED_PREFIXES = ("tests/", "docs/", ".github/", ".venv/", ".git/")

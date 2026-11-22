@@ -1,67 +1,74 @@
 # mlops-lifecycle-lab
 
+**Español** · [English](README.en.md)
+
 [![CI](https://github.com/Eduardo12Pacheco/laboratorio-mlops/actions/workflows/ci.yml/badge.svg)](https://github.com/Eduardo12Pacheco/laboratorio-mlops/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/Eduardo12Pacheco/laboratorio-mlops)](https://github.com/Eduardo12Pacheco/laboratorio-mlops/releases)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Licencia: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](pyproject.toml)
 
-**An end-to-end, local-first MLOps lifecycle on real hourly bike-rental demand data:**
-validation → shared features → tracked training → champion/challenger registry → batch and
-online serving → prediction logging → drift and performance monitoring → automated retrain
-with statistical promotion gates → probation and rollback, proven by a reproducible drill.
+**Un ciclo de vida MLOps completo y local sobre datos reales de alquiler de bicicletas por
+hora:** validación → features compartidas → entrenamiento trazado → registro
+campeón/retador → servicio por lotes y online → registro de predicciones → monitoreo de
+drift y rendimiento → reentrenamiento automático con compuertas estadísticas → probation y
+rollback, demostrado con un drill reproducible.
 
-> [Español](README.es.md) · [Architecture](docs/ARCHITECTURE.md) · [Operations](docs/OPERATIONS.md) · [Model card](docs/MODEL_CARD.md) · [Data](docs/DATA.md)
+> [Arquitectura](docs/ARCHITECTURE.md) · [Operación](docs/OPERATIONS.md) · [Model card](docs/MODEL_CARD.md) · [Datos](docs/DATA.md)
 
-![The Control Room: five pages of the real lifecycle](docs/assets/hero.gif)
+![El Control Room: cinco páginas del ciclo de vida real](docs/assets/hero.gif)
 
-## What it does
+## Qué hace
 
-- **Contract-first data.** A pure validation engine runs 13 named rules; a bad batch is
-  quarantined before it is scored or logged (never a silent bad prediction).
-- **One feature function.** Batch and online paths call the same `build_features`, and a
-  parity test proves they agree; leakage columns never reach the model.
-- **Tracked training and an alias registry.** MLflow records params, metrics, tags, gate
-  evidence and the model; lifecycle lives in `mll.stage` tags plus `champion`,
-  `previous-champion` and `challenger` aliases, never deprecated stages.
-- **Serving with hot reload.** FastAPI endpoints for single/batch predictions and delayed
-  labels, a Prometheus `/metrics`, request ids and a champion that is swapped atomically.
-- **Honest monitoring.** Trailing-28-day WAPE/RMSE/MAE/bias from labeled predictions are
-  reported separately from covariate and prediction PSI against the champion's training
-  window, so seasonality is visible without being mistaken for model harm.
-- **Automated lifecycle.** A six-gate champion/challenger decision (data validity, absolute
-  WAPE, baseline ratio, improvement, day-block bootstrap significance, segment regression),
-  21-day probation, automatic rollback, a run ledger and a restart-safe replay scheduler.
-- **A finished Control Room.** Five pages, light and dark, explicit loading/empty/error
-  states and status conveyed by icon and label, never colour alone.
+- **Datos con contrato.** Un motor puro de validación ejecuta 13 reglas con nombre; un lote
+  inválido se pone en cuarentena antes de puntuarse o registrarse (nunca una predicción
+  mala silenciosa).
+- **Una sola función de features.** Los caminos batch y online llaman al mismo
+  `build_features` y una prueba de paridad demuestra que coinciden; las columnas de fuga
+  nunca llegan al modelo.
+- **Entrenamiento trazado y registro por alias.** MLflow guarda parámetros, métricas, tags,
+  evidencia de compuertas y el modelo; el ciclo de vida vive en tags `mll.stage` y alias
+  `champion`, `previous-champion` y `challenger`, nunca en etapas obsoletas.
+- **Servicio con recarga en caliente.** Endpoints FastAPI para predicción individual, por
+  lotes y etiquetas tardías, `/metrics` de Prometheus, request ids y un campeón que se
+  intercambia de forma atómica.
+- **Monitoreo honesto.** WAPE/RMSE/MAE/sesgo de los últimos 28 días con etiquetas se
+  reportan aparte del PSI de covariables y predicciones contra la ventana de entrenamiento
+  del campeón, así la estacionalidad se ve sin confundirse con daño al modelo.
+- **Ciclo de vida automático.** Seis compuertas campeón/retador (validez, WAPE absoluto,
+  ratio contra baseline, mejora, significancia por bootstrap de días y regresión por
+  segmento), probation de 21 días, rollback automático, run ledger y un scheduler de replay
+  resistente a reinicios.
+- **Un Control Room terminado.** Cinco páginas, modo claro y oscuro, estados explícitos de
+  carga/vacío/error y estado comunicado con ícono y etiqueta, nunca solo con color.
 
-## Architecture
+## Arquitectura
 
 ```mermaid
 flowchart LR
-  data[Bundled UCI data] --> validate --> features --> train
-  train --> registry[(MLflow registry aliases)]
-  registry --> serve[FastAPI serving]
-  serve --> log[(SQLite prediction log)]
-  log --> monitor[28-day metrics + PSI]
-  monitor --> policy[Retrain policy]
+  data[Datos UCI incluidos] --> validate --> features --> train
+  train --> registry[(Alias del registro MLflow)]
+  registry --> serve[Servicio FastAPI]
+  serve --> log[(Predicciones en SQLite)]
+  log --> monitor[Métricas 28d + PSI]
+  monitor --> policy[Política de reentrenamiento]
   policy --> train
   registry --> ui[Streamlit Control Room]
   log --> ui
 ```
 
-Hexagonal, typed Python 3.12: pure `domain`, `application` use cases over ports, adapters for
-SQLite, MLflow, LightGBM, Evidently and HTTP, and a composition root that wires them. The
-dependency direction is enforced by import-linter in CI; see
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and the [ADRs](docs/adr/).
+Python 3.12 tipado y hexagonal: `domain` puro, casos de uso `application` sobre puertos,
+adaptadores para SQLite, MLflow, LightGBM, Evidently y HTTP, y una raíz de composición que
+los conecta. La dirección de dependencias la verifica import-linter en CI; ver
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) y los [ADRs](docs/adr/).
 
-## Quickstart
+## Inicio rápido
 
-Docker path (Linux/macOS, needs Docker ≥ 24 and Compose v2):
+Ruta Docker (Linux/macOS, requiere Docker ≥ 24 y Compose v2):
 
 ```bash
 git clone https://github.com/Eduardo12Pacheco/laboratorio-mlops && cd laboratorio-mlops
 ./install.sh
-# Open http://127.0.0.1:14501 (MLflow: http://127.0.0.1:14000)
+# Abrir http://127.0.0.1:14501 (MLflow: http://127.0.0.1:14000)
 ```
 
 Windows PowerShell:
@@ -69,10 +76,10 @@ Windows PowerShell:
 ```powershell
 git clone https://github.com/Eduardo12Pacheco/laboratorio-mlops; cd laboratorio-mlops
 .\install.ps1
-# Open http://127.0.0.1:14501
+# Abrir http://127.0.0.1:14501
 ```
 
-L1 without Docker (Python 3.12 + `uv`, no clone needed; each release also attaches the wheel):
+L1 sin Docker (Python 3.12 + `uv`, sin clonar; cada release adjunta además el wheel):
 
 ```bash
 uv tool install git+https://github.com/Eduardo12Pacheco/laboratorio-mlops
@@ -80,13 +87,13 @@ mll quickstart
 mll dashboard
 ```
 
-Run `./install.sh --check` (or `.\install.ps1 -Check`) for a side-effect-free prerequisite
-report, and `mll doctor` for the same checks on the L1 path.
+Ejecuta `./install.sh --check` (o `.\install.ps1 -Check`) para un informe de requisitos sin
+efectos secundarios, y `mll doctor` para las mismas comprobaciones en la ruta L1.
 
-## Results
+## Resultados
 
-Every number below comes from a committed, reproducible drill run (seed 42, 52 weeks,
-schema `drill-report/v1`); see [docs/results](docs/results) and
+Cada número proviene de un drill comprometido y reproducible (semilla 42, 52 semanas,
+esquema `drill-report/v1`); ver [docs/results](docs/results) y
 [docs/MODEL_CARD.md](docs/MODEL_CARD.md).
 
 <!-- results:start -->
@@ -100,44 +107,44 @@ schema `drill-report/v1`); see [docs/results](docs/results) and
 _Generated by `uv run python scripts/render_results_table.py` from `docs/results/drill-*.json` (seed 42, schema `drill-report/v1`); do not edit by hand._
 <!-- results:end -->
 
-## The drift drill
+## El drift drill
 
 ```bash
 mll drill run --scenario drift --weeks 52 --check
 ```
 
-The drill replays 2012 week by week. Look for the trigger at the end of 2012-04-01 (28-day
-WAPE `0.3086`), the promoted v2 (RMSE `53.27` vs champion `120.93`, a 55.95% improvement, bootstrap
-lower bound `9000.84`), probation passing three ticks later and the final challenger rejected at
-the end of the year. The automation cuts as-served 2012 RMSE from `109.92` (never-retrained
-v1) to `70.72`. The full timeline is in
-[docs/results/drill-drift.md](docs/results/drill-drift.md); `--scenario all` runs
-`drift`, `gate-reject`, `bad-batch` and `rollback` in isolated workspaces.
+El drill reproduce 2012 semana a semana. Busca el disparo al final del 2012-04-01 (WAPE de
+28 días `0.3086`), la v2 promovida (RMSE `53.27` contra `120.93` del campeón, mejora de 55.95%, cota
+inferior del bootstrap `9000.84`), la probation superada tres ticks después y el retador
+final rechazado al terminar el año. La automatización reduce el RMSE servido de 2012 de
+`109.92` (v1 nunca reentrenada) a `70.72`. La línea de tiempo completa está en
+[docs/results/drill-drift.md](docs/results/drill-drift.md); `--scenario all` ejecuta
+`drift`, `gate-reject`, `bad-batch` y `rollback` en espacios de trabajo aislados.
 
-Screenshots of every page in both themes live in
-[docs/assets/screenshots](docs/assets/screenshots); they are captured from the real app by
+Las capturas de cada página en ambos temas están en
+[docs/assets/screenshots](docs/assets/screenshots) y se toman de la app real con
 `scripts/capture_screenshots.py`.
 
-## Limitations
+## Limitaciones
 
-- Not a cloud service: no Kubernetes, managed services, auth system (only an optional admin
-  API key), Grafana/Prometheus server or canary traffic splitting.
-- "Production" is a replay of the dataset's 2012 half; no live data feed or feature store.
-- The model is deliberately simple (one LightGBM Poisson model, no tuning/AutoML/deep
-  learning); the lifecycle, not benchmark accuracy, is the product.
-- Drift PSI is informational and never triggers a retrain; only label-based WAPE does, by
-  design: in every 2012 weekly window at least half of the four weather features exceed PSI 0.2
-  (seasonality, not model harm).
-- The challenger is evaluated on a holdout and promoted without refitting on it, so the
-  promoted artifact is exactly the evaluated one.
-- Model artifacts execute code on load: the local registry is trusted state (see
+- No es un servicio en la nube: sin Kubernetes, servicios gestionados, sistema de auth (solo
+  una API key opcional de administración), servidor Grafana/Prometheus ni canary traffic splitting.
+- La "producción" es un replay de la mitad 2012 del dataset; sin feed de datos en vivo ni
+  feature store.
+- El modelo es deliberadamente simple (un LightGBM Poisson, sin tuning/AutoML/deep
+  learning); el producto es el ciclo de vida, no la precisión de benchmark.
+- El PSI de drift es informativo y nunca dispara un reentrenamiento; solo lo hace el WAPE con
+  etiquetas, por diseño: en cada semana de 2012 al menos la mitad de las 4 variables de clima supera
+  PSI 0.2 (estacionalidad, no daño al modelo).
+- El retador se evalúa en un holdout y se promueve sin reentrenar sobre él, así el artefacto
+  promovido es exactamente el evaluado.
+- Los artefactos ejecutan código al cargarse: el registro local es estado de confianza (ver
   [SECURITY.md](SECURITY.md)).
-- Reference numbers were produced on Linux x86_64; cross-OS floating-point differences can
-  move the retrain tick by one week, which the golden tests tolerate explicitly.
+- Los números de referencia son de Linux x86_64; el punto flotante entre SO puede mover el
+  tick de reentrenamiento una semana, algo que los tests golden toleran explícitamente.
 
-## License and data
+## Licencia y datos
 
-MIT © 2026 Eduardo Pacheco — see [LICENSE](LICENSE).
-Data: UCI Bike Sharing dataset (Fanaee-T, 2013), CC BY 4.0, DOI
-[10.24432/C5W894](https://doi.org/10.24432/C5W894), bundled unchanged as a gzip with its
-checksums and attribution in [docs/DATA.md](docs/DATA.md).
+MIT © 2026 Eduardo Pacheco — ver [LICENSE](LICENSE).
+Datos: UCI Bike Sharing (Fanaee-T, 2013), CC BY 4.0, DOI [10.24432/C5W894](https://doi.org/10.24432/C5W894),
+incluidos sin cambios como gzip con sus checksums y atribución en [docs/DATA.md](docs/DATA.md).

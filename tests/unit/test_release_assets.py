@@ -35,7 +35,7 @@ def _gif_dimensions(data: bytes) -> tuple[int, int]:
 
 
 def _readmes() -> tuple[Path, Path]:
-    return ROOT / "README.md", ROOT / "README.es.md"
+    return ROOT / "README.md", ROOT / "README.en.md"
 
 
 def test_readmes_exist_and_stay_within_the_line_budget() -> None:
@@ -59,9 +59,9 @@ def test_readmes_hold_the_generated_results_block_and_quickstart() -> None:
 
 
 def test_english_and_spanish_readmes_are_mirrors() -> None:
-    english, spanish = _readmes()
-    assert "[Español](README.es.md)" in english.read_text(encoding="utf-8")
-    assert "[English](README.md)" in spanish.read_text(encoding="utf-8")
+    spanish, english = _readmes()
+    assert "**Español** · [English](README.en.md)" in spanish.read_text(encoding="utf-8")
+    assert "[Español](README.md) · **English**" in english.read_text(encoding="utf-8")
 
 
 def test_every_page_screenshot_is_captured_in_both_themes() -> None:

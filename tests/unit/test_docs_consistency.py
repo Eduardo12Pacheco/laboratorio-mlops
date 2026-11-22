@@ -13,6 +13,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -119,14 +121,15 @@ def test_drill_json_must_carry_the_report_schema(tmp_path: Path) -> None:
     assert "drill-report/v1" in completed.stdout
 
 
-def test_readme_results_block_must_match_the_generated_table(tmp_path: Path) -> None:
+@pytest.mark.parametrize("readme", ["README.md", "README.en.md"])
+def test_readme_results_block_must_match_the_generated_table(tmp_path: Path, readme: str) -> None:
     _scaffold(tmp_path)
-    (tmp_path / "README.md").write_text(
+    (tmp_path / readme).write_text(
         "# Demo\n\n<!-- results:start -->\nstale numbers\n<!-- results:end -->\n"
     )
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
-    assert "README.md results block" in completed.stdout
+    assert f"{readme} results block" in completed.stdout
 
 
 def test_report_bundle_stays_under_the_size_limit(tmp_path: Path) -> None:
