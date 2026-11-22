@@ -40,10 +40,12 @@ def _scaffold(root: Path) -> None:
     docs = root / "docs"
     (docs / "adr").mkdir(parents=True)
     (docs / "results").mkdir(parents=True)
-    (docs / "ARCHITECTURE.md").write_text("# Architecture\n\nSee [data](DATA.md).\n")
-    (docs / "DATA.md").write_text("# Data\n")
-    (docs / "MODEL_CARD.md").write_text("# Model card\n")
-    (docs / "OPERATIONS.md").write_text("# Operations\n")
+    (docs / "ARCHITECTURE.md").write_text(
+        "# Architecture\n\nSee [data](DATA.md).\n", encoding="utf-8"
+    )
+    (docs / "DATA.md").write_text("# Data\n", encoding="utf-8")
+    (docs / "MODEL_CARD.md").write_text("# Model card\n", encoding="utf-8")
+    (docs / "OPERATIONS.md").write_text("# Operations\n", encoding="utf-8")
     adr = docs / "adr" / "0001-example.md"
     context = "\n".join(f"Context line {index}." for index in range(18))
     adr.write_text(
@@ -51,7 +53,8 @@ def _scaffold(root: Path) -> None:
         f"## Contexto\n\n{context}\n\n"
         "## Decisión\n\nDecision line.\n\n"
         "## Consecuencias\n\nConsequences line.\n\n"
-        "## Evidencia\n\nEvidence line.\n"
+        "## Evidencia\n\nEvidence line.\n",
+        encoding="utf-8",
     )
     report = {
         "schema": "drill-report/v1",
@@ -74,8 +77,12 @@ def _scaffold(root: Path) -> None:
     }
     for scenario in ("drift", "gate-reject", "bad-batch", "rollback"):
         report["scenario"] = scenario
-        (docs / "results" / f"drill-{scenario}.json").write_text(json.dumps(report))
-        (docs / "results" / f"drill-{scenario}.md").write_text(f"# Drill report: {scenario}\n")
+        (docs / "results" / f"drill-{scenario}.json").write_text(
+            json.dumps(report), encoding="utf-8"
+        )
+        (docs / "results" / f"drill-{scenario}.md").write_text(
+            f"# Drill report: {scenario}\n", encoding="utf-8"
+        )
     rendered = _run_script(
         str(ROOT / "scripts" / "render_results_table.py"),
         "--results-dir",
@@ -99,7 +106,9 @@ def test_committed_results_table_is_reproducible() -> None:
 
 def test_missing_relative_link_is_reported(tmp_path: Path) -> None:
     _scaffold(tmp_path)
-    (tmp_path / "docs" / "ARCHITECTURE.md").write_text("# Architecture\n\nSee [gone](gone.md).\n")
+    (tmp_path / "docs" / "ARCHITECTURE.md").write_text(
+        "# Architecture\n\nSee [gone](gone.md).\n", encoding="utf-8"
+    )
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
     assert "gone.md" in completed.stdout
@@ -108,7 +117,7 @@ def test_missing_relative_link_is_reported(tmp_path: Path) -> None:
 def test_adr_must_keep_its_four_sections(tmp_path: Path) -> None:
     _scaffold(tmp_path)
     adr = tmp_path / "docs" / "adr" / "0001-example.md"
-    adr.write_text("# ADR-0001\n\n## Contexto\n\nonly\n")
+    adr.write_text("# ADR-0001\n\n## Contexto\n\nonly\n", encoding="utf-8")
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
     assert "0001-example.md" in completed.stdout
@@ -117,9 +126,13 @@ def test_adr_must_keep_its_four_sections(tmp_path: Path) -> None:
 
 def test_drill_json_must_carry_the_report_schema(tmp_path: Path) -> None:
     _scaffold(tmp_path)
-    payload = json.loads((tmp_path / "docs" / "results" / "drill-drift.json").read_text())
+    payload = json.loads(
+        (tmp_path / "docs" / "results" / "drill-drift.json").read_text(encoding="utf-8")
+    )
     payload["schema"] = "drill-golden/v1"
-    (tmp_path / "docs" / "results" / "drill-drift.json").write_text(json.dumps(payload))
+    (tmp_path / "docs" / "results" / "drill-drift.json").write_text(
+        json.dumps(payload), encoding="utf-8"
+    )
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
     assert "drill-report/v1" in completed.stdout
@@ -129,7 +142,7 @@ def test_drill_json_must_carry_the_report_schema(tmp_path: Path) -> None:
 def test_readme_results_block_must_match_the_generated_table(tmp_path: Path, readme: str) -> None:
     _scaffold(tmp_path)
     (tmp_path / readme).write_text(
-        "# Demo\n\n<!-- results:start -->\nstale numbers\n<!-- results:end -->\n"
+        "# Demo\n\n<!-- results:start -->\nstale numbers\n<!-- results:end -->\n", encoding="utf-8"
     )
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
@@ -140,7 +153,7 @@ def test_report_bundle_stays_under_the_size_limit(tmp_path: Path) -> None:
     _scaffold(tmp_path)
     reports = tmp_path / "docs" / "assets" / "reports"
     reports.mkdir(parents=True)
-    (reports / "drift-2012-04-01.html").write_text("<html></html>")
+    (reports / "drift-2012-04-01.html").write_text("<html></html>", encoding="utf-8")
     (reports / "drill").write_bytes(b"x" * (5 * 1024 * 1024))
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
@@ -150,9 +163,11 @@ def test_report_bundle_stays_under_the_size_limit(tmp_path: Path) -> None:
 def test_readme_image_without_alt_text_is_reported(tmp_path: Path) -> None:
     _scaffold(tmp_path)
     (tmp_path / "README.md").write_text(
-        '# Demo\n\n<p align="center"><img src="docs/a.svg" width="100%"></p>\n'
+        '# Demo\n\n<p align="center"><img src="docs/a.svg" width="100%"></p>\n', encoding="utf-8"
     )
-    (tmp_path / "docs" / "a.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"/>')
+    (tmp_path / "docs" / "a.svg").write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg"/>', encoding="utf-8"
+    )
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
     assert "without alt text" in completed.stdout
@@ -160,7 +175,9 @@ def test_readme_image_without_alt_text_is_reported(tmp_path: Path) -> None:
 
 def test_readme_image_with_missing_file_is_reported(tmp_path: Path) -> None:
     _scaffold(tmp_path)
-    (tmp_path / "README.en.md").write_text("# Demo\n\n![Missing](docs/gone.gif)\n")
+    (tmp_path / "README.en.md").write_text(
+        "# Demo\n\n![Missing](docs/gone.gif)\n", encoding="utf-8"
+    )
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
     assert "docs/gone.gif" in completed.stdout
@@ -171,7 +188,7 @@ def test_readme_svg_with_script_is_reported(tmp_path: Path) -> None:
     assets = tmp_path / "docs" / "assets" / "readme"
     assets.mkdir(parents=True)
     (assets / "hero.svg").write_text(
-        '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
+        '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>', encoding="utf-8"
     )
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
@@ -185,7 +202,8 @@ def test_readme_svg_with_remote_reference_is_reported(tmp_path: Path) -> None:
     assets.mkdir(parents=True)
     (assets / "hero.svg").write_text(
         '<svg xmlns="http://www.w3.org/2000/svg">'
-        '<image href="https://example.com/photo.png"/></svg>'
+        '<image href="https://example.com/photo.png"/></svg>',
+        encoding="utf-8",
     )
     completed = _check_docs(tmp_path)
     assert completed.returncode == 1
@@ -202,7 +220,7 @@ def test_results_table_renderer_is_deterministic_and_ordered(tmp_path: Path) -> 
         cwd=tmp_path,
     )
     assert first.returncode == 0, first.stderr
-    table = (results / "results-table.md").read_text()
+    table = (results / "results-table.md").read_text(encoding="utf-8")
     second = _run_script(
         str(ROOT / "scripts" / "render_results_table.py"),
         "--results-dir",
@@ -210,6 +228,6 @@ def test_results_table_renderer_is_deterministic_and_ordered(tmp_path: Path) -> 
         cwd=tmp_path,
     )
     assert second.returncode == 0, second.stderr
-    assert (results / "results-table.md").read_text() == table
+    assert (results / "results-table.md").read_text(encoding="utf-8") == table
     assert table.index("drift") < table.index("gate-reject") < table.index("bad-batch")
     assert table.index("bad-batch") < table.index("rollback")
